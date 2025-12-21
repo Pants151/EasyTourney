@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const tournamentRoutes = require('./routes/tournamentRoutes');
 require('dotenv').config();
 
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // Permite leer JSON en las peticiones
 app.use('/api/auth', authRoutes);
+app.use('/api/tournaments', tournamentRoutes);
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
