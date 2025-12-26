@@ -7,6 +7,7 @@ const auth = require('../middleware/auth'); // Importamos nuestro guardia
 // @desc    Crear un torneo
 // @access  Privado (Necesita Token)
 router.post('/', auth, tournamentController.createTournament);
+router.put('/join/:id', auth, tournamentController.joinTournament);
 
 // @route   GET api/tournaments
 // @desc    Obtener todos los torneos
