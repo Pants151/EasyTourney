@@ -14,5 +14,7 @@ router.put('/join/:id', auth, tournamentController.joinTournament);
 // @access  Público
 router.get('/', tournamentController.getTournaments);
 router.get('/:id', tournamentController.getTournamentById);
+router.post('/generate/:id', auth, tournamentController.generateBrackets);
+router.put('/publish/:id', auth, tournamentController.publishTournament);
 
 module.exports = router;

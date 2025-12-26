@@ -1,4 +1,5 @@
 const Tournament = require('../models/Tournament');
+const Match = require('../models/Match');
 
 // Crear un nuevo torneo
 exports.createTournament = async (req, res) => {
@@ -80,5 +81,66 @@ exports.getTournamentById = async (req, res) => {
         console.error(err.message);
         if (err.kind === 'ObjectId') return res.status(404).json({ msg: 'Torneo no encontrado' });
         res.status(500).send('Error en el servidor');
+    }
+};
+
+// Generar Brackets (Solo para modalidad 1v1 inicialmente)
+exports.generateBrackets = async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id).populate('participantes');
+        
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+        if (tournament.participantes.length < 2) {
+            return res.status(400).json({ msg: 'Se necesitan al menos 2 participantes' });
+        }
+
+        // 1. Mezclar participantes aleatoriamente
+        const players = [...tournament.participantes].sort(() => 0.5 - Math.random());
+
+        // 2. Crear las partidas de la Ronda 1
+        const matches = [];
+        for (let i = 0; i < players.length; i += 2) {
+            const match = new Match({
+                torneo: tournament._id,
+                jugador1: players[i]._id,
+                jugador2: players[i+1] ? players[i+1]._id : null, // Por si es impar (bye)
+                ronda: 1
+            });
+            await match.save();
+            matches.push(match);
+        }
+
+        // 3. Actualizar estado del torneo
+        tournament.estado = 'En curso';
+        await tournament.save();
+
+        res.json({ msg: 'Brackets generados correctamente', matches });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al generar brackets');
+    }
+};
+
+// Publicar torneo (Cambiar estado a Abierto)
+exports.publishTournament = async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id);
+
+        if (!tournament) {
+            return res.status(404).json({ msg: 'Torneo no encontrado' });
+        }
+
+        // Verificar que el usuario sea el organizador
+        if (tournament.organizador.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'No autorizado' });
+        }
+
+        tournament.estado = 'Abierto';
+        await tournament.save();
+
+        res.json({ msg: 'Torneo publicado exitosamente', tournament });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al publicar el torneo');
     }
 };
