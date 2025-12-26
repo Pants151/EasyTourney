@@ -73,6 +73,16 @@ const TournamentDetails = () => {
         }
     };
 
+    const handleAdvance = async () => {
+        try {
+            const res = await tournamentService.advanceTournament(id);
+            alert(res.data.msg);
+            window.location.reload();
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al avanzar de ronda');
+        }
+    };
+
     if (loading) return <div className="text-center mt-5">Cargando...</div>;
     if (!tournament) return <div className="text-center mt-5">Torneo no encontrado</div>;
 
@@ -115,12 +125,19 @@ const TournamentDetails = () => {
                 </div>
                 {tournament.estado === 'En curso' && (
                     <div className="mt-5">
-                        <h3>Cuadro de Enfrentamientos (Ronda 1)</h3>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <h3>Cuadro de Enfrentamientos</h3>
+                            {user && tournament.organizador && user.id === tournament.organizador._id && (
+                                <button className="btn btn-outline-warning" onClick={handleAdvance}>
+                                    🚀 Avanzar de Ronda / Finalizar
+                                </button>
+                            )}
+                        </div>
                         <div className="row mt-3">
                             {matches.map(m => (
                                 <div key={m._id} className="col-md-6 col-lg-4 mb-3">
-                                    <div className="card text-center border-primary shadow-sm">
-                                        <div className="card-header bg-primary text-white">Partida</div>
+                                    <div className={`card text-center shadow-sm ${m.ganador ? 'border-success' : 'border-primary'}`}>
+                                        <div className="card-header bg-dark text-white">Ronda {m.ronda}</div>
                                         <div className="card-body">
                                             <div className="d-flex justify-content-around align-items-center">
                                                 <span className="fw-bold">{m.jugador1?.username || 'POR DEFINIR'}</span>
@@ -140,6 +157,12 @@ const TournamentDetails = () => {
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+                {tournament.estado === 'Finalizado' && tournament.ganador && (
+                    <div className="alert alert-success mt-5 text-center">
+                        <h2>🏆 ¡El torneo ha finalizado! 🏆</h2>
+                        <p className="display-6">Ganador: <strong>{tournament.ganador.username}</strong></p>
                     </div>
                 )}
             </div>

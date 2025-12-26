@@ -71,7 +71,8 @@ exports.getTournamentById = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id)
             .populate('organizador', 'username')
-            .populate('participantes', 'username');
+            .populate('participantes', 'username')
+            .populate('ganador', 'username');
         
         if (!tournament) {
             return res.status(404).json({ msg: 'Torneo no encontrado' });
@@ -183,5 +184,58 @@ exports.updateMatchResult = async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error al actualizar el resultado');
+    }
+};
+
+// Avanzar de ronda el torneo
+exports.advanceTournament = async (req, res) => {
+    try {
+        const tournamentId = req.params.id;
+        const tournament = await Tournament.findById(tournamentId);
+
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        // 1. Obtener la ronda más alta actual
+        const lastMatches = await Match.find({ torneo: tournamentId }).sort({ ronda: -1 }).limit(1);
+        const currentRound = lastMatches.length > 0 ? lastMatches[0].ronda : 1;
+
+        // 2. Verificar si todas las partidas de esa ronda tienen ganador
+        const matchesInRound = await Match.find({ torneo: tournamentId, ronda: currentRound });
+        const allFinished = matchesInRound.every(m => m.ganador);
+
+        if (!allFinished) {
+            return res.status(400).json({ msg: 'Aún hay partidas pendientes en la ronda actual' });
+        }
+
+        // 3. Extraer los IDs de los ganadores
+        const winners = matchesInRound.map(m => m.ganador);
+
+        // 4. Si solo queda 1 ganador, el torneo ha terminado
+        if (winners.length === 1) {
+            tournament.estado = 'Finalizado';
+            tournament.ganador = winners[0];
+            await tournament.save();
+            return res.json({ msg: '¡El torneo ha finalizado!', ganador: winners[0] });
+        }
+
+        // 5. Crear las partidas para la siguiente ronda (nextRound)
+        const nextRound = currentRound + 1;
+        const nextMatches = [];
+        for (let i = 0; i < winners.length; i += 2) {
+            const match = new Match({
+                torneo: tournamentId,
+                jugador1: winners[i],
+                jugador2: winners[i + 1] ? winners[i + 1] : null, // Manejo de impares
+                ronda: nextRound
+            });
+            await match.save();
+            nextMatches.push(match);
+        }
+
+        res.json({ msg: `Ronda ${nextRound} generada correctamente`, matches: nextMatches });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al avanzar de ronda');
     }
 };
