@@ -144,3 +144,19 @@ exports.publishTournament = async (req, res) => {
         res.status(500).send('Error al publicar el torneo');
     }
 };
+
+// Obtener todas las partidas de un torneo
+exports.getTournamentMatches = async (req, res) => {
+    try {
+        const matches = await Match.find({ torneo: req.params.id })
+            .populate('jugador1', 'username')
+            .populate('jugador2', 'username')
+            .populate('ganador', 'username')
+            .sort({ ronda: 1 }); // Ordenadas por ronda
+        
+        res.json(matches);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al obtener las partidas');
+    }
+};

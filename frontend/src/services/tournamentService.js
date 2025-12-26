@@ -13,6 +13,7 @@ const getTournamentById = async (id) => (await axios.get(API_URL + id)).data;
 const joinTournament = async (id) => axios.put(`${API_URL}join/${id}`, {}, getAuthHeaders());
 const generateBrackets = async (id) => axios.post(`${API_URL}generate/${id}`, {}, getAuthHeaders());
 const publishTournament = async (id) => axios.put(`${API_URL}publish/${id}`, {}, getAuthHeaders());
+const getTournamentMatches = async (id) => (await axios.get(`${API_URL}${id}/matches`)).data;
 
 export default { 
     createTournament, 
@@ -20,5 +21,6 @@ export default {
     getTournamentById, 
     joinTournament, 
     generateBrackets,
-    publishTournament
+    publishTournament,
+    getTournamentMatches
 };

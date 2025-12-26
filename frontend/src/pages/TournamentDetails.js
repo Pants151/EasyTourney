@@ -8,12 +8,17 @@ const TournamentDetails = () => {
     const { user } = useContext(AuthContext);
     const [tournament, setTournament] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [matches, setMatches] = useState([]);
 
     useEffect(() => {
         const fetchTournament = async () => {
             try {
                 const data = await tournamentService.getTournamentById(id);
                 setTournament(data);
+                if (data.estado === 'En curso') {
+                    const matchesData = await tournamentService.getTournamentMatches(id);
+                    setMatches(matchesData);
+                }
             } catch (err) {
                 console.error("Error cargando torneo", err);
             } finally {
@@ -83,6 +88,29 @@ const TournamentDetails = () => {
                         </ul>
                     </div>
                 </div>
+                {tournament.estado === 'En curso' && (
+                    <div className="mt-5">
+                        <h3>Cuadro de Enfrentamientos (Ronda 1)</h3>
+                        <div className="row mt-3">
+                            {matches.map(m => (
+                                <div key={m._id} className="col-md-6 col-lg-4 mb-3">
+                                    <div className="card text-center border-primary shadow-sm">
+                                        <div className="card-header bg-primary text-white">Partida</div>
+                                        <div className="card-body">
+                                            <div className="d-flex justify-content-around align-items-center">
+                                                <span className="fw-bold">{m.jugador1?.username || 'POR DEFINIR'}</span>
+                                                <span className="badge bg-secondary">VS</span>
+                                                <span className="fw-bold">{m.jugador2?.username || 'BYE (Pasa solo)'}</span>
+                                            </div>
+                                            <hr />
+                                            <p className="mb-0">Resultado: <span className="text-info">{m.resultado}</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
