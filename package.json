@@ -1,0 +1,26 @@
+{
+  "name": "easytourney",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "backend": "npm run dev --prefix backend",
+    "frontend": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pants151/EasyTourney.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Pants151/EasyTourney/issues"
+  },
+  "homepage": "https://github.com/Pants151/EasyTourney#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
