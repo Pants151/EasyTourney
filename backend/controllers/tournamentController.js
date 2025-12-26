@@ -160,3 +160,28 @@ exports.getTournamentMatches = async (req, res) => {
         res.status(500).send('Error al obtener las partidas');
     }
 };
+
+// Actualizar resultado de una partida
+exports.updateMatchResult = async (req, res) => {
+    try {
+        const { ganadorId, resultado } = req.body;
+        // Buscamos la partida y poblamos el torneo para verificar el organizador
+        const match = await Match.findById(req.params.id).populate('torneo');
+
+        if (!match) return res.status(404).json({ msg: 'Partida no encontrada' });
+
+        // Verificamos que quien hace la petición sea el organizador del torneo
+        if (match.torneo.organizador.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'No autorizado para reportar resultados' });
+        }
+
+        match.ganador = ganadorId;
+        match.resultado = resultado;
+        await match.save();
+
+        res.json(match);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al actualizar el resultado');
+    }
+};

@@ -48,6 +48,31 @@ const TournamentDetails = () => {
         }
     };
 
+    const handleReportResult = async (matchId) => {
+        const resultado = prompt("Introduce el resultado (ej. 2-1):");
+        if (!resultado) return;
+
+        // Para simplificar, pediremos el nombre del ganador o su ID
+        // En una versión más avanzada usaríamos un selector (Select/Modal)
+        const ganadorId = prompt("ID del ganador (Copia el ID del jugador o introduce 1 para Jugador 1, 2 para Jugador 2):");
+        
+        // Aquí podrías mejorar la lógica para obtener el ID real basado en la selección
+        // Por ahora, implementaremos la llamada básica
+        try {
+            const match = matches.find(m => m._id === matchId);
+            const targetId = ganadorId === "1" ? match.jugador1._id : (ganadorId === "2" ? match.jugador2._id : ganadorId);
+
+            await tournamentService.updateMatchResult(matchId, {
+                ganadorId: targetId,
+                resultado: resultado
+            });
+            alert('Resultado actualizado');
+            window.location.reload();
+        } catch (err) {
+            alert('Error al actualizar resultado');
+        }
+    };
+
     if (loading) return <div className="text-center mt-5">Cargando...</div>;
     if (!tournament) return <div className="text-center mt-5">Torneo no encontrado</div>;
 
@@ -104,6 +129,12 @@ const TournamentDetails = () => {
                                             </div>
                                             <hr />
                                             <p className="mb-0">Resultado: <span className="text-info">{m.resultado}</span></p>
+                                            {m.ganador && <p className="text-success small">Ganador: {m.ganador.username}</p>}
+                                            {user && tournament.organizador && user.id === tournament.organizador._id && (
+                                                <button className="btn btn-outline-secondary btn-sm mt-2" onClick={() => handleReportResult(m._id)}>
+                                                    Reportar Resultado
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

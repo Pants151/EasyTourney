@@ -7,6 +7,11 @@ const getAuthHeaders = () => {
     return { headers: { 'x-auth-token': token } };
 };
 
+const updateMatchResult = async (matchId, resultData) => {
+    const response = await axios.put(`${API_URL}match/${matchId}`, resultData, getAuthHeaders());
+    return response.data;
+};
+
 const createTournament = async (data) => axios.post(API_URL, data, getAuthHeaders());
 const getTournaments = async () => (await axios.get(API_URL)).data;
 const getTournamentById = async (id) => (await axios.get(API_URL + id)).data;
@@ -22,5 +27,6 @@ export default {
     joinTournament, 
     generateBrackets,
     publishTournament,
-    getTournamentMatches
+    getTournamentMatches,
+    updateMatchResult
 };

@@ -17,5 +17,6 @@ router.get('/:id', tournamentController.getTournamentById);
 router.post('/generate/:id', auth, tournamentController.generateBrackets);
 router.put('/publish/:id', auth, tournamentController.publishTournament);
 router.get('/:id/matches', tournamentController.getTournamentMatches);
+router.put('/match/:id', auth, tournamentController.updateMatchResult);
 
 module.exports = router;
