@@ -12,8 +12,8 @@ const Login = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            const data = await authService.login(formData);
-            login(data.token); // Usamos la función del contexto
+            const data = await authService.login(formData); // Recibe {token, user}
+            login(data); // Pasamos todo el objeto data
         } catch (err) {
             setError(err.response?.data?.msg || 'Error al iniciar sesión');
         }

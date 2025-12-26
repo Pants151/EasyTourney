@@ -71,7 +71,11 @@ exports.login = async (req, res) => {
             { expiresIn: 86400 },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token }); // Enviamos el token al cliente
+                // DEVOLVEMOS TAMBIÉN EL USUARIO
+                res.json({
+                    token,
+                    user: { id: user.id, username: user.username, rol: user.rol }
+                });
             }
         );
 
