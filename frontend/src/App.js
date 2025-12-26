@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import CreateTournament from './pages/CreateTournament';
+import TournamentDetails from './pages/TournamentDetails';
 
 // Componente Navbar interno para detectar el estado del usuario
 const Navbar = () => {
@@ -43,6 +44,7 @@ function App() {
                         <Route path="/register" element={<Register />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/create-tournament" element={<CreateTournament />} />
+                        <Route path="/tournament/:id" element={<TournamentDetails />} />
                     </Routes>
                 </div>
             </AuthProvider>

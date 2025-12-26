@@ -64,3 +64,21 @@ exports.joinTournament = async (req, res) => {
         res.status(500).send('Error al procesar la inscripción');
     }
 };
+
+// Obtener un torneo por ID
+exports.getTournamentById = async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id)
+            .populate('organizador', 'username')
+            .populate('participantes', 'username');
+        
+        if (!tournament) {
+            return res.status(404).json({ msg: 'Torneo no encontrado' });
+        }
+        res.json(tournament);
+    } catch (err) {
+        console.error(err.message);
+        if (err.kind === 'ObjectId') return res.status(404).json({ msg: 'Torneo no encontrado' });
+        res.status(500).send('Error en el servidor');
+    }
+};

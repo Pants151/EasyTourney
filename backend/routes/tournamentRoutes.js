@@ -13,5 +13,6 @@ router.put('/join/:id', auth, tournamentController.joinTournament);
 // @desc    Obtener todos los torneos
 // @access  Público
 router.get('/', tournamentController.getTournaments);
+router.get('/:id', tournamentController.getTournamentById);
 
 module.exports = router;

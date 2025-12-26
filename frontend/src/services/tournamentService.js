@@ -23,4 +23,9 @@ const joinTournament = async (id) => {
     return response.data;
 };
 
-export default { createTournament, getTournaments, joinTournament };
+const getTournamentById = async (id) => {
+    const response = await axios.get(API_URL + id);
+    return response.data;
+};
+
+export default { createTournament, getTournaments, joinTournament, getTournamentById };
