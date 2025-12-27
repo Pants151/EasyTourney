@@ -56,3 +56,14 @@ exports.deleteGame = async (req, res) => {
         res.status(500).send('Error al eliminar el juego');
     }
 };
+
+// Obtener los 5 primeros juegos (para el Home)
+exports.getTop5Games = async (req, res) => {
+    try {
+        // Simplemente obtenemos los primeros 5. Más adelante aquí iría una agregación compleja.
+        const games = await Game.find().limit(5);
+        res.json(games);
+    } catch (err) {
+        res.status(500).send('Error al obtener top juegos');
+    }
+};

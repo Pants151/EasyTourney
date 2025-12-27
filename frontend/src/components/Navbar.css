@@ -1,0 +1,26 @@
+.custom-navbar {
+    background: linear-gradient(to bottom, rgba(8, 11, 18, 0.9) 0%, rgba(8, 11, 18, 0) 100%);
+    padding-top: 20px;
+    transition: background 0.3s;
+}
+
+/* Si quisieras que se ponga oscuro al hacer scroll */
+.custom-navbar.scrolled {
+    background-color: var(--color-bg-main);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.nav-link-custom {
+    color: var(--color-text-light) !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    margin-left: 20px;
+    transition: color 0.2s;
+}
+
+.nav-link-custom:hover {
+    color: var(--color-accent) !important;
+}

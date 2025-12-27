@@ -1,38 +1,36 @@
-.App {
-  text-align: center;
+/* App.css - Paleta de colores y bases */
+:root {
+  --color-bg-main: #080b12; /* Fondo principal muy oscuro */
+  --color-bg-secondary: #111521; /* Fondo para barras secundarias */
+  --color-accent: #FF7300; /* Naranja vibrante del botón/acentos */
+  --color-text-light: #ffffff;
+  --color-text-dim: #aab0c4; /* Color de texto secundario */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  background-color: var(--color-bg-main) !important;
+  color: var(--color-text-light) !important;
+  font-family: 'Rajdhani', sans-serif; /* Recomiendo importar una fuente "gamer" como Rajdhani o Chakra Petch de Google Fonts en tu index.html */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Utilidades */
+.text-accent { color: var(--color-accent) !important; }
+.bg-dark-secondary { background-color: var(--color-bg-secondary); }
+
+/* Botón Naranja Personalizado */
+.btn-accent {
+    background-color: var(--color-accent);
+    color: white;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 12px 30px;
+    border: none;
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); /* Efecto inclinado "gamer" */
+    transition: all 0.3s ease;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn-accent:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--color-accent);
+    color: white;
 }

@@ -1,74 +1,115 @@
 import React, { useEffect, useState } from 'react';
-import tournamentService from '../services/tournamentService';
-import { useNavigate } from 'react-router-dom'; // 1. Importar el hook
+import gameService from '../services/gameService'; // Usamos el servicio de juegos
+import { Link } from 'react-router-dom';
+import './Home.css'; // CSS Específico para esta página
 
 const Home = () => {
-    const [tournaments, setTournaments] = useState([]);
-    const navigate = useNavigate(); // 2. Definir navigate DENTRO del componente
+    const [topGames, setTopGames] = useState([]);
 
     useEffect(() => {
-        const fetchTournaments = async () => {
+        // Cargar los 5 juegos para la barra horizontal
+        const fetchTopGames = async () => {
             try {
-                const data = await tournamentService.getTournaments();
-                setTournaments(data);
+                const data = await gameService.getTop5Games();
+                setTopGames(data);
             } catch (err) {
-                console.error("Error al cargar torneos", err);
+                console.error("Error cargando top juegos", err);
             }
         };
-        fetchTournaments();
+        fetchTopGames();
     }, []);
 
-    const handleJoin = async (id) => {
-        try {
-            await tournamentService.joinTournament(id);
-            alert('¡Te has inscrito correctamente!');
-            const data = await tournamentService.getTournaments();
-            setTournaments(data);
-        } catch (err) {
-            alert(err.response?.data?.msg || 'Error al inscribirse. Asegúrate de estar logueado.');
-        }
-    };
-
     return (
-        <div>
-            <h2 className="mb-4 text-center">Torneos Disponibles</h2>
-            <div className="row">
-                {tournaments.length > 0 ? (
-                    tournaments.map(t => (
-                        <div className="col-md-4 mb-4" key={t._id}>
-                            <div className="card h-100 shadow-sm">
-                                <div className="card-body">
-                                    <h5 className="card-title text-primary">{t.nombre}</h5>
-                                    <h6 className="card-subtitle mb-2 text-muted">{t.juego}</h6>
-                                    <p className="card-text">
-                                        <strong>Participantes:</strong> {t.participantes.length}<br/>
-                                        <strong>Modalidad:</strong> {t.modalidad}<br/>
-                                        <strong>Fecha:</strong> {new Date(t.fechaInicio).toLocaleDateString()}
-                                    </p>
-                                    <div className="d-flex justify-content-between mt-3">
-                                        {/* 3. Usar navigate para ir a los detalles */}
-                                        <button 
-                                            className="btn btn-outline-primary btn-sm"
-                                            onClick={() => navigate(`/tournament/${t._id}`)}
-                                        >
-                                            Ver Detalles
-                                        </button>
-                                        
-                                        <button 
-                                            className="btn btn-success btn-sm"
-                                            onClick={() => handleJoin(t._id)}
-                                        >
-                                            Inscribirse
-                                        </button>
+        <div className="home-wrapper">
+            
+            {/* --- SECCIÓN HERO --- */}
+            <section className="hero-section d-flex align-items-center justify-content-center">
+                {/* Fondo de imagen sutil o gradiente */}
+                <div className="hero-bg-overlay"></div>
+                
+                <div className="hero-content text-center text-uppercase position-relative z-2">
+                    {/* Logo grande */}
+                    <img src="/assets/images/logo-big.png" alt="EasyTourney Big Logo" className="hero-logo img-fluid mb-4 animate-fade-up" />
+                    
+                    <h1 className="hero-title fw-bolder mb-3 animate-fade-up delay-1">
+                        DONDE NACEN LAS <span className="text-accent outline-text">LEYENDAS</span>
+                    </h1>
+                    <p className="hero-subtitle h4 mb-5 text-dim animate-fade-up delay-2">
+                        Compite. Gana. Escribe tu historia.
+                    </p>
+                    <Link to="/register" className="btn btn-accent btn-lg animate-fade-up delay-3">
+                        EMPIEZA TU LEGADO
+                    </Link>
+                </div>
+            </section>
+
+
+            {/* --- BARRA DE JUEGOS POPULARES --- */}
+            <section className="popular-games-bar py-4 bg-dark-secondary position-relative z-3 shadow-lg">
+                <div className="container d-flex align-items-center overflow-hidden">
+                    <h4 className="text-uppercase fw-bold mb-0 me-4 text-nowrap">
+                        JUEGOS MÁS <span className="text-accent">POPULARES</span>
+                    </h4>
+                    
+                    {/* Lista horizontal de carátulas */}
+                    <div className="games-scroll-container d-flex flex-grow-1 ms-4">
+                        {topGames.length > 0 ? topGames.map(game => (
+                            <div key={game._id} className="game-cover-item mx-2">
+                                <img src={game.caratula} alt={game.nombre} className="img-fluid shadow-sm" title={game.nombre} />
+                            </div>
+                        )) : (
+                            <p className="text-muted ms-3 mb-0 align-self-center">Cargando juegos...</p>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+
+            {/* --- SECCIÓN VIDEO FEATURES --- */}
+            <section className="video-feature-section position-relative">
+                {/* Contenedor del Video de fondo */}
+                <div className="video-background-container">
+                    <video autoPlay loop muted playsInline className="video-bg">
+                        {/* Asegúrate de tener este archivo en /public/assets/images/ */}
+                        <source src="/assets/images/esports-video.mp4" type="video/mp4" />
+                    </video>
+                    <div className="video-overlay-gradient"></div>
+                </div>
+
+                <div className="container position-relative z-2 content-container h-100 d-flex align-items-center">
+                    <div className="row w-100 align-items-center">
+                        {/* Texto e Iconos a la izquierda */}
+                        <div className="col-lg-6 text-white">
+                            <h2 className="feature-title text-uppercase fw-bolder mb-4 lh-1">
+                                VIVE LA <span className="text-accent">INTENSIDAD</span> DE LA COMPETICIÓN PROFESIONAL
+                            </h2>
+                            <p className="lead text-dim mb-5">
+                                Participa en torneos diarios, sube en el ranking y consigue premios exclusivos. Tu camino al estrellato comienza aquí.
+                            </p>
+                            
+                            <div className="d-flex feature-icons">
+                                <div className="feature-item d-flex align-items-center me-5">
+                                    <img src="/assets/images/icon-trophy.png" alt="Trofeo" height="50" className="me-3" />
+                                    <div>
+                                        <h5 className="fw-bold mb-0">TORNEOS ÉPICOS</h5>
+                                        <small className="text-dim">Premios reales</small>
+                                    </div>
+                                </div>
+                                <div className="feature-item d-flex align-items-center">
+                                    <img src="/assets/images/icon-controller.png" alt="Mando" height="50" className="me-3" />
+                                    <div>
+                                        <h5 className="fw-bold mb-0">TODAS LAS PLATAFORMAS</h5>
+                                        <small className="text-dim">Juega donde quieras</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ))
-                ) : (
-                    <p className="text-center">No hay torneos disponibles en este momento.</p>
-                )}
-            </div>
+                        {/* El lado derecho queda libre para ver el video de fondo */}
+                        <div className="col-lg-6"></div>
+                    </div>
+                </div>
+            </section>
+
         </div>
     );
 };

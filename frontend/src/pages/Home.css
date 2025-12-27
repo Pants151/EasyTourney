@@ -1,0 +1,138 @@
+/* Home.css */
+
+/* === HERO SECTION === */
+.hero-section {
+    min-height: 90vh; /* Ocupa casi toda la pantalla */
+    position: relative;
+    /* Fondo de ejemplo, idealmente usa una imagen de estadio de esports oscura */
+    background: url('https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=2070') center/cover no-repeat fixed;
+    margin-top: -80px; /* Para que el navbar quede encima */
+    padding-top: 80px;
+}
+
+.hero-bg-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    /* Gradiente radial para oscurecer los bordes y centrar la atención */
+    background: radial-gradient(circle at center, rgba(8, 11, 18, 0.6) 0%, rgba(8, 11, 18, 1) 90%);
+}
+
+.hero-logo {
+    max-width: 350px; /* Ajusta según tu imagen */
+}
+
+.hero-title {
+    font-size: 4rem;
+    letter-spacing: 2px;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.hero-subtitle {
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+/* Efecto de texto con borde para "LEYENDAS" (opcional, si no te gusta quítalo) */
+/* .outline-text {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--color-accent);
+} */
+
+
+/* === POPULAR GAMES BAR === */
+.popular-games-bar {
+    border-top: 2px solid rgba(255, 115, 0, 0.1);
+    border-bottom: 2px solid rgba(255, 115, 0, 0.1);
+    /* Patrón de fondo sutil (opcional) */
+    background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.games-scroll-container {
+    /* Permite scroll horizontal si hay muchos juegos */
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 5px; /* Para ocultar la barra de scroll en algunos navegadores */
+    scrollbar-width: none; /* Firefox */
+}
+.games-scroll-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+.game-cover-item img {
+    height: 120px; /* Altura fija para las carátulas */
+    width: auto;
+    border-radius: 4px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.game-cover-item img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+
+/* === VIDEO FEATURE SECTION === */
+.video-feature-section {
+    height: 70vh; /* Altura de la sección inferior */
+    overflow: hidden;
+    background-color: #000;
+}
+
+.video-background-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+}
+
+.video-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* El video cubre todo el fondo sin deformarse */
+    opacity: 0.6; /* Hacemos el video semi-transparente */
+}
+
+.video-overlay-gradient {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    /* Gradiente potente de izquierda a derecha para oscurecer donde va el texto */
+    background: linear-gradient(90deg, var(--color-bg-main) 10%, rgba(8, 11, 18, 0.8) 50%, transparent 100%);
+}
+
+.feature-title {
+    font-size: 3.5rem;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+}
+
+.feature-icons img {
+    filter: drop-shadow(0 0 5px rgba(255, 115, 0, 0.5));
+}
+
+
+/* === ANIMACIONES SIMPLES DE ENTRADA === */
+.animate-fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.8s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajustes Responsive básicos */
+@media (max-width: 768px) {
+    .hero-title { font-size: 2.5rem; }
+    .feature-title { font-size: 2rem; }
+    .popular-games-bar h4 { font-size: 1rem; }
+    .game-cover-item img { height: 80px; }
+    .feature-icons { flex-direction: column; align-items: flex-start; }
+    .feature-item { margin-bottom: 20px; }
+}
