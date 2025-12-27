@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json()); // Permite leer JSON en las peticiones
 app.use('/api/auth', authRoutes);
 app.use('/api/tournaments', tournamentRoutes);
+app.use('/api/games', require('./routes/gameRoutes'));
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)

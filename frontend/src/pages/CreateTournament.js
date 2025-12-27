@@ -1,27 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import tournamentService from '../services/tournamentService';
+import gameService from '../services/gameService'; // Importamos el nuevo servicio
 import { useNavigate } from 'react-router-dom';
 
 const CreateTournament = () => {
+    const [games, setGames] = useState([]); // Para almacenar los juegos de la DB
     const [formData, setFormData] = useState({
         nombre: '',
-        juego: '',
+        juego: '', // Aquí guardaremos el ID del juego seleccionado
         modalidad: '1v1',
         fechaInicio: '',
         reglas: ''
     });
     const navigate = useNavigate();
 
+    // Cargar los juegos al montar el componente
+    useEffect(() => {
+        const fetchGames = async () => {
+            try {
+                const data = await gameService.getGames();
+                setGames(data);
+            } catch (err) {
+                console.error("Error cargando juegos", err);
+            }
+        };
+        fetchGames();
+    }, []);
+
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const onSubmit = async e => {
         e.preventDefault();
+        if(!formData.juego) return alert("Por favor, selecciona un juego");
         try {
             await tournamentService.createTournament(formData);
             alert('¡Torneo creado con éxito!');
             navigate('/');
         } catch (err) {
-            alert('Error al crear el torneo. Asegúrate de estar logueado como organizador.');
+            alert('Error al crear el torneo.');
         }
     };
 
@@ -33,10 +49,19 @@ const CreateTournament = () => {
                     <label className="form-label">Nombre del Torneo</label>
                     <input type="text" name="nombre" className="form-control" onChange={onChange} required />
                 </div>
+                
+                {/* SELECTOR DE JUEGOS OFICIALES */}
                 <div className="mb-3">
-                    <label className="form-label">Juego</label>
-                    <input type="text" name="juego" className="form-control" onChange={onChange} required />
+                    <label className="form-label">Juego Oficial</label>
+                    <select name="juego" className="form-select" onChange={onChange} required>
+                        <option value="">-- Selecciona un juego --</option>
+                        {games.map(g => (
+                            <option key={g._id} value={g._id}>{g.nombre}</option>
+                        ))}
+                    </select>
                 </div>
+
+                {/* Resto de campos... */}
                 <div className="row">
                     <div className="col-md-6 mb-3">
                         <label className="form-label">Modalidad</label>

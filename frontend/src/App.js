@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import CreateTournament from './pages/CreateTournament';
 import TournamentDetails from './pages/TournamentDetails';
+import AdminGames from './pages/AdminGames';
 
 // Componente Navbar interno para detectar el estado del usuario
 const Navbar = () => {
@@ -17,6 +18,9 @@ const Navbar = () => {
                 <div className="d-flex align-items-center">
                     {user ? (
                         <>
+                            {user && user.rol === 'administrador' && (
+                                <Link className="btn btn-link text-warning me-2" to="/admin/games">Gestionar Juegos</Link>
+                            )}
                             <Link className="btn btn-link text-light me-3" to="/create-tournament">Crear Torneo</Link>
                             <button onClick={logout} className="btn btn-danger btn-sm">Cerrar Sesión</button>
                         </>
@@ -45,6 +49,7 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/create-tournament" element={<CreateTournament />} />
                         <Route path="/tournament/:id" element={<TournamentDetails />} />
+                        <Route path="/admin/games" element={<AdminGames />} />
                     </Routes>
                 </div>
             </AuthProvider>

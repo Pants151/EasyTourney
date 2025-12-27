@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 
 const tournamentSchema = new mongoose.Schema({
     nombre: { type: String, required: true, trim: true },
-    juego: { type: String, required: true },
+    juego: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Game',
+        required: true
+    },
     plataformas: [String],
     modalidad: { type: String, enum: ['1v1', 'Equipos'], default: '1v1' },
     ubicacion: { type: String, default: 'Online' },

@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     },
     rol: {
         type: String,
-        enum: ['organizador', 'participante', 'espectador'],
+        enum: ['administrador', 'organizador', 'participante', 'espectador'],
         default: 'participante'
     },
     fechaRegistro: {
