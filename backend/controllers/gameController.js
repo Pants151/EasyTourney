@@ -25,7 +25,7 @@ exports.createGame = async (req, res) => {
 // Actualizar un juego (Solo Admin)
 exports.updateGame = async (req, res) => {
     try {
-        const { nombre, plataformas, caratula, logo } = req.body;
+        const { nombre, plataformas, caratula, logo, header } = req.body;
         let game = await Game.findById(req.params.id);
 
         if (!game) return res.status(404).json({ msg: 'Juego no encontrado' });
@@ -34,10 +34,12 @@ exports.updateGame = async (req, res) => {
         game.plataformas = plataformas || game.plataformas;
         game.caratula = caratula || game.caratula;
         game.logo = logo || game.logo;
+        game.header = header || game.header;
 
         await game.save();
         res.json(game);
     } catch (err) {
+        console.error(err);
         res.status(500).send('Error al actualizar el juego');
     }
 };

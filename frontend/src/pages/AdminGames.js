@@ -3,15 +3,16 @@ import gameService from '../services/gameService';
 
 const AdminGames = () => {
     const PLATAFORMAS_DISPONIBLES = ["PC", "PS5", "PS4", "Xbox Series X", "Xbox Series S", "Xbox One", "Nintendo Switch", "Mobile"];
-    
+
     const [games, setGames] = useState([]);
     const [editingId, setEditingId] = useState(null);
     const [selectedPlatform, setSelectedPlatform] = useState("");
-    const [formData, setFormData] = useState({ 
-        nombre: '', 
+    const [formData, setFormData] = useState({
+        nombre: '',
         plataformas: [],
-        caratula: '', 
-        logo: '' 
+        caratula: '',
+        logo: '',
+        header: ''
     });
 
     useEffect(() => { loadGames(); }, []);
@@ -24,9 +25,9 @@ const AdminGames = () => {
     // Función para añadir plataforma desde el combobox
     const addPlatform = () => {
         if (selectedPlatform && !formData.plataformas.includes(selectedPlatform)) {
-            setFormData({ 
-                ...formData, 
-                plataformas: [...formData.plataformas, selectedPlatform] 
+            setFormData({
+                ...formData,
+                plataformas: [...formData.plataformas, selectedPlatform]
             });
             setSelectedPlatform("");
         }
@@ -37,6 +38,17 @@ const AdminGames = () => {
         setFormData({
             ...formData,
             plataformas: formData.plataformas.filter(p => p !== plat)
+        });
+    };
+
+    const handleEdit = (game) => {
+        setEditingId(game._id);
+        setFormData({
+            nombre: game.nombre,
+            plataformas: game.plataformas,
+            caratula: game.caratula,
+            logo: game.logo,
+            header: game.header
         });
     };
 
@@ -55,7 +67,7 @@ const AdminGames = () => {
     };
 
     const resetForm = () => {
-        setFormData({ nombre: '', plataformas: [], caratula: '', logo: '' });
+        setFormData({ nombre: '', plataformas: [], caratula: '', logo: '', header: '' });
         setEditingId(null);
     };
 
@@ -66,12 +78,12 @@ const AdminGames = () => {
                     <div className="card p-4 shadow">
                         <h3>{editingId ? 'Editar Juego' : 'Nuevo Juego'}</h3>
                         <form onSubmit={onSubmit}>
-                            <input type="text" name="nombre" placeholder="Nombre del juego" className="form-control mb-3" 
-                                value={formData.nombre} onChange={e => setFormData({...formData, nombre: e.target.value})} required />
-                            
+                            <input type="text" name="nombre" placeholder="Nombre del juego" className="form-control mb-3"
+                                value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} required />
+
                             {/* COMBOBOX DE PLATAFORMAS */}
                             <div className="input-group mb-2">
-                                <select className="form-select" value={selectedPlatform} 
+                                <select className="form-select" value={selectedPlatform}
                                     onChange={e => setSelectedPlatform(e.target.value)}>
                                     <option value="">Selecciona plataforma...</option>
                                     {PLATAFORMAS_DISPONIBLES.map(p => (
@@ -85,18 +97,21 @@ const AdminGames = () => {
                             <div className="mb-3">
                                 {formData.plataformas.map(p => (
                                     <span key={p} className="badge bg-primary me-2 p-2">
-                                        {p} <button type="button" className="btn-close btn-close-white ms-2" 
-                                            style={{fontSize: '0.6rem'}} onClick={() => removePlatform(p)}></button>
+                                        {p} <button type="button" className="btn-close btn-close-white ms-2"
+                                            style={{ fontSize: '0.6rem' }} onClick={() => removePlatform(p)}></button>
                                     </span>
                                 ))}
                             </div>
 
-                            <input type="text" placeholder="URL Carátula" className="form-control mb-3" 
-                                value={formData.caratula} onChange={e => setFormData({...formData, caratula: e.target.value})} required />
-                            
-                            <input type="text" placeholder="URL Logo" className="form-control mb-3" 
-                                value={formData.logo} onChange={e => setFormData({...formData, logo: e.target.value})} required />
-                            
+                            <input type="text" placeholder="URL Carátula" className="form-control mb-3"
+                                value={formData.caratula} onChange={e => setFormData({ ...formData, caratula: e.target.value })} required />
+
+                            <input type="text" placeholder="URL Logo" className="form-control mb-3"
+                                value={formData.logo} onChange={e => setFormData({ ...formData, logo: e.target.value })} required />
+
+                            <input type="text" placeholder="URL Header/Banner" className="form-control mb-3"
+                                value={formData.header} onChange={e => setFormData({ ...formData, header: e.target.value })} required />
+
                             <button className="btn btn-dark w-100">{editingId ? 'Actualizar' : 'Guardar Juego'}</button>
                             {editingId && <button className="btn btn-link w-100" onClick={resetForm}>Cancelar</button>}
                         </form>
@@ -109,19 +124,16 @@ const AdminGames = () => {
                         {games.map(g => (
                             <div key={g._id} className="list-group-item d-flex justify-content-between align-items-center">
                                 <div className="d-flex align-items-center">
-                                    <img src={g.logo} alt="logo" style={{width: '40px', marginRight: '15px'}} />
+                                    <img src={g.logo} alt="logo" style={{ width: '40px', marginRight: '15px' }} />
                                     <div>
                                         <h6 className="mb-0">{g.nombre}</h6>
                                         <small className="text-muted">{g.plataformas.join(', ')}</small>
                                     </div>
                                 </div>
                                 <div>
-                                    <button className="btn btn-sm btn-info me-2" onClick={() => {
-                                        setEditingId(g._id);
-                                        setFormData({ nombre: g.nombre, plataformas: g.plataformas, caratula: g.caratula, logo: g.logo });
-                                    }}>Editar</button>
+                                    <button className="btn btn-sm btn-info me-2" onClick={() => handleEdit(g)}>Editar</button>
                                     <button className="btn btn-sm btn-danger" onClick={async () => {
-                                        if(window.confirm("¿Borrar juego?")) { await gameService.deleteGame(g._id); loadGames(); }
+                                        if (window.confirm("¿Borrar juego?")) { await gameService.deleteGame(g._id); loadGames(); }
                                     }}>Borrar</button>
                                 </div>
                             </div>
