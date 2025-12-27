@@ -26,23 +26,23 @@
 }
 
 .hero-logo {
-    max-width: 600px !important; /* Más pequeño */
-    margin-bottom: 10px !important; /* Menos separación del texto */
+    max-width: 180px !important; /* Logo más pequeño */
+    margin-bottom: 5px !important; /* Casi pegado al texto */
 }
 
 .hero-title {
     font-size: 4rem;
     letter-spacing: 2px;
-}
-
-.hero-title, .hero-subtitle {
     color: #ffffff !important;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    font-weight: 900;
+    margin-top: 0;
 }
 
 .hero-subtitle {
     font-weight: 300;
     letter-spacing: 1px;
+    color: #ffffff !important;
+    margin-bottom: 30px !important;
 }
 
 /* Efecto de texto con borde para "LEYENDAS" (opcional, si no te gusta quítalo) */
@@ -54,21 +54,21 @@
 
 .btn-accent {
     background-color: #FF7300 !important;
-    color: white !important;
+    color: #ffffff !important;
     border: none !important;
     padding: 12px 35px !important;
     font-weight: 800 !important;
     text-transform: uppercase;
     border-radius: 4px;
-    box-shadow: 0 4px 15px rgba(255, 115, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 115, 0, 0.4);
     transition: all 0.3s ease;
-    display: inline-block; /* Asegura que se comporte como botón */
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-accent:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(255, 115, 0, 0.5);
-    background-color: #ff8520 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 115, 0, 0.6);
 }
 
 /* === POPULAR GAMES BAR === */
@@ -108,14 +108,14 @@
 .btn-view-all {
     background-color: transparent !important;
     color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid #ffffff !important; /* Borde blanco para que resalte en el fondo oscuro */
     padding: 8px 25px !important;
-    transition: all 0.3s ease;
+    font-weight: 700;
 }
 
 .btn-view-all:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    border-color: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
 }
 
 

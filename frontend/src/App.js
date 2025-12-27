@@ -1,59 +1,34 @@
-import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { AuthProvider, AuthContext } from './context/AuthContext';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import CreateTournament from './pages/CreateTournament';
-import TournamentDetails from './pages/TournamentDetails';
-import AdminGames from './pages/AdminGames';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import TournamentDetails from './pages/TournamentDetails';
+import CreateTournament from './pages/CreateTournament';
+import AdminGames from './pages/AdminGames';
+import './App.css';
 
-// Componente Navbar interno para detectar el estado del usuario
-const Navbar = () => {
-    const { user, logout } = useContext(AuthContext);
-    return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-            <div className="container">
-                <Link className="navbar-brand" to="/">EasyTourney 🏆</Link>
-                <div className="d-flex align-items-center">
-                    {user ? (
-                        <>
-                            {user && user.rol === 'administrador' && (
-                                <Link className="btn btn-link text-warning me-2" to="/admin/games">Gestionar Juegos</Link>
-                            )}
-                            <Link className="btn btn-link text-light me-3" to="/create-tournament">Crear Torneo</Link>
-                            <button onClick={logout} className="btn btn-danger btn-sm">Cerrar Sesión</button>
-                        </>
-                    ) : (
-                        <>
-                            <Link className="btn btn-outline-light me-2" to="/login">Login</Link>
-                            <Link className="btn btn-primary" to="/register">Registro</Link>
-                        </>
-                    )}
-                </div>
-            </div>
-        </nav>
-    );
-};
-
-// App.js corregido
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="d-flex flex-column min-vh-100">
+        {/* Usamos un div con flexbox para que el footer siempre esté abajo */}
+        <div className="d-flex flex-column min-vh-100 bg-main">
           <Navbar />
-          {/* Eliminamos el div container mt-4 de aquí para que el Home sea full-width */}
-          <main className="flex-grow-1"> 
+          <main className="flex-grow-1">
             <Routes>
+              {/* Solo el Home NO lleva contenedor de Bootstrap para ser pantalla completa */}
               <Route path="/" element={<Home />} />
-              {/* Las demás rutas que sí necesiten contenedor lo llevarán dentro de su propio componente */}
-              <Route path="/login" element={<div className="container mt-5"><Login /></div>} />
-              <Route path="/register" element={<div className="container mt-5"><Register /></div>} />
-              <Route path="/tournament/:id" element={<div className="container mt-5"><TournamentDetails /></div>} />
-              <Route path="/create-tournament" element={<div className="container mt-5"><CreateTournament /></div>} />
-              <Route path="/admin/games" element={<div className="container mt-5"><AdminGames /></div>} />
+              
+              {/* Las demás páginas SÍ llevan su propio contenedor para no verse raras */}
+              <Route path="/login" element={<div className="container mt-navbar"><Login /></div>} />
+              <Route path="/register" element={<div className="container mt-navbar"><Register /></div>} />
+              <Route path="/tournament/:id" element={<div className="container mt-navbar"><TournamentDetails /></div>} />
+              <Route path="/create-tournament" element={<div className="container mt-navbar"><CreateTournament /></div>} />
+              <Route path="/admin/games" element={<div className="container mt-navbar"><AdminGames /></div>} />
             </Routes>
           </main>
           <Footer />

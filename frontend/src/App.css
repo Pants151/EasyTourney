@@ -17,6 +17,10 @@ body {
 .text-accent { color: var(--color-accent) !important; }
 .bg-dark-secondary { background-color: var(--color-bg-secondary); }
 
+/* Color de fondo principal para que no haya blancos */
+.bg-main { background-color: #080b12; }
+.mt-navbar { margin-top: 100px; } /* Para páginas que no son Home */
+
 /* Botón Naranja Personalizado */
 .btn-accent {
     background-color: var(--color-accent);
