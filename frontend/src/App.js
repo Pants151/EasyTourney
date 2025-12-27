@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import CreateTournament from './pages/CreateTournament';
 import TournamentDetails from './pages/TournamentDetails';
 import AdminGames from './pages/AdminGames';
+import Footer from './components/Footer';
 
 // Componente Navbar interno para detectar el estado del usuario
 const Navbar = () => {
@@ -36,25 +37,30 @@ const Navbar = () => {
     );
 };
 
+// App.js corregido
 function App() {
-    return (
-        <Router>
-            <AuthProvider>
-                <Navbar />
-                <div className="container">
-                    <Routes>
-                        {/* Aquí es donde cargamos el componente Home en lugar de un h2 simple */}
-                        <Route path="/" element={<Home />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/create-tournament" element={<CreateTournament />} />
-                        <Route path="/tournament/:id" element={<TournamentDetails />} />
-                        <Route path="/admin/games" element={<AdminGames />} />
-                    </Routes>
-                </div>
-            </AuthProvider>
-        </Router>
-    );
+  return (
+    <Router>
+      <AuthProvider>
+        <div className="d-flex flex-column min-vh-100">
+          <Navbar />
+          {/* Eliminamos el div container mt-4 de aquí para que el Home sea full-width */}
+          <main className="flex-grow-1"> 
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {/* Las demás rutas que sí necesiten contenedor lo llevarán dentro de su propio componente */}
+              <Route path="/login" element={<div className="container mt-5"><Login /></div>} />
+              <Route path="/register" element={<div className="container mt-5"><Register /></div>} />
+              <Route path="/tournament/:id" element={<div className="container mt-5"><TournamentDetails /></div>} />
+              <Route path="/create-tournament" element={<div className="container mt-5"><CreateTournament /></div>} />
+              <Route path="/admin/games" element={<div className="container mt-5"><AdminGames /></div>} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </AuthProvider>
+    </Router>
+  );
 }
 
 export default App;

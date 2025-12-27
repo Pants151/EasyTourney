@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import './Navbar.css'; // Crearemos este archivo específico
+import './Navbar.css';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -15,17 +15,24 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg custom-navbar fixed-top">
             <div className="container">
-                <Link className="navbar-brand" to="/">
-                    {/* Reemplaza el texto por tu logo pequeño */}
+                {/* Logo con funcionalidad de inicio */}
+                <Link className="navbar-brand d-flex align-items-center" to="/">
                     <img src="/assets/images/logo-nav.png" alt="EasyTourney Logo" height="40" />
                 </Link>
+
+                {/* Enlaces de navegación principales al lado del logo */}
+                <div className="d-flex me-auto ms-3">
+                    <Link className="nav-link nav-link-custom" to="#">TORNEOS</Link>
+                    <Link className="nav-link nav-link-custom" to="#">JUEGOS</Link>
+                </div>
+
                 <button className="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span className="navbar-toggler-icon"></span>
                 </button>
+
                 <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul className="navbar-nav align-items-center">
                         <li className="nav-item"><Link className="nav-link nav-link-custom" to="/">INICIO</Link></li>
-                        <li className="nav-item"><Link className="nav-link nav-link-custom" to="/">TORNEOS</Link></li>
                         
                         {user ? (
                             <>

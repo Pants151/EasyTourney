@@ -2,12 +2,20 @@
 
 /* === HERO SECTION === */
 .hero-section {
-    min-height: 90vh; /* Ocupa casi toda la pantalla */
+    min-height: 100vh; /* Que ocupe toda la pantalla */
     position: relative;
-    /* Fondo de ejemplo, idealmente usa una imagen de estadio de esports oscura */
     background: url('https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=2070') center/cover no-repeat fixed;
-    margin-top: -80px; /* Para que el navbar quede encima */
-    padding-top: 80px;
+    /* Eliminamos márgenes negativos que puedan causar saltos visuales */
+    margin-top: 0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-content {
+    /* El contenido del Hero debe estar por debajo del Navbar pero por encima del overlay */
+    z-index: 10; 
+    position: relative;
 }
 
 .hero-bg-overlay {
@@ -27,6 +35,10 @@
     text-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
+.hero-title, .hero-subtitle {
+    color: #ffffff !important; /* Blanco puro */
+}
+
 .hero-subtitle {
     font-weight: 300;
     letter-spacing: 1px;
@@ -38,6 +50,10 @@
     -webkit-text-stroke: 2px var(--color-accent);
 } */
 
+
+.btn-accent {
+    color: #ffffff !important; /* Texto del botón en blanco */
+}
 
 /* === POPULAR GAMES BAR === */
 .popular-games-bar {
@@ -58,18 +74,18 @@
 .games-scroll-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
 
 .game-cover-item img {
-    height: 120px; /* Altura fija para las carátulas */
-    width: auto;
-    border-radius: 4px;
+    height: 180px;  /* Altura fija */
+    width: 130px;   /* Ancho fijo */
+    object-fit: cover; /* Mantiene la proporción recortando si es necesario */
+    border-radius: 6px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
     border: 2px solid transparent;
 }
 
 .game-cover-item img:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px var(--color-accent);
+    transform: translateY(-5px);
     border-color: var(--color-accent);
+    box-shadow: 0 5px 15px rgba(255, 115, 0, 0.4);
 }
 
 

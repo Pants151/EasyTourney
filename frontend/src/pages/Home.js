@@ -29,15 +29,16 @@ const Home = () => {
                 
                 <div className="hero-content text-center text-uppercase position-relative z-2">
                     {/* Logo grande */}
-                    <img src="/assets/images/logo-big.png" alt="EasyTourney Big Logo" className="hero-logo img-fluid mb-4 animate-fade-up" />
+                    <img src="/assets/images/logo-big.png" alt="Logo Grande" className="hero-logo img-fluid mb-4 animate-fade-up" />
                     
-                    <h1 className="hero-title fw-bolder mb-3 animate-fade-up delay-1">
+                    {/* Texto en blanco puro */}
+                    <h1 className="hero-title fw-bolder mb-3 animate-fade-up delay-1 text-white">
                         DONDE NACEN LAS <span className="text-accent outline-text">LEYENDAS</span>
                     </h1>
-                    <p className="hero-subtitle h4 mb-5 text-dim animate-fade-up delay-2">
+                    <p className="hero-subtitle h4 mb-5 text-white animate-fade-up delay-2">
                         Compite. Gana. Escribe tu historia.
                     </p>
-                    <Link to="/register" className="btn btn-accent btn-lg animate-fade-up delay-3">
+                    <Link to="/register" className="btn btn-accent btn-lg animate-fade-up delay-3 text-white">
                         EMPIEZA TU LEGADO
                     </Link>
                 </div>
@@ -45,22 +46,23 @@ const Home = () => {
 
 
             {/* --- BARRA DE JUEGOS POPULARES --- */}
-            <section className="popular-games-bar py-4 bg-dark-secondary position-relative z-3 shadow-lg">
-                <div className="container d-flex align-items-center overflow-hidden">
-                    <h4 className="text-uppercase fw-bold mb-0 me-4 text-nowrap">
+            <section className="popular-games-bar py-5 bg-dark-secondary position-relative z-3">
+                <div className="container text-center">
+                    <h4 className="text-uppercase fw-bold mb-4">
                         JUEGOS MÁS <span className="text-accent">POPULARES</span>
                     </h4>
                     
                     {/* Lista horizontal de carátulas */}
-                    <div className="games-scroll-container d-flex flex-grow-1 ms-4">
-                        {topGames.length > 0 ? topGames.map(game => (
+                    <div className="games-scroll-container d-flex justify-content-center mb-4">
+                        {topGames.map(game => (
                             <div key={game._id} className="game-cover-item mx-2">
-                                <img src={game.caratula} alt={game.nombre} className="img-fluid shadow-sm" title={game.nombre} />
+                                <img src={game.caratula} alt={game.nombre} className="img-fluid" />
                             </div>
-                        )) : (
-                            <p className="text-muted ms-3 mb-0 align-self-center">Cargando juegos...</p>
-                        )}
+                        ))}
                     </div>
+
+                    {/* Botón debajo de los juegos */}
+                    <button className="btn btn-outline-light mt-2 px-4">Ver todos los juegos</button>
                 </div>
             </section>
 
