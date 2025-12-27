@@ -62,7 +62,7 @@ const Home = () => {
                     </div>
 
                     {/* Botón debajo de los juegos */}
-                    <button className="btn btn-outline-light mt-2 px-4">Ver todos los juegos</button>
+                    <button className="btn btn-view-all mt-2 px-4">Ver todos los juegos</button>
                 </div>
             </section>
 

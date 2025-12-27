@@ -15,15 +15,15 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg custom-navbar fixed-top">
             <div className="container">
-                {/* Logo con funcionalidad de inicio */}
+                {/* Logo de navegación */}
                 <Link className="navbar-brand d-flex align-items-center" to="/">
                     <img src="/assets/images/logo-nav.png" alt="EasyTourney Logo" height="40" />
                 </Link>
 
-                {/* Enlaces de navegación principales al lado del logo */}
-                <div className="d-flex me-auto ms-3">
-                    <Link className="nav-link nav-link-custom" to="#">TORNEOS</Link>
-                    <Link className="nav-link nav-link-custom" to="#">JUEGOS</Link>
+                {/* Nuevas secciones al lado del logo */}
+                <div className="d-flex me-auto">
+                    <Link className="nav-link nav-link-custom px-3" to="#">TORNEOS</Link>
+                    <Link className="nav-link nav-link-custom px-3" to="#">JUEGOS</Link>
                 </div>
 
                 <button className="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -33,14 +33,10 @@ const Navbar = () => {
                 <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul className="navbar-nav align-items-center">
                         <li className="nav-item"><Link className="nav-link nav-link-custom" to="/">INICIO</Link></li>
-                        
                         {user ? (
                             <>
                                 {user.rol === 'administrador' && (
                                      <li className="nav-item"><Link className="nav-link nav-link-custom text-accent" to="/admin/games">ADMIN JUEGOS</Link></li>
-                                )}
-                                {user.rol === 'organizador' && (
-                                     <li className="nav-item"><Link className="nav-link nav-link-custom" to="/create-tournament">CREAR TORNEO</Link></li>
                                 )}
                                 <li className="nav-item ms-3">
                                     <button className="btn btn-outline-light btn-sm px-3" onClick={handleLogout}>CERRAR SESIÓN</button>

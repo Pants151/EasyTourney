@@ -26,17 +26,18 @@
 }
 
 .hero-logo {
-    max-width: 350px; /* Ajusta según tu imagen */
+    max-width: 600px !important; /* Más pequeño */
+    margin-bottom: 10px !important; /* Menos separación del texto */
 }
 
 .hero-title {
     font-size: 4rem;
     letter-spacing: 2px;
-    text-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
 .hero-title, .hero-subtitle {
-    color: #ffffff !important; /* Blanco puro */
+    color: #ffffff !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 
 .hero-subtitle {
@@ -52,7 +53,22 @@
 
 
 .btn-accent {
-    color: #ffffff !important; /* Texto del botón en blanco */
+    background-color: #FF7300 !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 35px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(255, 115, 0, 0.3);
+    transition: all 0.3s ease;
+    display: inline-block; /* Asegura que se comporte como botón */
+}
+
+.btn-accent:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 115, 0, 0.5);
+    background-color: #ff8520 !important;
 }
 
 /* === POPULAR GAMES BAR === */
@@ -86,6 +102,20 @@
     transform: translateY(-5px);
     border-color: var(--color-accent);
     box-shadow: 0 5px 15px rgba(255, 115, 0, 0.4);
+}
+
+/* Botón "Ver todos los juegos" adaptado al fondo oscuro */
+.btn-view-all {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    padding: 8px 25px !important;
+    transition: all 0.3s ease;
+}
+
+.btn-view-all:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: #ffffff !important;
 }
 
 
