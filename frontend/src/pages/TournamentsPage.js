@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react'; // Añadido useContext
 import tournamentService from '../services/tournamentService';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext'; // Importar el contexto
 import './TournamentsPage.css';
 
 const TournamentsPage = () => {
-    const { user } = useContext(AuthContext);
     const [tournaments, setTournaments] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [limits, setLimits] = useState({ abiertos: 4, enCurso: 4, finalizados: 4 });
+    const { user } = useContext(AuthContext); // Obtener el usuario logueado
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +23,6 @@ const TournamentsPage = () => {
         fetchTournaments();
     }, []);
 
-    // Filtrado por búsqueda y estado
     const filtered = tournaments.filter(t => 
         t.nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -47,7 +46,7 @@ const TournamentsPage = () => {
                                         <span className="badge bg-accent">{t.modalidad}</span>
                                     </div>
                                 </div>
-                                <div className="card-content-page p-3">
+                                <div className="card-content-page p-3 text-white">
                                     <h5 className="fw-bold mb-1 text-truncate">{t.nombre}</h5>
                                     <p className="small text-dim mb-2">{t.juego?.nombre}</p>
                                     <div className="d-flex justify-content-between small">
@@ -76,11 +75,12 @@ const TournamentsPage = () => {
     return (
         <div className="tournaments-page-wrapper mt-navbar">
             <div className="container py-5">
-                <div className="header-page d-flex flex-column mb-5">
-                    <div className="d-flex justify-content-between align-items-center w-100 mb-4">
-                        <h1 className="fw-bolder text-uppercase m-0">TORNEOS</h1>
+                {/* Cabecera actualizada con botones condicionales */}
+                <div className="header-page mb-5">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <h1 className="fw-bolder text-uppercase m-0 text-white">TORNEOS</h1>
                         
-                        {/* Botones de gestión para Organizadores y Administradores */}
+                        {/* Validación de Rol para Organizador o Administrador */}
                         {(user?.rol === 'organizador' || user?.rol === 'administrador') && (
                             <div className="d-flex gap-3">
                                 <button 
@@ -90,7 +90,7 @@ const TournamentsPage = () => {
                                     Gestionar mis torneos
                                 </button>
                                 <button 
-                                    className="btn btn-outline-light" 
+                                    className="btn btn-view-all" 
                                     onClick={() => navigate('/create-tournament')}
                                 >
                                     + Crear Torneo
@@ -98,7 +98,7 @@ const TournamentsPage = () => {
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="search-box-wrapper w-100">
                         <input 
                             type="text" 

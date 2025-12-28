@@ -88,3 +88,28 @@
     background: #FF7300;
     color: white;
 }
+
+.header-page {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 30px;
+}
+
+/* Estilo para que el contenedor de búsqueda ocupe el ancho necesario */
+.search-box-wrapper {
+    position: relative;
+    max-width: 100%;
+}
+
+/* Asegurar que los botones no se amontonen en móvil */
+@media (max-width: 768px) {
+    .header-page .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 20px;
+    }
+    
+    .header-page .gap-3 {
+        width: 100%;
+        flex-direction: column;
+    }
+}
