@@ -75,7 +75,8 @@ exports.getTournamentById = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id)
             .populate('organizador', 'username')
             .populate('participantes', 'username')
-            .populate('ganador', 'username');
+            .populate('ganador', 'username')
+            .populate('juego'); // <--- AÑADIR ESTO para tener el banner y logo
         
         if (!tournament) {
             return res.status(404).json({ msg: 'Torneo no encontrado' });
@@ -254,5 +255,58 @@ exports.advanceTournament = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Error al avanzar de ronda');
+    }
+};
+
+// Actualizar datos de un torneo
+exports.updateTournament = async (req, res) => {
+    try {
+        const { nombre, juego, plataformas, modalidad, ubicacion, fechaInicio, reglas } = req.body;
+        let tournament = await Tournament.findById(req.params.id);
+
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        // Verificar que sea el organizador
+        if (tournament.organizador.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'No autorizado' });
+        }
+
+        // Actualizamos los campos
+        tournament.nombre = nombre || tournament.nombre;
+        tournament.juego = juego || tournament.juego;
+        tournament.plataformas = plataformas || tournament.plataformas;
+        tournament.modalidad = modalidad || tournament.modalidad;
+        tournament.ubicacion = ubicacion || tournament.ubicacion;
+        tournament.fechaInicio = fechaInicio || tournament.fechaInicio;
+        tournament.reglas = reglas || tournament.reglas;
+
+        await tournament.save();
+        res.json(tournament);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al actualizar el torneo');
+    }
+};
+
+// Eliminar un torneo
+exports.deleteTournament = async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id);
+
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        // Verificar que sea el organizador
+        if (tournament.organizador.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'No autorizado' });
+        }
+
+        // También deberíamos borrar las partidas asociadas si existen
+        await Match.deleteMany({ torneo: req.params.id });
+        await Tournament.findByIdAndDelete(req.params.id);
+
+        res.json({ msg: 'Torneo eliminado correctamente' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al eliminar el torneo');
     }
 };

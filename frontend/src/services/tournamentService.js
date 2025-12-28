@@ -13,11 +13,13 @@ const updateMatchResult = async (matchId, resultData) => {
 };
 
 const getMyTournaments = async () => {
-    const response = await axios.get(`${API_URL}my-tournaments`, getAuthHeaders());
+    const response = await axios.get(API_URL + 'my-tournaments', getAuthHeaders());
     return response.data;
 };
 
 const createTournament = async (data) => axios.post(API_URL, data, getAuthHeaders());
+const updateTournament = async (id, data) => axios.put(API_URL + id, data, getAuthHeaders());
+const deleteTournament = async (id) => axios.delete(API_URL + id, getAuthHeaders());
 const getTournaments = async () => (await axios.get(API_URL)).data;
 const getTournamentById = async (id) => (await axios.get(API_URL + id)).data;
 const joinTournament = async (id) => axios.put(`${API_URL}join/${id}`, {}, getAuthHeaders());
@@ -36,5 +38,7 @@ export default {
     getTournamentMatches,
     updateMatchResult,
     advanceTournament,
-    getMyTournaments
+    getMyTournaments,
+    updateTournament,
+    deleteTournament
 };

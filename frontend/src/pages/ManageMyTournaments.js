@@ -19,6 +19,19 @@ const ManageMyTournaments = () => {
         fetchMyTournaments();
     }, []);
 
+    const handleDelete = async (id) => {
+        if (window.confirm('¿Estás seguro de que quieres eliminar este torneo? Esta acción no se puede deshacer.')) {
+            try {
+                await tournamentService.deleteTournament(id);
+                alert('Torneo eliminado');
+                // Recargamos la lista
+                setMyTournaments(myTournaments.filter(t => t._id !== id));
+            } catch (err) {
+                alert('Error al eliminar');
+            }
+        }
+    };
+
     return (
         <div className="tournaments-page-wrapper mt-navbar">
             <div className="container py-5">
@@ -44,19 +57,13 @@ const ManageMyTournaments = () => {
                                 <div className="card-content-page p-3">
                                     <h5 className="fw-bold mb-3 text-truncate">{t.nombre}</h5>
                                     <div className="d-grid gap-2">
-                                        <button 
-                                            className="btn btn-accent btn-sm" 
-                                            onClick={() => navigate(`/tournament/${t._id}`)}
-                                        >
-                                            Ver / Gestionar
-                                        </button>
-                                        <button 
-                                            className="btn btn-outline-light btn-sm"
-                                            // Aquí iría la lógica de edición en el futuro
-                                            onClick={() => alert('Función de edición en desarrollo')}
-                                        >
-                                            Editar Datos
-                                        </button>
+                                        <button className="btn btn-accent btn-sm" onClick={() => navigate(`/tournament/${t._id}`)}>Ver / Gestionar</button>
+                                        <div className="d-flex gap-2">
+                                            <button className="btn btn-outline-light btn-sm flex-grow-1" onClick={() => navigate(`/edit-tournament/${t._id}`)}>Editar Datos</button>
+                                            <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t._id)}>
+                                                <i className="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

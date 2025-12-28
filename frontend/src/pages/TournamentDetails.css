@@ -1,0 +1,97 @@
+.details-page-wrapper {
+    background-color: #080b12;
+    min-height: 100vh;
+}
+
+/* HERO DEL TORNEO */
+.tournament-hero {
+    height: 450px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+}
+
+.hero-overlay-details {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(0deg, #080b12 0%, rgba(8, 11, 18, 0.4) 100%);
+}
+
+.hero-info-content {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 40px;
+}
+
+.game-logo-details {
+    height: 100px;
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+}
+
+/* INFO CARDS */
+.info-card-custom {
+    background: #111521;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.text-accent { color: #FF7300 !important; }
+
+/* ENFRENTAMIENTOS */
+.match-card-custom {
+    background: #161b29;
+    border-left: 4px solid #FF7300;
+    transition: transform 0.2s;
+}
+
+.match-card-custom:hover {
+    transform: scale(1.02);
+}
+
+.player-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.vs-circle {
+    width: 35px;
+    height: 35px;
+    background: #FF7300;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.8rem;
+    margin: 0 15px;
+}
+
+.brackets-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.round-column {
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.match-card-tree {
+    background: #111521;
+    border: 1px solid rgba(255, 115, 0, 0.2);
+    border-radius: 4px;
+    position: relative;
+}
+
+.bg-winner {
+    background-color: rgba(255, 115, 0, 0.2) !important;
+    border: 1px solid #FF7300;
+}
+
+.text-dim { color: #aab0c4; }

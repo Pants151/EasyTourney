@@ -1,86 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import tournamentService from '../services/tournamentService';
-import gameService from '../services/gameService'; // Importamos el nuevo servicio
+import gameService from '../services/gameService';
 import { useNavigate } from 'react-router-dom';
+import './TournamentForm.css';
 
 const CreateTournament = () => {
-    const [games, setGames] = useState([]); // Para almacenar los juegos de la DB
+    const [games, setGames] = useState([]);
     const [formData, setFormData] = useState({
-        nombre: '',
-        juego: '', // Aquí guardaremos el ID del juego seleccionado
-        modalidad: '1v1',
-        fechaInicio: '',
-        reglas: ''
+        nombre: '', juego: '', modalidad: '1v1', fechaInicio: '', reglas: ''
     });
     const navigate = useNavigate();
 
-    // Cargar los juegos al montar el componente
     useEffect(() => {
         const fetchGames = async () => {
-            try {
-                const data = await gameService.getGames();
-                setGames(data);
-            } catch (err) {
-                console.error("Error cargando juegos", err);
-            }
+            const data = await gameService.getGames();
+            setGames(data);
         };
         fetchGames();
     }, []);
 
-    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
-
     const onSubmit = async e => {
         e.preventDefault();
-        if(!formData.juego) return alert("Por favor, selecciona un juego");
         try {
             await tournamentService.createTournament(formData);
-            alert('¡Torneo creado con éxito!');
-            navigate('/');
-        } catch (err) {
-            alert('Error al crear el torneo.');
-        }
+            alert('¡Torneo creado!');
+            navigate('/manage-my-tournaments');
+        } catch (err) { alert('Error al crear'); }
     };
 
     return (
-        <div className="card p-4 shadow-sm">
-            <h3>Crear Nuevo Torneo 🏆</h3>
-            <form onSubmit={onSubmit}>
-                <div className="mb-3">
-                    <label className="form-label">Nombre del Torneo</label>
-                    <input type="text" name="nombre" className="form-control" onChange={onChange} required />
-                </div>
-                
-                {/* SELECTOR DE JUEGOS OFICIALES */}
-                <div className="mb-3">
-                    <label className="form-label">Juego Oficial</label>
-                    <select name="juego" className="form-select" onChange={onChange} required>
-                        <option value="">-- Selecciona un juego --</option>
-                        {games.map(g => (
-                            <option key={g._id} value={g._id}>{g.nombre}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Resto de campos... */}
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <label className="form-label">Modalidad</label>
-                        <select name="modalidad" className="form-select" onChange={onChange}>
-                            <option value="1v1">1v1</option>
-                            <option value="Equipos">Equipos</option>
-                        </select>
+        <div className="container py-5 mt-navbar">
+            <div className="row justify-content-center">
+                <div className="col-lg-8">
+                    <div className="form-container-custom p-4 p-md-5">
+                        <h2 className="text-uppercase fw-bolder mb-4">Crear <span className="text-accent">Torneo</span></h2>
+                        <form onSubmit={onSubmit}>
+                            <div className="mb-4">
+                                <label className="form-label-custom">Nombre del Evento</label>
+                                <input type="text" name="nombre" className="form-control-custom form-control" 
+                                    placeholder="Ej: Copa de Invierno 2024" onChange={e => setFormData({...formData, nombre: e.target.value})} required />
+                            </div>
+                            <div className="mb-4">
+                                <label className="form-label-custom">Juego Oficial</label>
+                                <select name="juego" className="form-select form-select-custom" onChange={e => setFormData({...formData, juego: e.target.value})} required>
+                                    <option value="">Selecciona un juego...</option>
+                                    {games.map(g => <option key={g._id} value={g._id}>{g.nombre}</option>)}
+                                </select>
+                            </div>
+                            <div className="row">
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">Modalidad</label>
+                                    <select name="modalidad" className="form-select form-select-custom" onChange={e => setFormData({...formData, modalidad: e.target.value})}>
+                                        <option value="1v1">1v1 (Individual)</option>
+                                        <option value="Equipos">Equipos</option>
+                                    </select>
+                                </div>
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">Fecha de Inicio</label>
+                                    <input type="datetime-local" name="fechaInicio" className="form-control-custom form-control" 
+                                        onChange={e => setFormData({...formData, fechaInicio: e.target.value})} required />
+                                </div>
+                            </div>
+                            <div className="mb-5">
+                                <label className="form-label-custom">Reglamento y Detalles</label>
+                                <textarea name="reglas" className="form-control-custom form-control" rows="5" 
+                                    placeholder="Describe las reglas..." onChange={e => setFormData({...formData, reglas: e.target.value})}></textarea>
+                            </div>
+                            <button type="submit" className="btn-accent w-100">PUBLICAR TORNEO</button>
+                        </form>
                     </div>
-                    <div className="col-md-6 mb-3">
-                        <label className="form-label">Fecha de Inicio</label>
-                        <input type="datetime-local" name="fechaInicio" className="form-control" onChange={onChange} required />
-                    </div>
                 </div>
-                <div className="mb-3">
-                    <label className="form-label">Reglas</label>
-                    <textarea name="reglas" className="form-control" rows="3" onChange={onChange}></textarea>
-                </div>
-                <button type="submit" className="btn btn-primary">Publicar Torneo</button>
-            </form>
+            </div>
         </div>
     );
 };
