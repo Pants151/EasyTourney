@@ -12,7 +12,7 @@ const AdminGames = () => {
     const [editingId, setEditingId] = useState(null);
     const [adminSearchTerm, setAdminSearchTerm] = useState(""); // Estado para el buscador
     
-    const availablePlatforms = ['PC', 'PS5', 'Xbox Series X/S', 'PS4', 'Xbox One', 'Nintendo Switch', 'Mobile'];
+    const availablePlatforms = ['PC', 'PS5','PS4', 'PS3', 'PS2', 'PS1', 'Xbox Series X/S',  'Xbox One', 'Xbox 360', 'Xbox', 'Nintendo Switch','Nintendo Switch 2', 'Nintendo 3DS', 'Nintendo DS', 'Wii', 'Wii U', 'Gamecube', 'Mobile'];
 
     const [formData, setFormData] = useState({
         nombre: '',

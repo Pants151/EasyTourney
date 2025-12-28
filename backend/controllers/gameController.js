@@ -13,11 +13,22 @@ exports.getGames = async (req, res) => {
 // Crear un juego (Solo Admin)
 exports.createGame = async (req, res) => {
     try {
-        const { nombre, plataformas, caratula, logo } = req.body;
-        const newGame = new Game({ nombre, plataformas, caratula, logo });
+        // 1. Añadimos 'header' a la desestructuración del cuerpo
+        const { nombre, plataformas, caratula, logo, header } = req.body;
+
+        // 2. Incluimos 'header' al crear la nueva instancia del modelo
+        const newGame = new Game({ 
+            nombre, 
+            plataformas, 
+            caratula, 
+            logo, 
+            header 
+        });
+
         await newGame.save();
         res.json(newGame);
     } catch (err) {
+        console.error(err); // Es buena práctica imprimir el error para depurar
         res.status(500).send('Error al guardar el juego');
     }
 };

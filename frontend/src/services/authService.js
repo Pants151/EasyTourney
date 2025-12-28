@@ -22,5 +22,7 @@ const getAuthHeaders = () => ({
 const getProfile = async () => (await axios.get(API_URL + 'profile', getAuthHeaders())).data;
 const updateProfile = async (userData) => (await axios.put(API_URL + 'profile', userData, getAuthHeaders())).data;
 const deleteAccount = async () => (await axios.delete(API_URL + 'profile', getAuthHeaders())).data;
+const changePassword = async (passwords) => 
+    (await axios.put(API_URL + 'change-password', passwords, getAuthHeaders())).data;
 
-export default { register, login, getProfile, updateProfile, deleteAccount };
+export default { register, login, getProfile, updateProfile, deleteAccount, changePassword };

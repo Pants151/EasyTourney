@@ -8,35 +8,42 @@ const Account = () => {
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: '', email: '', rol: '', pais: '', fechaNacimiento: ''
+        username: '', email: '', rol: ''
     });
+    // Estado separado para el cambio de contraseña
+    const [passwords, setPasswords] = useState({ passwordActual: '', passwordNuevo: '' });
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const data = await authService.getProfile();
-                setFormData({
-                    username: data.username,
-                    email: data.email,
-                    rol: data.rol,
-                    pais: data.pais || '',
-                    fechaNacimiento: data.fechaNacimiento ? data.fechaNacimiento.split('T')[0] : ''
-                });
+                setFormData({ username: data.username, email: data.email, rol: data.rol });
             } catch (err) { console.error(err); }
         };
         fetchProfile();
     }, []);
 
-    const onUpdate = async (e) => {
+    const onUpdateProfile = async (e) => {
         e.preventDefault();
         try {
             await authService.updateProfile(formData);
             alert('Perfil actualizado');
-        } catch (err) { alert('Error al actualizar'); }
+        } catch (err) { alert('Error al actualizar perfil'); }
+    };
+
+    const onChangePassword = async (e) => {
+        e.preventDefault();
+        try {
+            await authService.changePassword(passwords);
+            alert('Contraseña cambiada con éxito');
+            setPasswords({ passwordActual: '', passwordNuevo: '' }); // Limpiar campos
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al cambiar contraseña');
+        }
     };
 
     const onDelete = async () => {
-        if (window.confirm("¿ESTÁS SEGURO? Esta acción eliminará permanentemente tu cuenta y progreso.")) {
+        if (window.confirm("¿ESTÁS SEGURO? Esta acción es irreversible.")) {
             try {
                 await authService.deleteAccount();
                 logout();
@@ -54,7 +61,9 @@ const Account = () => {
                             <button className="btn btn-view-all btn-sm" onClick={() => navigate(-1)}>VOLVER ATRÁS</button>
                         </div>
 
-                        <form onSubmit={onUpdate}>
+                        {/* --- SECCIÓN DATOS PERSONALES --- */}
+                        <form onSubmit={onUpdateProfile} className="mb-5 pb-5 border-bottom border-secondary">
+                            <h5 className="text-white mb-4 text-uppercase fw-bold">Datos Personales</h5>
                             <div className="row">
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Nombre de Usuario</label>
@@ -62,7 +71,7 @@ const Account = () => {
                                         onChange={e => setFormData({...formData, username: e.target.value})} required />
                                 </div>
                                 <div className="col-md-6 mb-4">
-                                    <label className="form-label-custom">Rol de Usuario (No editable)</label>
+                                    <label className="form-label-custom">Rol de Usuario</label>
                                     <input type="text" className="form-control form-control-custom opacity-50" value={formData.rol} readOnly />
                                 </div>
                             </div>
@@ -71,12 +80,30 @@ const Account = () => {
                                 <input type="email" className="form-control form-control-custom" value={formData.email} 
                                     onChange={e => setFormData({...formData, email: e.target.value})} required />
                             </div>
-                            
-                            <div className="d-flex gap-3 mt-4">
-                                <button type="submit" className="btn-accent flex-grow-1">GUARDAR CAMBIOS</button>
-                                <button type="button" className="btn btn-delete-custom px-4" onClick={onDelete}>ELIMINAR CUENTA</button>
-                            </div>
+                            <button type="submit" className="btn-accent px-5">GUARDAR DATOS</button>
                         </form>
+
+                        {/* --- SECCIÓN SEGURIDAD (CONTRASEÑA) --- */}
+                        <form onSubmit={onChangePassword} className="mb-5">
+                            <h5 className="text-white mb-4 text-uppercase fw-bold">Seguridad</h5>
+                            <div className="row">
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">Contraseña Actual</label>
+                                    <input type="password" name="passwordActual" className="form-control form-control-custom" 
+                                        value={passwords.passwordActual} onChange={e => setPasswords({...passwords, passwordActual: e.target.value})} required />
+                                </div>
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">Nueva Contraseña</label>
+                                    <input type="password" name="passwordNuevo" className="form-control form-control-custom" 
+                                        value={passwords.passwordNuevo} onChange={e => setPasswords({...passwords, passwordNuevo: e.target.value})} required />
+                                </div>
+                            </div>
+                            <button type="submit" className="btn btn-outline-warning fw-bold px-5">ACTUALIZAR CONTRASEÑA</button>
+                        </form>
+
+                        <div className="text-end border-top border-secondary pt-4">
+                            <button type="button" className="btn btn-delete-custom px-4" onClick={onDelete}>ELIMINAR MI CUENTA</button>
+                        </div>
                     </div>
                 </div>
             </div>
