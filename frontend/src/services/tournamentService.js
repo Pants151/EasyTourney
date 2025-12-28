@@ -12,6 +12,11 @@ const updateMatchResult = async (matchId, resultData) => {
     return response.data;
 };
 
+const getMyTournaments = async () => {
+    const response = await axios.get(`${API_URL}my-tournaments`, getAuthHeaders());
+    return response.data;
+};
+
 const createTournament = async (data) => axios.post(API_URL, data, getAuthHeaders());
 const getTournaments = async () => (await axios.get(API_URL)).data;
 const getTournamentById = async (id) => (await axios.get(API_URL + id)).data;
@@ -30,5 +35,6 @@ export default {
     publishTournament,
     getTournamentMatches,
     updateMatchResult,
-    advanceTournament
+    advanceTournament,
+    getMyTournaments
 };

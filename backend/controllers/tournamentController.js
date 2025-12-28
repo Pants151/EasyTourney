@@ -32,12 +32,15 @@ exports.createTournament = async (req, res) => {
 // Obtener todos los torneos
 exports.getTournaments = async (req, res) => {
     try {
-        // .populate('organizador', 'username') sirve para traer el nombre del usuario, no solo el ID
-        const tournaments = await Tournament.find().sort({ fechaInicio: -1 }).populate('organizador', 'username');
+        // Añadimos 'juego' al populate para obtener logos y carátulas
+        const tournaments = await Tournament.find()
+            .populate('organizador', 'username')
+            .populate('juego') 
+            .sort({ fechaInicio: -1 });
         res.json(tournaments);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Error al obtener los torneos');
+        res.status(500).send('Error al obtener torneos');
     }
 };
 
@@ -159,6 +162,20 @@ exports.getTournamentMatches = async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error al obtener las partidas');
+    }
+};
+
+// Obtener torneos del organizador actual
+exports.getMyTournaments = async (req, res) => {
+    try {
+        // Buscamos torneos donde el organizador coincida con el ID del usuario autenticado
+        const tournaments = await Tournament.find({ organizador: req.user.id })
+            .populate('juego')
+            .sort({ fechaInicio: -1 });
+        res.json(tournaments);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al obtener tus torneos');
     }
 };
 

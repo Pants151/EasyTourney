@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import TournamentDetails from './pages/TournamentDetails';
 import CreateTournament from './pages/CreateTournament';
 import AdminGames from './pages/AdminGames';
+import TournamentsPage from './pages/TournamentsPage';
+import ManageMyTournaments from './pages/ManageMyTournaments';
 import './App.css';
 
 function App() {
@@ -29,6 +31,8 @@ function App() {
               <Route path="/tournament/:id" element={<div className="container mt-navbar"><TournamentDetails /></div>} />
               <Route path="/create-tournament" element={<div className="container mt-navbar"><CreateTournament /></div>} />
               <Route path="/admin/games" element={<div className="container mt-navbar"><AdminGames /></div>} />
+              <Route path="/tournaments" element={<TournamentsPage />} />
+              <Route path="/manage-my-tournaments" element={<ManageMyTournaments />} />
             </Routes>
           </main>
           <Footer />

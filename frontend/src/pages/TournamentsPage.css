@@ -1,0 +1,90 @@
+.tournaments-page-wrapper {
+    background-color: #080b12;
+    min-height: 100vh;
+}
+
+.section-title-page {
+    border-left: 4px solid #FF7300;
+    padding-left: 15px;
+    letter-spacing: 1px;
+}
+
+/* SEARCH BAR CUSTOM */
+.search-box-wrapper {
+    position: relative;
+    width: 350px;
+}
+
+.search-input-custom {
+    width: 100%;
+    background: #111521;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 20px;
+    padding-right: 45px;
+    color: white;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-input-custom:focus {
+    border-color: #FF7300;
+}
+
+.search-icon-page {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FF7300;
+}
+
+/* CARDS */
+.tournament-card-page {
+    background: #111521;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tournament-card-page:hover {
+    transform: translateY(-8px);
+    border-color: #FF7300;
+}
+
+.card-image-wrapper {
+    height: 160px;
+    background: #05070a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.game-logo-card {
+    max-height: 80%;
+    max-width: 80%;
+    object-fit: contain;
+}
+
+.bg-accent {
+    background-color: #FF7300 !important;
+}
+
+.btn-view-more {
+    background: transparent;
+    color: white;
+    border: 1px solid #FF7300;
+    padding: 8px 30px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.btn-view-more:hover {
+    background: #FF7300;
+    color: white;
+}
