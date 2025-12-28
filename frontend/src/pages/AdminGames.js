@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import gameService from '../services/gameService';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import './TournamentForm.css';
+import './TournamentsPage.css';
 
 const AdminGames = () => {
-    const PLATAFORMAS_DISPONIBLES = ["PC", "PS5", "PS4", "Xbox Series X", "Xbox Series S", "Xbox One", "Nintendo Switch", "Mobile"];
-
+    const { user, loading } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [editingId, setEditingId] = useState(null);
-    const [selectedPlatform, setSelectedPlatform] = useState("");
+    const [adminSearchTerm, setAdminSearchTerm] = useState(""); // Estado para el buscador
+    
+    const availablePlatforms = ['PC', 'PS5', 'Xbox Series X/S', 'PS4', 'Xbox One', 'Nintendo Switch', 'Mobile'];
+
     const [formData, setFormData] = useState({
         nombre: '',
         plataformas: [],
@@ -15,25 +22,33 @@ const AdminGames = () => {
         header: ''
     });
 
-    useEffect(() => { loadGames(); }, []);
+    useEffect(() => {
+        if (!loading && user?.rol !== 'administrador') {
+            navigate('/');
+        }
+        fetchGames();
+    }, [user, loading, navigate]);
 
-    const loadGames = async () => {
-        const data = await gameService.getGames();
-        setGames(data);
+    const fetchGames = async () => {
+        try {
+            const data = await gameService.getGames();
+            setGames(data);
+        } catch (err) { console.error(err); }
     };
 
-    // Función para añadir plataforma desde el combobox
-    const addPlatform = () => {
-        if (selectedPlatform && !formData.plataformas.includes(selectedPlatform)) {
+    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    const handlePlatformSelect = (e) => {
+        const value = e.target.value;
+        if (value && !formData.plataformas.includes(value)) {
             setFormData({
                 ...formData,
-                plataformas: [...formData.plataformas, selectedPlatform]
+                plataformas: [...formData.plataformas, value]
             });
-            setSelectedPlatform("");
         }
+        e.target.value = ""; 
     };
 
-    // Función para quitar plataforma
     const removePlatform = (plat) => {
         setFormData({
             ...formData,
@@ -50,94 +65,167 @@ const AdminGames = () => {
             logo: game.logo,
             header: game.header
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const onSubmit = async e => {
+    const handleDelete = async (id) => {
+        if (window.confirm('¿Estás seguro de que quieres eliminar este juego?')) {
+            try {
+                await gameService.deleteGame(id);
+                fetchGames();
+            } catch (err) {
+                alert('Error al eliminar');
+            }
+        }
+    };
+
+    const onSubmit = async (e) => {
         e.preventDefault();
-        if (formData.plataformas.length === 0) return alert("Añade al menos una plataforma");
+        if (formData.plataformas.length === 0) return alert("Selecciona al menos una plataforma.");
+
         try {
             if (editingId) {
                 await gameService.updateGame(editingId, formData);
+                setEditingId(null);
             } else {
                 await gameService.createGame(formData);
             }
-            resetForm();
-            loadGames();
-        } catch (err) { alert('Error en la operación'); }
+            setFormData({ nombre: '', plataformas: [], caratula: '', logo: '', header: '' });
+            fetchGames();
+            alert('¡Operación exitosa!');
+        } catch (err) {
+            alert('Error en la operación');
+        }
     };
 
-    const resetForm = () => {
-        setFormData({ nombre: '', plataformas: [], caratula: '', logo: '', header: '' });
-        setEditingId(null);
-    };
+    // Filtrado de juegos para el buscador
+    const filteredGames = games.filter(g => 
+        g.nombre.toLowerCase().includes(adminSearchTerm.toLowerCase())
+    );
+
+    if (loading) return <div className="text-center py-5 text-white">Verificando...</div>;
 
     return (
-        <div className="container mt-4">
-            <div className="row">
-                <div className="col-md-5">
-                    <div className="card p-4 shadow">
-                        <h3>{editingId ? 'Editar Juego' : 'Nuevo Juego'}</h3>
-                        <form onSubmit={onSubmit}>
-                            <input type="text" name="nombre" placeholder="Nombre del juego" className="form-control mb-3"
-                                value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} required />
+        <div className="tournaments-page-wrapper mt-navbar">
+            <div className="container py-5">
+                <h1 className="fw-bolder text-uppercase mb-5 text-white text-center">
+                    GESTIÓN DE <span className="text-accent">JUEGOS</span>
+                </h1>
 
-                            {/* COMBOBOX DE PLATAFORMAS */}
-                            <div className="input-group mb-2">
-                                <select className="form-select" value={selectedPlatform}
-                                    onChange={e => setSelectedPlatform(e.target.value)}>
-                                    <option value="">Selecciona plataforma...</option>
-                                    {PLATAFORMAS_DISPONIBLES.map(p => (
+                {/* FORMULARIO */}
+                <div className="form-container-custom p-4 p-md-5 mb-5 shadow-lg">
+                    <h3 className="text-uppercase fw-bold mb-4 text-white">
+                        {editingId ? 'Editar Juego' : 'Añadir Nuevo Juego'}
+                    </h3>
+                    <form onSubmit={onSubmit}>
+                        <div className="row">
+                            <div className="col-md-6 mb-4">
+                                <label className="form-label-custom">Nombre del Juego</label>
+                                <input type="text" name="nombre" className="form-control form-control-custom" 
+                                    value={formData.nombre} onChange={onChange} required />
+                            </div>
+                            
+                            <div className="col-md-6 mb-4">
+                                <label className="form-label-custom">Seleccionar Plataformas</label>
+                                <select className="form-select form-select-custom mb-2" onChange={handlePlatformSelect}>
+                                    <option value="">-- Añadir plataforma --</option>
+                                    {availablePlatforms.map(p => (
                                         <option key={p} value={p}>{p}</option>
                                     ))}
                                 </select>
-                                <button type="button" className="btn btn-outline-secondary" onClick={addPlatform}>Añadir</button>
+                                <div className="d-flex flex-wrap gap-2">
+                                    {formData.plataformas.map(p => (
+                                        <span key={p} className="badge bg-accent d-flex align-items-center">
+                                            {p}
+                                            <button type="button" className="btn-close btn-close-white ms-2" 
+                                                style={{fontSize: '0.6rem'}} onClick={() => removePlatform(p)}></button>
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
+                        </div>
 
-                            {/* LISTA DE PLATAFORMAS SELECCIONADAS */}
-                            <div className="mb-3">
-                                {formData.plataformas.map(p => (
-                                    <span key={p} className="badge bg-primary me-2 p-2">
-                                        {p} <button type="button" className="btn-close btn-close-white ms-2"
-                                            style={{ fontSize: '0.6rem' }} onClick={() => removePlatform(p)}></button>
-                                    </span>
-                                ))}
+                        <div className="row">
+                            <div className="col-md-4 mb-4">
+                                <label className="form-label-custom">URL Portada</label>
+                                <input type="text" name="caratula" className="form-control form-control-custom" 
+                                    value={formData.caratula} onChange={onChange} required />
                             </div>
+                            <div className="col-md-4 mb-4">
+                                <label className="form-label-custom">URL Logo</label>
+                                <input type="text" name="logo" className="form-control form-control-custom" 
+                                    value={formData.logo} onChange={onChange} required />
+                            </div>
+                            <div className="col-md-4 mb-4">
+                                <label className="form-label-custom">URL Banner</label>
+                                <input type="text" name="header" className="form-control form-control-custom" 
+                                    value={formData.header} onChange={onChange} required />
+                            </div>
+                        </div>
 
-                            <input type="text" placeholder="URL Carátula" className="form-control mb-3"
-                                value={formData.caratula} onChange={e => setFormData({ ...formData, caratula: e.target.value })} required />
-
-                            <input type="text" placeholder="URL Logo" className="form-control mb-3"
-                                value={formData.logo} onChange={e => setFormData({ ...formData, logo: e.target.value })} required />
-
-                            <input type="text" placeholder="URL Header/Banner" className="form-control mb-3"
-                                value={formData.header} onChange={e => setFormData({ ...formData, header: e.target.value })} required />
-
-                            <button className="btn btn-dark w-100">{editingId ? 'Actualizar' : 'Guardar Juego'}</button>
-                            {editingId && <button className="btn btn-link w-100" onClick={resetForm}>Cancelar</button>}
-                        </form>
-                    </div>
+                        <div className="d-flex gap-3">
+                            <button type="submit" className="btn-accent flex-grow-1">
+                                {editingId ? 'ACTUALIZAR DATOS' : 'CREAR JUEGO'}
+                            </button>
+                            {editingId && (
+                                <button type="button" className="btn btn-view-all" 
+                                    onClick={() => { setEditingId(null); setFormData({ nombre: '', plataformas: [], caratula: '', logo: '', header: '' }); }}>
+                                    CANCELAR
+                                </button>
+                            )}
+                        </div>
+                    </form>
                 </div>
 
-                <div className="col-md-7">
-                    <h4>Juegos Oficiales</h4>
-                    <div className="list-group">
-                        {games.map(g => (
-                            <div key={g._id} className="list-group-item d-flex justify-content-between align-items-center">
-                                <div className="d-flex align-items-center">
-                                    <img src={g.logo} alt="logo" style={{ width: '40px', marginRight: '15px' }} />
-                                    <div>
-                                        <h6 className="mb-0">{g.nombre}</h6>
-                                        <small className="text-muted">{g.plataformas.join(', ')}</small>
-                                    </div>
-                                </div>
-                                <div>
-                                    <button className="btn btn-sm btn-info me-2" onClick={() => handleEdit(g)}>Editar</button>
-                                    <button className="btn btn-sm btn-danger" onClick={async () => {
-                                        if (window.confirm("¿Borrar juego?")) { await gameService.deleteGame(g._id); loadGames(); }
-                                    }}>Borrar</button>
-                                </div>
-                            </div>
-                        ))}
+                {/* BUSCADOR DE LA TABLA */}
+                <div className="search-box-wrapper mb-4" style={{maxWidth: '400px'}}>
+                    <input 
+                        type="text" 
+                        className="search-input-custom" 
+                        placeholder="Filtrar por nombre..." 
+                        value={adminSearchTerm}
+                        onChange={(e) => setAdminSearchTerm(e.target.value)}
+                    />
+                    <i className="bi bi-search search-icon-page"></i>
+                </div>
+
+                {/* TABLA */}
+                <div className="info-card-custom p-0 overflow-hidden shadow">
+                    <div className="table-responsive">
+                        <table className="table table-dark table-hover mb-0 align-middle">
+                            <thead>
+                                <tr className="text-accent text-uppercase small fw-bold">
+                                    <th className="ps-4 py-3">Miniatura</th>
+                                    <th>Nombre</th>
+                                    <th>Plataformas</th>
+                                    <th className="text-end pe-4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredGames.map(g => (
+                                    <tr key={g._id} className="border-bottom border-secondary">
+                                        <td className="ps-4 py-3">
+                                            <img src={g.caratula} alt="cover" className="rounded shadow-sm" style={{height: '60px', width: '45px', objectFit: 'cover'}} />
+                                        </td>
+                                        <td className="fw-bold">{g.nombre}</td>
+                                        <td>
+                                            {g.plataformas.map(p => (
+                                                <span key={p} className="badge bg-dark border border-secondary me-1">{p}</span>
+                                            ))}
+                                        </td>
+                                        <td className="text-end pe-4">
+                                            {/* TEXTO AÑADIDO A LOS BOTONES */}
+                                            <button className="btn btn-sm btn-outline-info me-2" onClick={() => handleEdit(g)}>
+                                                <i className="bi bi-pencil-square me-1"></i> EDITAR
+                                            </button>
+                                            <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(g._id)}>
+                                                <i className="bi bi-trash me-1"></i> BORRAR
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

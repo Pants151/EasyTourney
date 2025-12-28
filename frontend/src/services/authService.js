@@ -15,4 +15,12 @@ const login = async (userData) => {
     return response.data;
 };
 
-export default { register, login };
+const getAuthHeaders = () => ({
+    headers: { 'x-auth-token': localStorage.getItem('userToken') }
+});
+
+const getProfile = async () => (await axios.get(API_URL + 'profile', getAuthHeaders())).data;
+const updateProfile = async (userData) => (await axios.put(API_URL + 'profile', userData, getAuthHeaders())).data;
+const deleteAccount = async () => (await axios.delete(API_URL + 'profile', getAuthHeaders())).data;
+
+export default { register, login, getProfile, updateProfile, deleteAccount };

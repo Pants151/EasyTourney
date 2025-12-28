@@ -23,7 +23,15 @@ const Navbar = () => {
 
                 <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul className="navbar-nav align-items-center">
-                        <li className="nav-item"><Link className="nav-link nav-link-custom" to="/">INICIO</Link></li>
+                        {user ? (
+                            <li className="nav-item">
+                                <Link className="nav-link nav-link-custom" to="/account">CUENTA</Link>
+                            </li>
+                        ) : (
+                            <li className="nav-item">
+                                <Link className="nav-link nav-link-custom" to="/">INICIO</Link>
+                            </li>
+                        )}
                         {user ? (
                             <li className="nav-item ms-3">
                                 <button className="btn btn-outline-light btn-sm" onClick={() => { logout(); navigate('/login'); }}>CERRAR SESIÓN</button>

@@ -1,0 +1,28 @@
+/* Custom Admin Table */
+.custom-admin-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #111521 !important;
+}
+
+.custom-admin-table thead th {
+    background-color: #0d1117;
+    border-bottom: 2px solid #FF7300;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.custom-admin-table tbody tr {
+    transition: background 0.3s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.custom-admin-table tbody tr:hover {
+    background-color: rgba(255, 115, 0, 0.05) !important;
+}
+
+.custom-admin-table td {
+    color: #e0e0e0;
+    border: none;
+}

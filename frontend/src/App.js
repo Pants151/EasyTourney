@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Account from './pages/Account';
 import TournamentDetails from './pages/TournamentDetails';
 import CreateTournament from './pages/CreateTournament';
 import AdminGames from './pages/AdminGames';
@@ -30,6 +31,7 @@ function App() {
               {/* Las demás páginas SÍ llevan su propio contenedor para no verse raras */}
               <Route path="/login" element={<div className="container mt-navbar"><Login /></div>} />
               <Route path="/register" element={<div className="container mt-navbar"><Register /></div>} />
+              <Route path="/account" element={<Account />} />
               <Route path="/tournament/:id" element={<div className="container mt-navbar"><TournamentDetails /></div>} />
               <Route path="/create-tournament" element={<div className="container mt-navbar"><CreateTournament /></div>} />
               <Route path="/admin/games" element={<div className="container mt-navbar"><AdminGames /></div>} />

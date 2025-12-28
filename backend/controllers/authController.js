@@ -84,3 +84,42 @@ exports.login = async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 };
+
+// Obtener perfil del usuario actual
+exports.getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (err) {
+        res.status(500).send('Error al obtener el perfil');
+    }
+};
+
+// Actualizar perfil
+exports.updateUserProfile = async (req, res) => {
+    const { username, email, pais, fechaNacimiento } = req.body;
+    try {
+        let user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
+        user.username = username || user.username;
+        user.email = email || user.email;
+        user.pais = pais || user.pais;
+        user.fechaNacimiento = fechaNacimiento || user.fechaNacimiento;
+
+        await user.save();
+        res.json({ id: user.id, username: user.username, rol: user.rol, email: user.email });
+    } catch (err) {
+        res.status(500).send('Error al actualizar perfil');
+    }
+};
+
+// Eliminar cuenta
+exports.deleteUser = async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.user.id);
+        res.json({ msg: 'Cuenta eliminada correctamente' });
+    } catch (err) {
+        res.status(500).send('Error al eliminar la cuenta');
+    }
+};

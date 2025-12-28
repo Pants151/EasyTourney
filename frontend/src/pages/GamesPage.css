@@ -1,3 +1,7 @@
+.letter-spacing-1 {
+    letter-spacing: 1px;
+}
+
 .game-card-full {
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -9,28 +13,28 @@
 
 .game-cover-wrapper {
     position: relative;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
-    background-color: #05070a; /* Fondo negro por si la imagen es más estrecha */
-    aspect-ratio: 2 / 3; /* Proporción estándar de póster de juego */
-    border: 2px solid transparent;
+    background-color: #05070a;
+    aspect-ratio: 2 / 3;
+    border: 2px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
 }
 
 .game-card-full:hover .game-cover-wrapper {
     border-color: #FF7300;
-    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(255, 115, 0, 0.3);
 }
 
 .game-card-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: linear-gradient(0deg, rgba(8, 11, 18, 0.9) 0%, rgba(8, 11, 18, 0.2) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s ease;
 }
 
 .game-card-full:hover .game-card-overlay {
@@ -40,10 +44,12 @@
 .game-cover-wrapper img {
     width: 100%;
     height: 100%;
-    /* 'cover' llena el espacio (puede recortar un poco los lados). 
-       Si quieres ver la imagen ENTERA sin recortes, usa 'contain', 
-       aunque dejará barras negras si la imagen original no es 2:3.
-    */
-    object-fit: cover; 
+    object-fit: cover;
     display: block;
+}
+
+/* Estilo para el botón de la cabecera cuando hay muchos elementos */
+.header-page {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 30px;
 }
