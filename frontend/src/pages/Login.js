@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import authService from '../services/authService';
 import './TournamentForm.css'; // Reutilizamos los estilos de formulario
 
 const Login = () => {
@@ -13,7 +14,10 @@ const Login = () => {
     const onSubmit = async e => {
         e.preventDefault();
         try {
-            await login(formData.email, formData.password);
+            // 1. Llamamos al servicio para obtener la respuesta del servidor (token + user)
+            const res = await authService.login(formData);
+            // 2. Pasamos EL OBJETO COMPLETO al contexto
+            login(res);
             navigate('/');
         } catch (err) {
             alert('Error al iniciar sesión. Comprueba tus credenciales.');

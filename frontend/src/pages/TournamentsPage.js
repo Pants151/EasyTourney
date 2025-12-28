@@ -8,7 +8,7 @@ const TournamentsPage = () => {
     const [tournaments, setTournaments] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [limits, setLimits] = useState({ abiertos: 4, enCurso: 4, finalizados: 4 });
-    const { user } = useContext(AuthContext); // Obtener el usuario logueado
+    const { user, loading } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,6 +22,9 @@ const TournamentsPage = () => {
         };
         fetchTournaments();
     }, []);
+
+    // SI EL CONTEXTO ESTÁ CARGANDO, NO RENDERIZAMOS AÚN
+    if (loading) return <div className="text-center py-5 text-white">Cargando usuario...</div>;
 
     const filtered = tournaments.filter(t => 
         t.nombre.toLowerCase().includes(searchTerm.toLowerCase())
