@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import gameService from '../services/gameService'; // Usamos el servicio de juegos
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Home.css'; // CSS Específico para esta página
 
 const Home = () => {
     const [topGames, setTopGames] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Cargar los 5 juegos para la barra horizontal
@@ -21,16 +22,16 @@ const Home = () => {
 
     return (
         <div className="home-wrapper">
-            
+
             {/* --- SECCIÓN HERO --- */}
             <section className="hero-section d-flex align-items-center justify-content-center">
                 {/* Fondo de imagen sutil o gradiente */}
                 <div className="hero-bg-overlay"></div>
-                
+
                 <div className="hero-content text-center text-uppercase position-relative z-2">
                     {/* Logo grande */}
                     <img src="/assets/images/logo-big.png" alt="Logo Grande" className="hero-logo img-fluid mb-4 animate-fade-up" />
-                    
+
                     {/* Texto en blanco puro */}
                     <h1 className="hero-title fw-bolder mb-3 animate-fade-up delay-1 text-white">
                         DONDE NACEN LAS <span className="text-accent outline-text">LEYENDAS</span>
@@ -51,18 +52,25 @@ const Home = () => {
                     <h4 className="text-uppercase fw-bold mb-4">
                         JUEGOS MÁS <span className="text-accent">POPULARES</span>
                     </h4>
-                    
+
                     {/* Lista horizontal de carátulas */}
                     <div className="games-scroll-container d-flex justify-content-center mb-4">
                         {topGames.map(game => (
-                            <div key={game._id} className="game-cover-item mx-2">
+                            <div 
+                                key={game._id} 
+                                className="game-cover-item mx-2" 
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => navigate(`/tournaments?game=${game._id}`)}
+                            >
                                 <img src={game.caratula} alt={game.nombre} className="img-fluid" />
                             </div>
                         ))}
                     </div>
 
                     {/* Botón debajo de los juegos */}
-                    <button className="btn btn-view-all mt-2 px-4">Ver todos los juegos</button>
+                    <button className="btn btn-view-all mt-2" onClick={() => navigate('/games')}>
+                        Ver todos los juegos
+                    </button>
                 </div>
             </section>
 
@@ -88,7 +96,7 @@ const Home = () => {
                             <p className="lead text-dim mb-5">
                                 Participa en torneos diarios, sube en el ranking y consigue premios exclusivos. Tu camino al estrellato comienza aquí.
                             </p>
-                            
+
                             <div className="d-flex feature-icons">
                                 <div className="feature-item d-flex align-items-center me-5">
                                     <img src="/assets/images/icon-trophy.png" alt="Trofeo" height="50" className="me-3" />

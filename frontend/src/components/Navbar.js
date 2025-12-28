@@ -18,7 +18,7 @@ const Navbar = () => {
                 {/* Secciones al lado del logo */}
                 <div className="d-flex me-auto align-items-center">
                     <Link className="nav-link nav-link-custom px-3" to="/tournaments">TORNEOS</Link>
-                    <Link className="nav-link nav-link-custom ms-2" to="#">JUEGOS</Link>
+                    <Link className="nav-link nav-link-custom px-3" to="/games">JUEGOS</Link>
                 </div>
 
                 <div className="collapse navbar-collapse justify-content-end" id="navbarNav">

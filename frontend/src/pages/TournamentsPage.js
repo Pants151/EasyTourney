@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'; // Añadido useContext
 import tournamentService from '../services/tournamentService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext'; // Importar el contexto
 import './TournamentsPage.css';
 
@@ -10,6 +10,8 @@ const TournamentsPage = () => {
     const [limits, setLimits] = useState({ abiertos: 4, enCurso: 4, finalizados: 4 });
     const { user, loading } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const gameFilter = searchParams.get('game');
 
     useEffect(() => {
         const fetchTournaments = async () => {
@@ -26,9 +28,18 @@ const TournamentsPage = () => {
     // SI EL CONTEXTO ESTÁ CARGANDO, NO RENDERIZAMOS AÚN
     if (loading) return <div className="text-center py-5 text-white">Cargando usuario...</div>;
 
-    const filtered = tournaments.filter(t => 
-        t.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = tournaments.filter(t => {
+        const matchesSearch = t.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesGame = gameFilter ? (t.juego?._id === gameFilter) : true;
+        return matchesSearch && matchesGame;
+    });
+
+    const getPageTitle = () => {
+        if (gameFilter && filtered.length > 0) {
+            return `TORNEOS DE ${filtered[0].juego?.nombre}`;
+        }
+        return "TORNEOS";
+    };
 
     const renderSection = (title, status, limitKey) => {
         const sectionTournaments = filtered.filter(t => t.estado === status);
@@ -81,7 +92,7 @@ const TournamentsPage = () => {
                 {/* Cabecera actualizada con botones condicionales */}
                 <div className="header-page mb-5">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h1 className="fw-bolder text-uppercase m-0 text-white">TORNEOS</h1>
+                        <h1 className="fw-bolder text-uppercase m-0 text-white">{getPageTitle()}</h1>
                         
                         {/* Validación de Rol para Organizador o Administrador */}
                         {(user?.rol === 'organizador' || user?.rol === 'administrador') && (
