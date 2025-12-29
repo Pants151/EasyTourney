@@ -5,11 +5,11 @@ const matchSchema = new mongoose.Schema({
     // Soporte para 1v1
     jugador1: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     jugador2: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    // Soporte para Equipos
+    // Soporte para EQUIPOS (Faltaba en tu archivo)
     equipo1: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     equipo2: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     ronda: { type: Number, default: 1 },
-    // Ganador flexible (puede ser User o Team)
+    // Ganador flexible (Puede ser User o Team)
     ganador: {
         type: mongoose.Schema.Types.ObjectId,
         refPath: 'ganadorTipo' 
