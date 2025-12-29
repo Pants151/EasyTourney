@@ -29,6 +29,7 @@ const getTournamentMatches = async (id) => (await axios.get(`${API_URL}${id}/mat
 const advanceTournament = async (id) => axios.post(`${API_URL}advance/${id}`, {}, getAuthHeaders());
 const createTeam = async (id, data) => axios.post(`${API_URL}team/${id}`, data, getAuthHeaders());
 const joinTeam = async (teamId) => axios.put(`${API_URL}team/join/${teamId}`, {}, getAuthHeaders());
+const respondToTeamRequest = async (teamId, data) => axios.put(`${API_URL}team/respond/${teamId}`, data, getAuthHeaders());
 const leaveTournament = async (id) => axios.put(`${API_URL}leave/${id}`, {}, getAuthHeaders());
 const expelParticipant = async (tId, uId) => axios.delete(`${API_URL}${tId}/expel/${uId}`, getAuthHeaders());
 
@@ -47,6 +48,7 @@ export default {
     deleteTournament,
     createTeam,
     joinTeam,
+    respondToTeamRequest,
     leaveTournament,
     expelParticipant
 };

@@ -84,7 +84,7 @@ const TournamentsPage = () => {
                                     {user?.rol === 'participante' && t.estado === 'Abierto' && !t.participantes.includes(user.id) && (
                                         <button 
                                             className="btn btn-accent btn-sm w-100 mt-3 fw-bold"
-                                            onClick={(e) => handleQuickJoin(e, t._id)}
+                                            onClick={(e) => handleQuickJoin(e, t)}
                                         >
                                             INSCRIBIRSE
                                         </button>

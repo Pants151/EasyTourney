@@ -124,14 +124,23 @@ const handleAdvanceRound = async () => {
     };
 
     const handleExpulsar = async (userId) => {
-        if (!window.confirm("¿Estás seguro de expulsar a este participante?")) return;
+    if (!window.confirm("¿Estás seguro de expulsar a este participante?")) return;
+    try {
+        // Cambiamos kickParticipant por expelParticipant
+        await tournamentService.expelParticipant(id, userId); 
+        alert("Participante expulsado.");
+        window.location.reload();
+    } catch (err) {
+        alert(err.response?.data?.msg || "Error al expulsar");
+    }
+};
+
+    const handleRespondMember = async (teamId, userId, action) => {
         try {
-            await tournamentService.kickParticipant(id, userId);
-            alert("Participante expulsado.");
+            await tournamentService.respondToTeamRequest(teamId, { userId, action });
+            alert(`Usuario ${action === 'accept' ? 'aceptado' : 'rechazado'}`);
             window.location.reload();
-        } catch (err) {
-            alert(err.response?.data?.msg || "Error al expulsar");
-        }
+        } catch (err) { alert("Error al procesar solicitud"); }
     };
 
     // Lógica para verificar si el usuario ya está inscrito
@@ -286,6 +295,35 @@ const handleAdvanceRound = async () => {
                             {/* VISTA PARTICIPANTES (Tarjetas) */}
                             {activeTab === 'participantes' && (
                                 <div className="row">
+                                    {tournament.formato === 'Equipos' && tournament.equipos?.map(team => {
+                                        // Si el usuario actual es el capitán de este equipo
+                                        if (user && team.capitan === user.id) {
+                                            const pendientes = team.miembros.filter(m => m.estado === 'Pendiente');
+                                            if (pendientes.length === 0) return null;
+
+                                            return (
+                                                <div key={team._id} className="col-12 mb-4">
+                                                    <div className="alert alert-warning border-warning bg-dark-secondary">
+                                                        <h6 className="fw-bold text-warning text-uppercase small">
+                                                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                                            Solicitudes pendientes para tu equipo: {team.nombre}
+                                                        </h6>
+                                                        <hr />
+                                                        {pendientes.map(m => (
+                                                            <div key={m.usuario._id} className="d-flex justify-content-between align-items-center mb-2">
+                                                                <span className="text-white">{m.usuario.username}</span>
+                                                                <div className="d-flex gap-2">
+                                                                    <button className="btn btn-success btn-sm" onClick={() => handleRespondMember(team._id, m.usuario._id, 'accept')}>ACEPTAR</button>
+                                                                    <button className="btn btn-danger btn-sm" onClick={() => handleRespondMember(team._id, m.usuario._id, 'reject')}>RECHAZAR</button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    })}
                                     {tournament.participantes.map(p => (
                                         <div key={p._id} className="col-md-4 mb-3">
                                             <div className="participant-card p-3 bg-dark-secondary rounded text-center">

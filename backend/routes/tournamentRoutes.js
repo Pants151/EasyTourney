@@ -27,8 +27,5 @@ router.put('/team/join/:teamId', auth, tournamentController.joinTeam); // Solici
 router.put('/team/respond/:teamId', auth, tournamentController.respondToTeamRequest); // Aceptar/Rechazar miembro
 router.put('/leave/:id', auth, tournamentController.leaveTournament); // Abandonar torneo
 router.delete('/:tournamentId/expel/:userId', auth, tournamentController.expelParticipant); // Expulsar participante (Organizador)
-router.delete('/:id/leave', auth, tournamentController.handleExitTournament);
-router.delete('/:id/expel/:userId', auth, tournamentController.handleExitTournament); // Misma lógica
-
 
 module.exports = router;
