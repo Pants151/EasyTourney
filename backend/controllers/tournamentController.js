@@ -220,7 +220,7 @@ exports.advanceTournament = async (req, res) => {
         const nextMatches = [];
         for (let i = 0; i < winners.length; i += 2) {
             const matchData = {
-                torneo: tournamentId,
+                torneo: tournament._id,
                 ronda: nextRound,
                 ganadorTipo: tournament.formato === 'Equipos' ? 'Team' : 'User'
             };
@@ -236,9 +236,9 @@ exports.advanceTournament = async (req, res) => {
             const match = new Match(matchData);
             await match.save();
             nextMatches.push(match);
-    }
+        }
         res.json({ msg: `Ronda ${nextRound} generada` });
-} catch (err) { res.status(500).send('Error al avanzar ronda'); }
+    } catch (err) { res.status(500).send('Error al avanzar ronda'); }
 };
 
 // Actualizar datos de un torneo

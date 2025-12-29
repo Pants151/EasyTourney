@@ -135,6 +135,15 @@ const handleAdvanceRound = async () => {
     }
 };
 
+    const handleLeave = async () => {
+        if (!window.confirm("¿Seguro que quieres abandonar el torneo? Si eres capitán, el equipo se disolverá.")) return;
+        try {
+            await tournamentService.leaveTournament(id);
+            alert("Has abandonado el torneo.");
+            window.location.reload();
+        } catch (err) { alert(err.response?.data?.msg || "Error al abandonar"); }
+    };
+
     const handleRespondMember = async (teamId, userId, action) => {
         try {
             await tournamentService.respondToTeamRequest(teamId, { userId, action });
@@ -217,6 +226,11 @@ const handleAdvanceRound = async () => {
                                     <i className="bi bi-check-circle me-2"></i>ESTÁS INSCRITO
                                 </div>
                             )}
+                            {isJoined && tournament.estado === 'Abierto' && user?.rol === 'participante' && (
+                                <button className="btn btn-outline-danger w-100 mt-2 btn-sm fw-bold" onClick={handleLeave}>
+                                    ABANDONAR TORNEO
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -254,23 +268,32 @@ const handleAdvanceRound = async () => {
                                             {Object.keys(rounds).sort().map(rNum => (
                                                 <div key={rNum} className="round-column">
                                                     <h6 className="text-center text-accent text-uppercase mb-3">Ronda {rNum}</h6>
-                                                    {rounds[rNum].map(m => (
-                                                        <div key={m._id} className="match-item shadow-sm">
-                                                            <div 
-                                                                className={`player-slot rounded mb-1 ${m.ganador?._id === m.jugador1?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer ? 'cursor-pointer' : ''}`}
-                                                                onClick={() => isOrganizer && m.jugador1 && handleSetWinner(m._id, m.jugador1._id)}
-                                                            >
-                                                                <small className="fw-bold">{m.jugador1?.username || 'TBD'}</small>
+                                                    {rounds[rNum].map(m => {
+                                                        // Determinamos qué datos usar según el formato
+                                                        const isTeams = tournament.formato === 'Equipos';
+                                                        const p1 = isTeams ? m.equipo1 : m.jugador1;
+                                                        const p2 = isTeams ? m.equipo2 : m.jugador2;
+                                                        const p1Name = isTeams ? p1?.nombre : p1?.username;
+                                                        const p2Name = isTeams ? p2?.nombre : p2?.username;
+
+                                                        return (
+                                                            <div key={m._id} className="match-item shadow-sm">
+                                                                <div 
+                                                                    className={`player-slot rounded mb-1 ${m.ganador?._id === p1?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer && p1 ? 'cursor-pointer' : ''}`}
+                                                                    onClick={() => isOrganizer && p1 && handleSetWinner(m._id, p1._id)}
+                                                                >
+                                                                    <small className="fw-bold">{p1Name || 'TBD'}</small>
+                                                                </div>
+                                                                <div className="text-center small py-1 text-dim" style={{fontSize: '0.6rem'}}>VS</div>
+                                                                <div 
+                                                                    className={`player-slot rounded ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer && p2 ? 'cursor-pointer' : ''}`}
+                                                                    onClick={() => isOrganizer && p2 && handleSetWinner(m._id, p2._id)}
+                                                                >
+                                                                    <small className="fw-bold">{p2Name || (isTeams ? 'TBD' : 'BYE')}</small>
+                                                                </div>
                                                             </div>
-                                                            <div className="text-center small py-1 text-dim" style={{fontSize: '0.6rem'}}>VS</div>
-                                                            <div 
-                                                                className={`player-slot rounded ${m.ganador?._id === m.jugador2?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer ? 'cursor-pointer' : ''}`}
-                                                                onClick={() => isOrganizer && m.jugador2 && handleSetWinner(m._id, m.jugador2._id)}
-                                                            >
-                                                                <small className="fw-bold">{m.jugador2?.username || 'BYE'}</small>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
                                             ))}
                                         </div>
