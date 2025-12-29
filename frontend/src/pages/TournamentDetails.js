@@ -31,12 +31,17 @@ const TournamentDetails = () => {
 
     // Ejemplo de reporte visual de ganador
     const handleSetWinner = async (matchId, winnerId) => {
-        if (!isOrganizer) return;
-        try {
-            await tournamentService.reportWinner(matchId, { ganador: winnerId });
-            window.location.reload();
-        } catch (err) { alert("Error al reportar ganador"); }
-    };
+    if (!isOrganizer) return;
+    try {
+        // Cambiamos 'reportWinner' por 'updateMatchResult'
+        // Cambiamos el campo 'ganador' por 'ganadorId'
+        await tournamentService.updateMatchResult(matchId, { ganadorId: winnerId }); 
+        window.location.reload();
+    } catch (err) { 
+        console.error(err);
+        alert("Error al reportar ganador"); 
+    }
+};
 
     const handleSetWinnerBR = async (winnerId) => {
         if (!isOrganizer) return;
@@ -189,24 +194,24 @@ const handleAdvanceRound = async () => {
                                             </div>
                                         </div>
                                     ) : Object.keys(rounds).length > 0 ? (
-                                        <div className="brackets-container d-flex gap-4 overflow-auto pb-4">
+                                        <div className="brackets-tree overflow-auto pb-4">
                                             {Object.keys(rounds).sort().map(rNum => (
                                                 <div key={rNum} className="round-column">
                                                     <h6 className="text-center text-accent text-uppercase mb-3">Ronda {rNum}</h6>
                                                     {rounds[rNum].map(m => (
-                                                        <div key={m._id} className="match-card-tree mb-3 p-2 text-white shadow-sm">
+                                                        <div key={m._id} className="match-item shadow-sm">
                                                             <div 
-                                                                className={`p-2 rounded ${m.ganador?._id === m.jugador1?._id ? 'bg-winner' : 'bg-dark'} ${isOrganizer ? 'player-slot' : ''}`}
+                                                                className={`player-slot rounded mb-1 ${m.ganador?._id === m.jugador1?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer ? 'cursor-pointer' : ''}`}
                                                                 onClick={() => isOrganizer && m.jugador1 && handleSetWinner(m._id, m.jugador1._id)}
                                                             >
-                                                                <small>{m.jugador1?.username || 'TBD'}</small>
+                                                                <small className="fw-bold">{m.jugador1?.username || 'TBD'}</small>
                                                             </div>
-                                                            <div className="text-center small py-1 text-dim">VS</div>
+                                                            <div className="text-center small py-1 text-dim" style={{fontSize: '0.6rem'}}>VS</div>
                                                             <div 
-                                                                className={`p-2 rounded ${m.ganador?._id === m.jugador2?._id ? 'bg-winner' : 'bg-dark'} ${isOrganizer ? 'player-slot' : ''}`}
+                                                                className={`player-slot rounded ${m.ganador?._id === m.jugador2?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer ? 'cursor-pointer' : ''}`}
                                                                 onClick={() => isOrganizer && m.jugador2 && handleSetWinner(m._id, m.jugador2._id)}
                                                             >
-                                                                <small>{m.jugador2?.username || 'BYE'}</small>
+                                                                <small className="fw-bold">{m.jugador2?.username || 'BYE'}</small>
                                                             </div>
                                                         </div>
                                                     ))}

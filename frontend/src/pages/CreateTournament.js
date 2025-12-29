@@ -7,7 +7,13 @@ import './TournamentForm.css';
 const CreateTournament = () => {
     const [games, setGames] = useState([]);
     const [formData, setFormData] = useState({
-        nombre: '', juego: '', modalidad: '1v1', fechaInicio: '', reglas: ''
+        nombre: '', 
+        juego: '', 
+        formato: '1v1', 
+        tamanoEquipoMax: 2, 
+        limiteParticipantes: 16,
+        fechaInicio: '', 
+        reglas: ''
     });
     const navigate = useNavigate();
 
@@ -49,12 +55,33 @@ const CreateTournament = () => {
                             </div>
                             <div className="row">
                                 <div className="col-md-6 mb-4">
-                                    <label className="form-label-custom">Modalidad</label>
-                                    <select name="modalidad" className="form-select form-select-custom" onChange={e => setFormData({...formData, modalidad: e.target.value})}>
+                                    <label className="form-label-custom">Formato de Juego</label>
+                                    <select name="formato" className="form-select form-select-custom" 
+                                        value={formData.formato}
+                                        onChange={e => setFormData({...formData, formato: e.target.value})}>
                                         <option value="1v1">1v1 (Individual)</option>
-                                        <option value="Equipos">Equipos</option>
+                                        <option value="Equipos">Por Equipos</option>
+                                        <option value="Battle Royale">Battle Royale</option>
                                     </select>
                                 </div>
+                                
+                                {/* Selector dinámico para tamaño de equipo */}
+                                {formData.formato === 'Equipos' && (
+                                    <div className="col-md-6 mb-4">
+                                        <label className="form-label-custom">Integrantes por Equipo (1-6)</label>
+                                        <input type="number" className="form-control form-control-custom" 
+                                            min="1" max="6" value={formData.tamanoEquipoMax}
+                                            onChange={e => setFormData({...formData, tamanoEquipoMax: e.target.value})} />
+                                    </div>
+                                )}
+
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">Límite de Participantes</label>
+                                    <input type="number" className="form-control form-control-custom" 
+                                        min="2" value={formData.limiteParticipantes}
+                                        onChange={e => setFormData({...formData, limiteParticipantes: e.target.value})} />
+                                </div>
+
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Fecha de Inicio</label>
                                     <input type="datetime-local" name="fechaInicio" className="form-control-custom form-control" 

@@ -4,25 +4,24 @@ const Match = require('../models/Match');
 // Crear un nuevo torneo
 exports.createTournament = async (req, res) => {
     try {
-        // Extraemos los datos del cuerpo de la petición
-        const { nombre, juego, plataformas, modalidad, ubicacion, fechaInicio, reglas } = req.body;
+        // Extraemos 'formato' y 'tamanoEquipoMax' en lugar de modalidad
+        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes } = req.body;
 
-        // Creamos la instancia del torneo
         const newTournament = new Tournament({
             nombre,
             juego,
             plataformas,
-            modalidad,
+            formato, // Sincronizado con el modelo
+            tamanoEquipoMax: formato === 'Equipos' ? tamanoEquipoMax : 1,
+            limiteParticipantes,
             ubicacion,
             fechaInicio,
             reglas,
-            organizador: req.user.id // El ID viene del Middleware 'auth'
+            organizador: req.user.id
         });
 
-        // Guardamos en MongoDB
         const tournament = await newTournament.save();
         res.json(tournament);
-        
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error al crear el torneo');
@@ -261,21 +260,18 @@ exports.advanceTournament = async (req, res) => {
 // Actualizar datos de un torneo
 exports.updateTournament = async (req, res) => {
     try {
-        const { nombre, juego, plataformas, modalidad, ubicacion, fechaInicio, reglas } = req.body;
+        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes } = req.body;
         let tournament = await Tournament.findById(req.params.id);
 
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+        if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
 
-        // Verificar que sea el organizador
-        if (tournament.organizador.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'No autorizado' });
-        }
-
-        // Actualizamos los campos
         tournament.nombre = nombre || tournament.nombre;
         tournament.juego = juego || tournament.juego;
         tournament.plataformas = plataformas || tournament.plataformas;
-        tournament.modalidad = modalidad || tournament.modalidad;
+        tournament.formato = formato || tournament.formato; // Actualizado
+        tournament.tamanoEquipoMax = formato === 'Equipos' ? tamanoEquipoMax : 1;
+        tournament.limiteParticipantes = limiteParticipantes || tournament.limiteParticipantes;
         tournament.ubicacion = ubicacion || tournament.ubicacion;
         tournament.fechaInicio = fechaInicio || tournament.fechaInicio;
         tournament.reglas = reglas || tournament.reglas;
@@ -283,7 +279,6 @@ exports.updateTournament = async (req, res) => {
         await tournament.save();
         res.json(tournament);
     } catch (err) {
-        console.error(err.message);
         res.status(500).send('Error al actualizar el torneo');
     }
 };

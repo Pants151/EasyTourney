@@ -174,42 +174,44 @@
 .brackets-tree {
     display: flex;
     flex-direction: row;
+    padding: 20px 0;
 }
 
 .round-column {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    width: 220px;
-    margin-right: 40px;
+    justify-content: space-around; /* Esto distribuye los matches para crear el efecto de árbol */
+    width: 240px;
+    margin-right: 50px;
 }
 
 .match-item {
     position: relative;
-    padding: 10px;
+    padding: 12px;
     background: #111521;
-    border: 1px solid #FF7300;
-    margin-bottom: 20px;
-    border-radius: 4px;
+    border: 1px solid rgba(255, 115, 0, 0.3);
+    border-radius: 6px;
+    margin: 15px 0;
 }
 
-/* Conectores visuales */
+/* Conector horizontal que sale del match */
 .match-item::after {
     content: "";
     position: absolute;
-    right: -40px;
+    right: -50px;
     top: 50%;
-    width: 40px;
+    width: 50px;
     height: 2px;
     background: #FF7300;
+    z-index: 1;
 }
 
 .round-column:last-child .match-item::after { display: none; }
 
 .player-slot {
-    padding: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
 }
 
 .player-slot:hover {
@@ -217,6 +219,11 @@
 }
 
 .is-winner {
-    background: rgba(40, 167, 69, 0.2) !important;
-    border: 1px solid #28a745;
+    background: rgba(255, 115, 0, 0.2) !important;
+    border: 1px solid #FF7300 !important;
+    color: #fff;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }
