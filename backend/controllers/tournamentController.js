@@ -35,7 +35,7 @@ exports.getTournaments = async (req, res) => {
         // Añadimos 'juego' al populate para obtener logos y carátulas
         const tournaments = await Tournament.find()
             .populate('organizador', 'username')
-            .populate('juego') 
+            .populate('juego')
             .sort({ fechaInicio: -1 });
         res.json(tournaments);
     } catch (err) {
@@ -75,10 +75,10 @@ exports.getTournamentById = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id)
             .populate('organizador', 'username')
             .populate('participantes', 'username')
-            .populate('ganador', 'username')
+            .populate('ganador')
             .populate('juego')
-            .populate('equipos'); 
-        
+            .populate('equipos');
+
         if (!tournament) {
             return res.status(404).json({ msg: 'Torneo no encontrado' });
         }
@@ -96,13 +96,13 @@ exports.generateBrackets = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id)
             .populate('participantes')
             .populate('equipos');
-        
+
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
         let entities = [];
         if (tournament.formato === 'Equipos') {
             // Solo equipos que tengan al menos el capitán aceptado
-            entities = tournament.equipos; 
+            entities = tournament.equipos;
         } else {
             entities = tournament.participantes;
         }
@@ -119,13 +119,13 @@ exports.generateBrackets = async (req, res) => {
                 torneo: tournament._id,
                 ronda: 1
             };
-            
+
             if (tournament.formato === 'Equipos') {
                 matchData.equipo1 = entities[i]._id;
-                matchData.equipo2 = entities[i+1] ? entities[i+1]._id : null;
+                matchData.equipo2 = entities[i + 1] ? entities[i + 1]._id : null;
             } else {
                 matchData.jugador1 = entities[i]._id;
-                matchData.jugador2 = entities[i+1] ? entities[i+1]._id : null;
+                matchData.jugador2 = entities[i + 1] ? entities[i + 1]._id : null;
             }
 
             const match = new Match(matchData);
@@ -174,9 +174,11 @@ exports.getTournamentMatches = async (req, res) => {
         const matches = await Match.find({ torneo: req.params.id })
             .populate('jugador1', 'username')
             .populate('jugador2', 'username')
-            .populate('ganador', 'username')
+            .populate('equipo1', 'nombre') // Añadimos población de equipos
+            .populate('equipo2', 'nombre')
+            .populate('ganador')
             .sort({ ronda: 1 }); // Ordenadas por ronda
-        
+
         res.json(matches);
     } catch (err) {
         console.error(err.message);

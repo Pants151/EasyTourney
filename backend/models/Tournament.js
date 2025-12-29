@@ -32,7 +32,12 @@ const tournamentSchema = new mongoose.Schema({
     },
     ganador: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        refPath: 'ganadorTipo'
+    },
+    ganadorTipo: {
+        type: String,
+        enum: ['User', 'Team'],
+        default: 'User'
     },
     participantes: [{
         type: mongoose.Schema.Types.ObjectId,
