@@ -75,44 +75,32 @@ exports.getTournamentById = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id)
             .populate('organizador', 'username')
             .populate('participantes', 'username')
-            .populate('ganador')
+            .populate({ path: 'ganador', options: { strictPopulate: false } }) // Fix error
             .populate('juego')
             .populate({
                 path: 'equipos',
-                populate: { path: 'miembros.usuario', select: 'username' } // Ver miembros en la lista
+                populate: { path: 'miembros.usuario', select: 'username' }
             });
         res.json(tournament);
     } catch (err) { res.status(500).send('Error en servidor'); }
 };
 
-// Generar Brackets (Solo para modalidad 1v1 inicialmente)
+// Generar Brackets (Soporta 1v1 y Equipos)
 exports.generateBrackets = async (req, res) => {
     try {
-        const tournament = await Tournament.findById(req.params.id)
-            .populate('participantes')
-            .populate('equipos');
-
+        const tournament = await Tournament.findById(req.params.id).populate('participantes').populate('equipos');
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        let entities = [];
-        if (tournament.formato === 'Equipos') {
-            // Solo equipos que tengan al menos el capitán aceptado
-            entities = tournament.equipos;
-        } else {
-            entities = tournament.participantes;
-        }
+        let entities = tournament.formato === 'Equipos' ? [...tournament.equipos] : [...tournament.participantes];
+        if (entities.length < 2) return res.status(400).json({ msg: 'Mínimo 2 participantes/equipos' });
 
-        if (entities.length < 2) return res.status(400).json({ msg: 'Faltan participantes o equipos' });
-
-        // Mezclar entidades
         entities.sort(() => 0.5 - Math.random());
 
-        // 2. Crear las partidas de la Ronda 1
-        const matches = [];
         for (let i = 0; i < entities.length; i += 2) {
             const matchData = {
                 torneo: tournament._id,
-                ronda: 1
+                ronda: 1,
+                ganadorTipo: tournament.formato === 'Equipos' ? 'Team' : 'User' // <-- IMPORTANTE
             };
 
             if (tournament.formato === 'Equipos') {
@@ -122,17 +110,12 @@ exports.generateBrackets = async (req, res) => {
                 matchData.jugador1 = entities[i]._id;
                 matchData.jugador2 = entities[i + 1] ? entities[i + 1]._id : null;
             }
-
-            const match = new Match(matchData);
-            await match.save();
-            matches.push(match);
+            await new Match(matchData).save();
         }
 
-        // 3. Actualizar estado del torneo
         tournament.estado = 'En curso';
         await tournament.save();
-
-        res.json({ msg: 'Brackets generados correctamente', matches });
+        res.json({ msg: 'Brackets generados correctamente' });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error al generar brackets');
@@ -199,78 +182,63 @@ exports.getMyTournaments = async (req, res) => {
 exports.updateMatchResult = async (req, res) => {
     try {
         const { ganadorId, resultado } = req.body;
-        // Buscamos la partida y poblamos el torneo para verificar el organizador
         const match = await Match.findById(req.params.id).populate('torneo');
 
         if (!match) return res.status(404).json({ msg: 'Partida no encontrada' });
 
-        // Verificamos que quien hace la petición sea el organizador del torneo
-        if (match.torneo.organizador.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'No autorizado para reportar resultados' });
-        }
-
+        // Guardamos el ganador y su tipo (Team o User) basado en el formato del torneo
         match.ganador = ganadorId;
+        match.ganadorTipo = match.torneo.formato === 'Equipos' ? 'Team' : 'User';
         match.resultado = resultado;
-        await match.save();
 
+        await match.save();
         res.json(match);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Error al actualizar el resultado');
-    }
+    } catch (err) { res.status(500).send('Error al actualizar resultado'); }
 };
 
-// Avanzar de ronda el torneo
+// Avanzar de ronda corregido
 exports.advanceTournament = async (req, res) => {
     try {
-        const tournamentId = req.params.id;
-        const tournament = await Tournament.findById(tournamentId);
-
-        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
-
-        // 1. Obtener la ronda más alta actual
-        const lastMatches = await Match.find({ torneo: tournamentId }).sort({ ronda: -1 }).limit(1);
+        const tournament = await Tournament.findById(req.params.id);
+        const lastMatches = await Match.find({ torneo: req.params.id }).sort({ ronda: -1 }).limit(1);
         const currentRound = lastMatches.length > 0 ? lastMatches[0].ronda : 1;
 
-        // 2. Verificar si todas las partidas de esa ronda tienen ganador
-        const matchesInRound = await Match.find({ torneo: tournamentId, ronda: currentRound });
-        const allFinished = matchesInRound.every(m => m.ganador);
+        const matchesInRound = await Match.find({ torneo: req.params.id, ronda: currentRound });
+        if (!matchesInRound.every(m => m.ganador)) return res.status(400).json({ msg: 'Faltan resultados' });
 
-        if (!allFinished) {
-            return res.status(400).json({ msg: 'Aún hay partidas pendientes en la ronda actual' });
-        }
-
-        // 3. Extraer los IDs de los ganadores
         const winners = matchesInRound.map(m => m.ganador);
 
-        // 4. Si solo queda 1 ganador, el torneo ha terminado
         if (winners.length === 1) {
             tournament.estado = 'Finalizado';
             tournament.ganador = winners[0];
+            tournament.ganadorTipo = tournament.formato === 'Equipos' ? 'Team' : 'User';
             await tournament.save();
-            return res.json({ msg: '¡El torneo ha finalizado!', ganador: winners[0] });
+            return res.json({ msg: '¡Torneo finalizado!' });
         }
 
-        // 5. Crear las partidas para la siguiente ronda (nextRound)
         const nextRound = currentRound + 1;
         const nextMatches = [];
         for (let i = 0; i < winners.length; i += 2) {
-            const match = new Match({
+            const matchData = {
                 torneo: tournamentId,
-                jugador1: winners[i],
-                jugador2: winners[i + 1] ? winners[i + 1] : null, // Manejo de impares
-                ronda: nextRound
-            });
+                ronda: nextRound,
+                ganadorTipo: tournament.formato === 'Equipos' ? 'Team' : 'User'
+            };
+
+            if (tournament.formato === 'Equipos') {
+                matchData.equipo1 = winners[i];
+                matchData.equipo2 = winners[i + 1] || null;
+            } else {
+                matchData.jugador1 = winners[i];
+                matchData.jugador2 = winners[i + 1] || null;
+            }
+
+            const match = new Match(matchData);
             await match.save();
             nextMatches.push(match);
-        }
-
-        res.json({ msg: `Ronda ${nextRound} generada correctamente`, matches: nextMatches });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error al avanzar de ronda');
     }
+        res.json({ msg: `Ronda ${nextRound} generada` });
+} catch (err) { res.status(500).send('Error al avanzar ronda'); }
 };
 
 // Actualizar datos de un torneo
@@ -348,7 +316,7 @@ exports.createTeam = async (req, res) => {
 exports.leaveTournament = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id);
-        if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador') 
+        if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador')
             return res.status(400).json({ msg: 'No puedes abandonar un torneo en curso o finalizado' });
 
         // Si el torneo es por equipos, buscar si el usuario es capitán
@@ -383,7 +351,7 @@ exports.handleExitTournament = async (req, res) => {
 
         // ¿Es el usuario el capitán de algún equipo?
         const team = await Team.findOne({ torneo: id, capitan: targetUser });
-        
+
         if (team) {
             // Si es capitán, eliminamos el equipo y a todos sus miembros del torneo
             const memberIds = team.miembros.map(m => m.usuario.toString());
@@ -409,9 +377,9 @@ exports.expelParticipant = async (req, res) => {
     try {
         const { tournamentId, userId } = req.params;
         const tournament = await Tournament.findById(tournamentId);
-        
+
         if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
-        if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador') 
+        if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador')
             return res.status(400).json({ msg: 'No se puede expulsar con el torneo empezado' });
 
         // Lógica idéntica a abandonar (si es capitán se borra equipo, si no, solo el miembro)
@@ -429,4 +397,64 @@ exports.expelParticipant = async (req, res) => {
         await tournament.save();
         res.json({ msg: 'Participante expulsado' });
     } catch (err) { res.status(500).send('Error al expulsar'); }
+};
+
+// Unirse a un equipo (Solicitud pendiente)
+exports.joinTeam = async (req, res) => {
+    try {
+        const team = await Team.findById(req.params.teamId);
+        if (!team) return res.status(404).json({ msg: 'Equipo no encontrado' });
+
+        const tournament = await Tournament.findById(team.torneo);
+
+        // Verificar límite de miembros (Solo aceptados)
+        const acceptedMembers = team.miembros.filter(m => m.estado === 'Aceptado');
+        if (acceptedMembers.length >= tournament.tamanoEquipoMax) {
+            return res.status(400).json({ msg: 'El equipo ya está lleno' });
+        }
+
+        // Verificar si ya está en este equipo
+        if (team.miembros.some(m => m.usuario.toString() === req.user.id)) {
+            return res.status(400).json({ msg: 'Ya has solicitado unirte o eres parte del equipo' });
+        }
+
+        team.miembros.push({ usuario: req.user.id, estado: 'Pendiente' });
+        await team.save();
+
+        res.json({ msg: 'Solicitud enviada al capitán', team });
+    } catch (err) {
+        res.status(500).send('Error al solicitar unirse al equipo');
+    }
+};
+
+// Aceptar o rechazar miembros (Solo Capitán)
+exports.respondToTeamRequest = async (req, res) => {
+    try {
+        const { userId, action } = req.body; // action: 'accept' o 'reject'
+        const team = await Team.findById(req.params.teamId);
+
+        if (!team) return res.status(404).json({ msg: 'Equipo no encontrado' });
+        if (team.capitan.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'No autorizado (Solo el capitán)' });
+        }
+
+        if (action === 'accept') {
+            const member = team.miembros.find(m => m.usuario.toString() === userId);
+            if (member) member.estado = 'Aceptado';
+
+            // Al aceptar, también lo añadimos a la lista general del torneo si no estaba
+            const tournament = await Tournament.findById(team.torneo);
+            if (!tournament.participantes.includes(userId)) {
+                tournament.participantes.push(userId);
+                await tournament.save();
+            }
+        } else {
+            team.miembros = team.miembros.filter(m => m.usuario.toString() !== userId);
+        }
+
+        await team.save();
+        res.json({ msg: `Usuario ${action === 'accept' ? 'aceptado' : 'rechazado'}`, team });
+    } catch (err) {
+        res.status(500).send('Error al procesar la respuesta del capitán');
+    }
 };

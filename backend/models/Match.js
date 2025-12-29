@@ -5,11 +5,11 @@ const matchSchema = new mongoose.Schema({
     // Soporte para 1v1
     jugador1: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     jugador2: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    // Soporte para EQUIPOS (Faltaba en tu archivo)
+    // Soporte para EQUIPOS
     equipo1: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     equipo2: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     ronda: { type: Number, default: 1 },
-    // Ganador flexible (Puede ser User o Team)
+    // Ganador dinámico (User o Team)
     ganador: {
         type: mongoose.Schema.Types.ObjectId,
         refPath: 'ganadorTipo' 
@@ -20,7 +20,8 @@ const matchSchema = new mongoose.Schema({
         enum: ['User', 'Team'],
         default: 'User'
     },
-    resultado: { type: String, default: "Pendiente" }
+    resultado: { type: String, default: "Pendiente" },
+    siguientePartida: { type: mongoose.Schema.Types.ObjectId, ref: 'Match' }
 });
 
 module.exports = mongoose.model('Match', matchSchema);

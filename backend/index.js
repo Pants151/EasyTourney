@@ -1,9 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();
+
+require('./models/User');
+require('./models/Game');
+require('./models/Team');
+require('./models/Tournament');
+require('./models/Match');
+
 const authRoutes = require('./routes/authRoutes');
 const tournamentRoutes = require('./routes/tournamentRoutes');
-require('dotenv').config();
+
 
 const app = express();
 
