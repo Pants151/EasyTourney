@@ -215,6 +215,19 @@ const handleAdvanceRound = async () => {
                                 <li className="mb-2"><i className="bi bi-shield-check text-accent me-2"></i> {tournament.formato || tournament.modalidad}</li>
                             </ul>
 
+                            {/* AVISO DEL GANADOR */}
+                            {tournament.estado === 'Finalizado' && tournament.ganador && (
+                                <div className="winner-announcement mt-4 p-3 text-center rounded">
+                                    <div className="fs-1 mb-1">🏆</div>
+                                    <h6 className="text-accent fw-bold text-uppercase mb-1" style={{ letterSpacing: '1px', fontSize: '0.8rem' }}>Campeón</h6>
+                                    <h5 className="text-white fw-bolder mb-0">
+                                        {tournament.formato === 'Equipos' 
+                                            ? (tournament.ganador.nombre || "Equipo Desconocido") 
+                                            : (tournament.ganador.username || "Usuario Desconocido")}
+                                    </h5>
+                                </div>
+                            )}
+
                             {/* BOTÓN DE INSCRIPCIÓN */}
                             {showJoinButton && (
                                 <button className="btn btn-accent w-100 mt-3 fw-bold" onClick={handleInscribirse}>
@@ -269,25 +282,28 @@ const handleAdvanceRound = async () => {
                                                 <div key={rNum} className="round-column">
                                                     <h6 className="text-center text-accent text-uppercase mb-3">Ronda {rNum}</h6>
                                                     {rounds[rNum].map(m => {
-                                                        // Determinamos qué datos usar según el formato
+                                                        // Detectamos si usamos Jugador o Equipo según formato
                                                         const isTeams = tournament.formato === 'Equipos';
                                                         const p1 = isTeams ? m.equipo1 : m.jugador1;
                                                         const p2 = isTeams ? m.equipo2 : m.jugador2;
                                                         const p1Name = isTeams ? p1?.nombre : p1?.username;
                                                         const p2Name = isTeams ? p2?.nombre : p2?.username;
 
+                                                        // Bloqueo: Solo es clicable si soy organizador, el torneo está en curso y NO hay ganador aún
+                                                        const canSetWinner = isOrganizer && tournament.estado === 'En curso' && !m.ganador;
+
                                                         return (
                                                             <div key={m._id} className="match-item shadow-sm">
                                                                 <div 
-                                                                    className={`player-slot rounded mb-1 ${m.ganador?._id === p1?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer && p1 ? 'cursor-pointer' : ''}`}
-                                                                    onClick={() => isOrganizer && p1 && handleSetWinner(m._id, p1._id)}
+                                                                    className={`player-slot rounded mb-1 ${m.ganador?._id === p1?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p1 ? 'cursor-pointer' : 'no-interaction'}`}
+                                                                    onClick={() => canSetWinner && p1 && handleSetWinner(m._id, p1._id)}
                                                                 >
                                                                     <small className="fw-bold">{p1Name || 'TBD'}</small>
                                                                 </div>
                                                                 <div className="text-center small py-1 text-dim" style={{fontSize: '0.6rem'}}>VS</div>
                                                                 <div 
-                                                                    className={`player-slot rounded ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${isOrganizer && p2 ? 'cursor-pointer' : ''}`}
-                                                                    onClick={() => isOrganizer && p2 && handleSetWinner(m._id, p2._id)}
+                                                                    className={`player-slot rounded ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p2 ? 'cursor-pointer' : 'no-interaction'}`}
+                                                                    onClick={() => canSetWinner && p2 && handleSetWinner(m._id, p2._id)}
                                                                 >
                                                                     <small className="fw-bold">{p2Name || (isTeams ? 'TBD' : 'BYE')}</small>
                                                                 </div>
