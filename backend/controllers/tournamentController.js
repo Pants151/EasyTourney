@@ -75,19 +75,13 @@ exports.getTournamentById = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id)
             .populate('organizador', 'username')
             .populate('participantes', 'username')
-            .populate('ganador')
             .populate('juego')
-            .populate('equipos');
-
-        if (!tournament) {
-            return res.status(404).json({ msg: 'Torneo no encontrado' });
-        }
+            .populate({
+                path: 'equipos',
+                populate: { path: 'miembros.usuario', select: 'username' } // Ver miembros en la lista
+            });
         res.json(tournament);
-    } catch (err) {
-        console.error(err.message);
-        if (err.kind === 'ObjectId') return res.status(404).json({ msg: 'Torneo no encontrado' });
-        res.status(500).send('Error en el servidor');
-    }
+    } catch (err) { res.status(500).send('Error en servidor'); }
 };
 
 // Generar Brackets (Solo para modalidad 1v1 inicialmente)
@@ -325,4 +319,113 @@ exports.deleteTournament = async (req, res) => {
         console.error(err.message);
         res.status(500).send('Error al eliminar el torneo');
     }
+};
+
+// Crear un equipo
+exports.createTeam = async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id);
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        const newTeam = new Team({
+            nombre: req.body.nombre,
+            capitan: req.user.id,
+            torneo: tournament._id,
+            miembros: [{ usuario: req.user.id, estado: 'Aceptado' }]
+        });
+
+        const team = await newTeam.save();
+        tournament.equipos.push(team._id);
+        if (!tournament.participantes.includes(req.user.id)) tournament.participantes.push(req.user.id);
+        await tournament.save();
+
+        res.json(team);
+    } catch (err) { res.status(500).send('Error al crear equipo'); }
+};
+
+// Abandonar Torneo (Participante)
+exports.leaveTournament = async (req, res) => {
+    try {
+        const tournament = await Tournament.findById(req.params.id);
+        if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador') 
+            return res.status(400).json({ msg: 'No puedes abandonar un torneo en curso o finalizado' });
+
+        // Si el torneo es por equipos, buscar si el usuario es capitán
+        const team = await Team.findOne({ torneo: tournament._id, capitan: req.user.id });
+        if (team) {
+            // Es capitán: se borra el equipo y se expulsa a todos los miembros
+            const memberIds = team.miembros.map(m => m.usuario.toString());
+            tournament.participantes = tournament.participantes.filter(p => !memberIds.includes(p.toString()));
+            tournament.equipos = tournament.equipos.filter(e => e.toString() !== team._id.toString());
+            await Team.findByIdAndDelete(team._id);
+        } else {
+            // No es capitán: solo se borra a sí mismo
+            tournament.participantes = tournament.participantes.filter(p => p.toString() !== req.user.id);
+            await Team.updateMany({ torneo: tournament._id }, { $pull: { miembros: { usuario: req.user.id } } });
+        }
+
+        await tournament.save();
+        res.json({ msg: 'Has abandonado el torneo' });
+    } catch (err) { res.status(500).send('Error al abandonar'); }
+};
+
+// Abandonar o Expulsar del torneo
+exports.handleExitTournament = async (req, res) => {
+    try {
+        const { id, userId } = req.params; // id del torneo, userId opcional (para expulsar)
+        const targetUser = userId || req.user.id;
+        const tournament = await Tournament.findById(id);
+
+        if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador') {
+            return res.status(400).json({ msg: 'No se puede salir/expulsar con el torneo en curso' });
+        }
+
+        // ¿Es el usuario el capitán de algún equipo?
+        const team = await Team.findOne({ torneo: id, capitan: targetUser });
+        
+        if (team) {
+            // Si es capitán, eliminamos el equipo y a todos sus miembros del torneo
+            const memberIds = team.miembros.map(m => m.usuario.toString());
+            tournament.participantes = tournament.participantes.filter(p => !memberIds.includes(p.toString()));
+            tournament.equipos = tournament.equipos.filter(e => e.toString() !== team._id.toString());
+            await Team.findByIdAndDelete(team._id);
+        } else {
+            // Si no es capitán, solo lo quitamos a él
+            tournament.participantes = tournament.participantes.filter(p => p.toString() !== targetUser);
+            // También lo quitamos de la lista de miembros de cualquier equipo donde esté
+            await Team.updateMany({ torneo: id }, { $pull: { miembros: { usuario: targetUser } } });
+        }
+
+        await tournament.save();
+        res.json({ msg: 'Operación realizada correctamente' });
+    } catch (err) {
+        res.status(500).send('Error al procesar la salida');
+    }
+};
+
+// Expulsar Participante (Organizador)
+exports.expelParticipant = async (req, res) => {
+    try {
+        const { tournamentId, userId } = req.params;
+        const tournament = await Tournament.findById(tournamentId);
+        
+        if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
+        if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador') 
+            return res.status(400).json({ msg: 'No se puede expulsar con el torneo empezado' });
+
+        // Lógica idéntica a abandonar (si es capitán se borra equipo, si no, solo el miembro)
+        const team = await Team.findOne({ torneo: tournamentId, capitan: userId });
+        if (team) {
+            const memberIds = team.miembros.map(m => m.usuario.toString());
+            tournament.participantes = tournament.participantes.filter(p => !memberIds.includes(p.toString()));
+            tournament.equipos = tournament.equipos.filter(e => e.toString() !== team._id.toString());
+            await Team.findByIdAndDelete(team._id);
+        } else {
+            tournament.participantes = tournament.participantes.filter(p => p.toString() !== userId);
+            await Team.updateMany({ torneo: tournamentId }, { $pull: { miembros: { usuario: userId } } });
+        }
+
+        await tournament.save();
+        res.json({ msg: 'Participante expulsado' });
+    } catch (err) { res.status(500).send('Error al expulsar'); }
 };

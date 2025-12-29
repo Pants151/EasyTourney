@@ -22,6 +22,13 @@ router.put('/match/:id', auth, tournamentController.updateMatchResult);
 router.post('/advance/:id', auth, tournamentController.advanceTournament);
 router.put('/:id', auth, tournamentController.updateTournament);
 router.delete('/:id', auth, tournamentController.deleteTournament);
+router.post('/team/:id', auth, tournamentController.createTeam); // Crear equipo
+router.put('/team/join/:teamId', auth, tournamentController.joinTeam); // Solicitar unirse
+router.put('/team/respond/:teamId', auth, tournamentController.respondToTeamRequest); // Aceptar/Rechazar miembro
+router.put('/leave/:id', auth, tournamentController.leaveTournament); // Abandonar torneo
+router.delete('/:tournamentId/expel/:userId', auth, tournamentController.expelParticipant); // Expulsar participante (Organizador)
+router.delete('/:id/leave', auth, tournamentController.handleExitTournament);
+router.delete('/:id/expel/:userId', auth, tournamentController.handleExitTournament); // Misma lógica
 
 
 module.exports = router;

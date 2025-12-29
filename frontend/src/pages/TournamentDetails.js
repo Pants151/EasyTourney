@@ -339,14 +339,22 @@ const handleAdvanceRound = async () => {
                         {/* UNIRSE A EQUIPO EXISTENTE */}
                         <label className="form-label-custom">Equipos Disponibles ({tournament.tamanoEquipoMax} máx)</label>
                         <div className="teams-list-scroll mb-4">
-                            {tournament.equipos?.length > 0 ? tournament.equipos.map(team => (
-                                <div key={team._id} className="d-flex justify-content-between align-items-center bg-dark p-2 mb-2 rounded">
-                                    <span className="text-white small">{team.nombre} ({team.miembros?.filter(m => m.estado === 'Aceptado').length || 1}/{tournament.tamanoEquipoMax})</span>
-                                    <button className="btn btn-outline-warning btn-sm" style={{fontSize: '0.7rem'}} onClick={() => handleJoinTeam(team._id)}>
-                                        SOLICITAR
-                                    </button>
+                            {tournament.equipos?.map(team => (
+                                <div key={team._id} className="bg-dark p-3 mb-3 rounded border border-secondary shadow-sm">
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 className="text-white fw-bold m-0">{team.nombre}</h6>
+                                        <button className="btn btn-accent btn-sm" onClick={() => handleJoinTeam(team._id)}>UNIRSE</button>
+                                    </div>
+                                    {/* Lista de miembros actuales */}
+                                    <div className="d-flex flex-wrap gap-2">
+                                        {team.miembros.map(m => (
+                                            <span key={m.usuario._id} className={`badge ${m.estado === 'Aceptado' ? 'bg-secondary' : 'bg-dark border border-warning text-warning'}`}>
+                                                {m.usuario.username} {m.estado === 'Pendiente' && '(?)'}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
-                            )) : <p className="text-dim small">No hay equipos creados aún.</p>}
+                            ))}
                         </div>
 
                         <button className="btn btn-view-all w-100" onClick={() => setShowTeamModal(false)}>CERRAR</button>

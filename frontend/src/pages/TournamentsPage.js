@@ -42,16 +42,16 @@ const TournamentsPage = () => {
     };
 
     // Función para manejar la inscripción desde la lista
-    const handleQuickJoin = async (e, tournamentId) => {
-        e.stopPropagation(); // Evita que se abra la página de detalles al hacer clic
-        try {
-            await tournamentService.joinTournament(tournamentId); //
-            alert('Inscripción rápida realizada');
-            window.location.reload();
-        } catch (err) {
-            alert(err.response?.data?.msg || 'Error al inscribirse');
-        }
-    };
+    const handleQuickJoin = async (e, t) => {
+    e.stopPropagation();
+    if (t.formato === 'Equipos') {
+        // Redirigir a detalles para que elija equipo
+        navigate(`/tournament/${t._id}?join=true`);
+    } else {
+        // Inscripción directa para 1v1 y BR
+        try { await tournamentService.joinTournament(t._id); window.location.reload(); } catch (err) { alert(err.response.data.msg); }
+    }
+};
 
     const renderSection = (title, status, limitKey) => {
         const sectionTournaments = filtered.filter(t => t.estado === status);
