@@ -95,3 +95,128 @@
 }
 
 .text-dim { color: #aab0c4; }
+
+/* TournamentDetails.css actualizado */
+
+.tournament-mini-nav {
+    display: flex;
+    overflow-x: auto;
+}
+
+.nav-tab-btn {
+    background: none;
+    border: none;
+    color: #aab0c4;
+    font-weight: 700;
+    padding: 10px 5px;
+    position: relative;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+.nav-tab-btn:hover {
+    color: #ffffff;
+}
+
+.nav-tab-btn.active {
+    color: #FF7300;
+}
+
+.nav-tab-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #FF7300;
+    box-shadow: 0 0 10px rgba(255, 115, 0, 0.5);
+}
+
+/* Tarjetas de Participantes */
+.participant-card {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s;
+}
+
+.participant-card:hover {
+    transform: translateY(-5px);
+    border-color: #FF7300;
+}
+
+.avatar-placeholder {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 115, 0, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilo para las reglas */
+.reglas-text {
+    line-height: 1.6;
+    color: #d1d4dc;
+}
+
+.bg-dark-secondary {
+    background-color: #111521 !important;
+}
+
+/* Asegurar scroll suave en móviles para el nav */
+.tournament-mini-nav::-webkit-scrollbar {
+    height: 0px;
+}
+
+/* Estructura de Árbol para Brackets */
+.brackets-tree {
+    display: flex;
+    flex-direction: row;
+}
+
+.round-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 220px;
+    margin-right: 40px;
+}
+
+.match-item {
+    position: relative;
+    padding: 10px;
+    background: #111521;
+    border: 1px solid #FF7300;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+/* Conectores visuales */
+.match-item::after {
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    width: 40px;
+    height: 2px;
+    background: #FF7300;
+}
+
+.round-column:last-child .match-item::after { display: none; }
+
+.player-slot {
+    padding: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.player-slot:hover {
+    background: rgba(255, 115, 0, 0.2);
+}
+
+.is-winner {
+    background: rgba(40, 167, 69, 0.2) !important;
+    border: 1px solid #28a745;
+}

@@ -8,7 +8,15 @@ const tournamentSchema = new mongoose.Schema({
         required: true
     },
     plataformas: [String],
-    modalidad: { type: String, enum: ['1v1', 'Equipos'], default: '1v1' },
+    limiteParticipantes: { type: Number, default: 16 },
+    formato: { 
+        type: String, 
+        enum: ['1v1', 'Equipos', 'Battle Royale'], 
+        default: '1v1' 
+    },
+    tamanoEquipoMax: { type: Number, min: 1, max: 6, default: 1 },
+    // Para Equipos, guardaremos una referencia a una nueva colección de Teams
+    equipos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }],
     ubicacion: { type: String, default: 'Online' },
     fechaInicio: { type: Date, required: true },
     estado: { 

@@ -9,6 +9,7 @@ const TournamentDetails = () => {
     const { user } = useContext(AuthContext);
     const [tournament, setTournament] = useState(null);
     const [matches, setMatches] = useState([]);
+    const [activeTab, setActiveTab] = useState('fases'); // Estado para el mini-nav
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -24,58 +25,30 @@ const TournamentDetails = () => {
         fetchAll();
     }, [id]);
 
-    const handlePublish = async () => {
-        try {
-            await tournamentService.publishTournament(id);
-            alert('Torneo publicado. Ahora los usuarios pueden inscribirse.');
-            window.location.reload();
-        } catch (err) { alert('Error al publicar'); }
-    };
-
-    const handleGenerateBrackets = async () => {
-        try {
-            await tournamentService.generateBrackets(id);
-            alert('Torneo iniciado y enfrentamientos generados.');
-            window.location.reload();
-        } catch (err) { alert(err.response?.data?.msg || 'Error al generar brackets'); }
-    };
-
-    const handleAdvanceRound = async () => {
-        try {
-            const res = await tournamentService.advanceTournament(id);
-            alert(res.data.msg);
-            window.location.reload();
-        } catch (err) { alert(err.response?.data?.msg || 'Error al avanzar'); }
-    };
-
-    const handleReportMatch = async (matchId, player1, player2) => {
-        const winnerUsername = prompt(`¿Quién ganó? Escribe el nombre de usuario exacto (${player1?.username} o ${player2?.username}):`);
-        if (!winnerUsername) return;
-
-        let winnerId = null;
-        if (winnerUsername === player1?.username) winnerId = player1._id;
-        else if (winnerUsername === player2?.username) winnerId = player2._id;
-        else {
-            alert("Usuario no coincide con ninguno de los participantes.");
-            return;
-        }
-
-        const score = prompt("Ingresa el resultado (ej: 2-1):", "1-0");
-
-        try {
-            await tournamentService.updateMatchResult(matchId, { ganadorId: winnerId, resultado: score });
-            alert("Resultado registrado");
-            window.location.reload();
-        } catch (err) {
-            alert("Error al registrar resultado");
-        }
-    };
-
     if (!tournament) return <div className="text-center py-5 text-white">Cargando...</div>;
 
-    const isOrganizer = user && tournament.organizador && user.id === tournament.organizador._id;
+    const isOrganizer = user && tournament.organizador && (user.id === tournament.organizador._id || user.id === tournament.organizador);
 
-    // Agrupamos los enfrentamientos por ronda para la vista de árbol
+    // Ejemplo de reporte visual de ganador
+    const handleSetWinner = async (matchId, winnerId) => {
+        if (!isOrganizer) return;
+        try {
+            await tournamentService.reportWinner(matchId, { ganador: winnerId });
+            window.location.reload();
+        } catch (err) { alert("Error al reportar ganador"); }
+    };
+
+    const handleSetWinnerBR = async (winnerId) => {
+        if (!isOrganizer) return;
+        if (window.confirm('¿Confirmar a este usuario como ganador?')) {
+            try {
+                await tournamentService.updateTournament(id, { ganador: winnerId, estado: 'Finalizado' });
+                window.location.reload();
+            } catch (err) { alert("Error al reportar ganador"); }
+        }
+    };
+
+    // Agrupamos enfrentamientos por rondas para "FASES"
     const rounds = {};
     matches.forEach(m => {
         if (!rounds[m.ronda]) rounds[m.ronda] = [];
@@ -84,7 +57,6 @@ const TournamentDetails = () => {
 
     return (
         <div className="details-page-wrapper mt-navbar">
-            {/* --- HERO SECTION --- */}
             <header className="tournament-hero" style={{ backgroundImage: `url(${tournament.juego?.header})` }}>
                 <div className="hero-overlay-details"></div>
                 <div className="container hero-info-content">
@@ -97,89 +69,122 @@ const TournamentDetails = () => {
                             <h1 className="display-4 fw-bolder text-white text-uppercase">{tournament.nombre}</h1>
                         </div>
                     </div>
-                    
-                    {/* BOTONES DE ACCIÓN PARA EL ORGANIZADOR */}
-                    {isOrganizer && (
-                        <div className="d-flex gap-2 mt-3">
-                            {tournament.estado === 'Borrador' && (
-                                <button className="btn btn-accent px-4" onClick={handlePublish}>PUBLICAR TORNEO</button>
-                            )}
-                            {tournament.estado === 'Abierto' && tournament.participantes.length >= 2 && (
-                                <button className="btn btn-accent px-4" onClick={handleGenerateBrackets}>INICIAR Y GENERAR BRACKETS</button>
-                            )}
-                            {tournament.estado === 'En curso' && (
-                                <button className="btn btn-outline-warning px-4" onClick={handleAdvanceRound}>AVANZAR RONDA / FINALIZAR</button>
-                            )}
-                        </div>
-                    )}
                 </div>
             </header>
 
             <div className="container py-5">
                 <div className="row">
-                    {/* INFO LATERAL */}
+                    {/* INFO LATERAL (Se queda fija aquí) */}
                     <div className="col-lg-3">
-                        <div className="info-card-custom mb-4">
-                            <h5 className="text-accent fw-bold text-uppercase mb-3">Información</h5>
-                            {tournament.estado === 'Finalizado' && tournament.ganador && (
-                                <div className="alert alert-success p-2 text-center mb-3">
-                                    <small className="d-block text-uppercase fw-bold">Campeón 🏆</small>
-                                    <strong>{tournament.ganador.username}</strong>
-                                </div>
-                            )}
+                        <div className="info-card-custom mb-4 shadow-sm">
+                            <h5 className="text-accent fw-bold text-uppercase mb-3">Resumen</h5>
                             <ul className="list-unstyled text-white small">
-                                <li className="mb-2"><strong>Plataformas:</strong> {tournament.plataformas?.join(', ')}</li>
-                                <li className="mb-2"><strong>Inscritos:</strong> {tournament.participantes?.length}</li>
-                                <li className="mb-2"><strong>Fecha:</strong> {new Date(tournament.fechaInicio).toLocaleDateString()}</li>
+                                <li className="mb-2"><i className="bi bi-controller text-accent me-2"></i> {tournament.juego?.nombre}</li>
+                                <li className="mb-2"><i className="bi bi-calendar-event text-accent me-2"></i> {new Date(tournament.fechaInicio).toLocaleDateString()}</li>
+                                <li className="mb-2"><i className="bi bi-people text-accent me-2"></i> {tournament.participantes?.length} Inscritos</li>
+                                <li className="mb-2"><i className="bi bi-shield-check text-accent me-2"></i> {tournament.formato || tournament.modalidad}</li>
                             </ul>
-                            
-                            {/* Botón de inscripción para usuarios */}
-                            {!isOrganizer && tournament.estado === 'Abierto' && (
-                                <button className="btn btn-accent w-100 mt-3 fw-bold" onClick={async () => {
-                                    try {
-                                        await tournamentService.joinTournament(id);
-                                        alert('¡Inscripción exitosa!');
-                                        window.location.reload();
-                                    } catch (err) { alert(err.response?.data?.msg || 'Error al inscribirse'); }
-                                }}>
-                                    INSCRIBIRSE AHORA
-                                </button>
-                            )}
                         </div>
                     </div>
 
-                    {/* VISTA DE BRACKETS POR RONDAS */}
+                    {/* CONTENIDO DINÁMICO CON MINI-NAV */}
                     <div className="col-lg-9">
-                        <h3 className="text-white fw-bold text-uppercase mb-4">Cuadro del Torneo</h3>
-                        {Object.keys(rounds).length > 0 ? (
-                            <div className="brackets-container d-flex gap-4 overflow-auto pb-4">
-                                {Object.keys(rounds).sort().map(rondaNum => (
-                                    <div key={rondaNum} className="round-column">
-                                        <h6 className="text-center text-accent text-uppercase mb-3">Ronda {rondaNum}</h6>
-                                        {rounds[rondaNum].map(m => (
-                                            <div key={m._id} className="match-card-tree mb-3 p-2 text-white">
-                                                <div className={`p-2 rounded ${m.ganador?._id === m.jugador1?._id ? 'bg-winner' : 'bg-dark'}`}>
-                                                    <small>{m.jugador1?.username || 'TBD'}</small>
-                                                </div>
-                                                <div className="text-center small py-1 text-dim">VS</div>
-                                                <div className={`p-2 rounded ${m.ganador?._id === m.jugador2?._id ? 'bg-winner' : 'bg-dark'}`}>
-                                                    <small>{m.jugador2?.username || 'BYE'}</small>
-                                                </div>
-                                                {/* El organizador puede reportar el resultado haciendo clic aquí */}
-                                                {isOrganizer && tournament.estado === 'En curso' && !m.ganador && (
-                                                    <button className="btn btn-link btn-sm text-accent w-100 p-0 mt-1" 
-                                                        onClick={() => handleReportMatch(m._id, m.jugador1, m.jugador2)}>Reportar</button>
-                                                )}
+                        <div className="tournament-mini-nav d-flex gap-4 mb-4 border-bottom border-secondary pb-2">
+                            {['fases', 'información', 'participantes', 'streams'].map(tab => (
+                                <button 
+                                    key={tab}
+                                    className={`nav-tab-btn ${activeTab === tab ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab)}
+                                >
+                                    {tab.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="tab-content-wrapper">
+                            {/* VISTA FASES (Brackets) */}
+                            {activeTab === 'fases' && (
+                                <div className="fases-content">
+                                    {tournament.formato === 'Battle Royale' ? (
+                                        <div className="br-standings text-white bg-dark-secondary p-4 rounded">
+                                            <h5 className="mb-3 text-accent">Reportar Ganador de Ronda</h5>
+                                            <div className="d-flex flex-wrap">
+                                                {tournament.participantes.map(p => (
+                                                    <button key={p._id} className="btn btn-outline-light m-2" onClick={() => handleSetWinnerBR(p._id)}>
+                                                        {p.username} GANA RONDA
+                                                    </button>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-5 bg-dark-secondary rounded">
-                                <p className="text-dim m-0">Esperando el inicio del torneo para mostrar los brackets.</p>
-                            </div>
-                        )}
+                                        </div>
+                                    ) : Object.keys(rounds).length > 0 ? (
+                                        <div className="brackets-container d-flex gap-4 overflow-auto pb-4">
+                                            {Object.keys(rounds).sort().map(rNum => (
+                                                <div key={rNum} className="round-column">
+                                                    <h6 className="text-center text-accent text-uppercase mb-3">Ronda {rNum}</h6>
+                                                    {rounds[rNum].map(m => (
+                                                        <div key={m._id} className="match-card-tree mb-3 p-2 text-white shadow-sm">
+                                                            <div 
+                                                                className={`p-2 rounded ${m.ganador?._id === m.jugador1?._id ? 'bg-winner' : 'bg-dark'} ${isOrganizer ? 'player-slot' : ''}`}
+                                                                onClick={() => isOrganizer && m.jugador1 && handleSetWinner(m._id, m.jugador1._id)}
+                                                            >
+                                                                <small>{m.jugador1?.username || 'TBD'}</small>
+                                                            </div>
+                                                            <div className="text-center small py-1 text-dim">VS</div>
+                                                            <div 
+                                                                className={`p-2 rounded ${m.ganador?._id === m.jugador2?._id ? 'bg-winner' : 'bg-dark'} ${isOrganizer ? 'player-slot' : ''}`}
+                                                                onClick={() => isOrganizer && m.jugador2 && handleSetWinner(m._id, m.jugador2._id)}
+                                                            >
+                                                                <small>{m.jugador2?.username || 'BYE'}</small>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-5 bg-dark-secondary rounded">
+                                            <p className="text-dim m-0">El cuadro se generará cuando inicie el torneo.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* VISTA INFORMACIÓN (Reglamento) */}
+                            {activeTab === 'información' && (
+                                <div className="info-tab-content text-white p-4 bg-dark-secondary rounded shadow-sm">
+                                    <h4 className="text-accent text-uppercase fw-bold mb-3">Reglamento y Detalles</h4>
+                                    <p className="reglas-text" style={{ whiteSpace: 'pre-wrap' }}>
+                                        {tournament.reglas || "El organizador no ha proporcionado reglas específicas aún."}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* VISTA PARTICIPANTES (Tarjetas) */}
+                            {activeTab === 'participantes' && (
+                                <div className="row">
+                                    {tournament.participantes.map(p => (
+                                        <div key={p._id} className="col-md-4 mb-3">
+                                            <div className="participant-card p-3 bg-dark-secondary rounded text-center shadow-sm">
+                                                <div className="avatar-placeholder mb-2 mx-auto">
+                                                    <i className="bi bi-person-circle fs-2 text-accent"></i>
+                                                </div>
+                                                <h6 className="text-white fw-bold mb-0">{p.username}</h6>
+                                                <small className="text-dim text-uppercase" style={{fontSize: '0.7rem'}}>Jugador</small>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* VISTA STREAMS/VÍDEOS */}
+                            {activeTab === 'streams' && (
+                                <div className="streams-tab-content text-center py-5 bg-dark-secondary rounded">
+                                    <i className="bi bi-broadcast fs-1 text-accent mb-3"></i>
+                                    <h5 className="text-white">Sin transmisiones activas</h5>
+                                    <p className="text-dim">Próximamente podrás ver aquí los directos de Twitch y vídeos de YouTube asociados.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
