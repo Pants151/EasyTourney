@@ -227,3 +227,24 @@
 .cursor-pointer {
     cursor: pointer;
 }
+
+/* Modal de Equipos */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content-team {
+    width: 90%;
+    max-width: 500px;
+}
+
+.teams-list-scroll {
+    max-height: 250px;
+    overflow-y: auto;
+}

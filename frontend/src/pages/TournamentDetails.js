@@ -10,6 +10,8 @@ const TournamentDetails = () => {
     const [tournament, setTournament] = useState(null);
     const [matches, setMatches] = useState([]);
     const [activeTab, setActiveTab] = useState('fases'); // Estado para el mini-nav
+    const [showTeamModal, setShowTeamModal] = useState(false);
+    const [newTeamName, setNewTeamName] = useState("");
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -18,6 +20,15 @@ const TournamentDetails = () => {
                     tournamentService.getTournamentById(id),
                     tournamentService.getTournamentMatches(id)
                 ]);
+
+                // Enriquecer participantes con nombre de equipo si aplica
+                if (tData.formato === 'Equipos' && tData.equipos) {
+                    tData.participantes = tData.participantes.map(p => {
+                        const team = tData.equipos.find(t => t.miembros.some(m => (m.usuario._id || m.usuario) === p._id));
+                        return { ...p, equipoNombre: team ? team.nombre : null };
+                    });
+                }
+
                 setTournament(tData);
                 setMatches(mData);
             } catch (err) { console.error(err); }
@@ -87,6 +98,42 @@ const handleAdvanceRound = async () => {
         }
     };
 
+    const handleInscribirse = () => {
+        if (tournament.formato === 'Equipos') {
+            setShowTeamModal(true); // Abrir ventana de equipos
+        } else {
+            handleJoin(); // Inscripción directa 1v1 o BR
+        }
+    };
+
+    const handleCreateTeam = async () => {
+        try {
+            // Llamada al servicio para crear equipo
+            await tournamentService.createTeam(id, { nombre: newTeamName });
+            alert("Equipo creado. Eres el capitán.");
+            window.location.reload();
+        } catch (err) { alert("Error al crear equipo"); }
+    };
+
+    const handleJoinTeam = async (teamId) => {
+        try {
+            await tournamentService.joinTeam(teamId);
+            alert("Solicitud enviada al equipo.");
+            window.location.reload();
+        } catch (err) { alert(err.response?.data?.msg || "Error al unirse al equipo"); }
+    };
+
+    const handleExpulsar = async (userId) => {
+        if (!window.confirm("¿Estás seguro de expulsar a este participante?")) return;
+        try {
+            await tournamentService.kickParticipant(id, userId);
+            alert("Participante expulsado.");
+            window.location.reload();
+        } catch (err) {
+            alert(err.response?.data?.msg || "Error al expulsar");
+        }
+    };
+
     // Lógica para verificar si el usuario ya está inscrito
     const isJoined = tournament.participantes.some(p => (p._id || p) === (user?.id || user?._id));
     // Solo mostramos el botón si es participante, el torneo está abierto y no está unido
@@ -152,7 +199,7 @@ const handleAdvanceRound = async () => {
 
                             {/* BOTÓN DE INSCRIPCIÓN */}
                             {showJoinButton && (
-                                <button className="btn btn-accent w-100 mt-3 fw-bold" onClick={handleJoin}>
+                                <button className="btn btn-accent w-100 mt-3 fw-bold" onClick={handleInscribirse}>
                                     INSCRIBIRSE AHORA
                                 </button>
                             )}
@@ -241,12 +288,18 @@ const handleAdvanceRound = async () => {
                                 <div className="row">
                                     {tournament.participantes.map(p => (
                                         <div key={p._id} className="col-md-4 mb-3">
-                                            <div className="participant-card p-3 bg-dark-secondary rounded text-center shadow-sm">
-                                                <div className="avatar-placeholder mb-2 mx-auto">
-                                                    <i className="bi bi-person-circle fs-2 text-accent"></i>
-                                                </div>
-                                                <h6 className="text-white fw-bold mb-0">{p.username}</h6>
-                                                <small className="text-dim text-uppercase" style={{fontSize: '0.7rem'}}>Jugador</small>
+                                            <div className="participant-card p-3 bg-dark-secondary rounded text-center">
+                                                <h6 className="text-white fw-bold mb-1">{p.username}</h6>
+                                                {tournament.formato === 'Equipos' && (
+                                                    <div className="text-accent small text-uppercase">
+                                                        Equipo: {p.equipoNombre || 'Sin equipo'}
+                                                    </div>
+                                                )}
+                                                {/* Botón de expulsar para el organizador si el torneo no ha empezado */}
+                                                {isOrganizer && tournament.estado === 'Abierto' && (
+                                                    <button className="btn btn-link text-danger btn-sm p-0 mt-2" 
+                                                        onClick={() => handleExpulsar(p._id)}>EXPULSAR</button>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -265,6 +318,41 @@ const handleAdvanceRound = async () => {
                     </div>
                 </div>
             </div>
+
+            {/* MODAL DE EQUIPOS */}
+            {showTeamModal && (
+                <div className="custom-modal-overlay">
+                    <div className="form-container-custom p-4 shadow-lg modal-content-team">
+                        <h3 className="text-accent text-uppercase fw-bold mb-4">Inscripción por Equipos</h3>
+                        
+                        {/* CREAR EQUIPO */}
+                        <div className="mb-4 pb-4 border-bottom border-secondary">
+                            <label className="form-label-custom">Crear Nuevo Equipo</label>
+                            <div className="d-flex gap-2">
+                                <input type="text" className="form-control form-control-custom" 
+                                    placeholder="Nombre del equipo..." value={newTeamName}
+                                    onChange={(e) => setNewTeamName(e.target.value)} />
+                                <button className="btn btn-accent px-4" onClick={handleCreateTeam}>CREAR</button>
+                            </div>
+                        </div>
+
+                        {/* UNIRSE A EQUIPO EXISTENTE */}
+                        <label className="form-label-custom">Equipos Disponibles ({tournament.tamanoEquipoMax} máx)</label>
+                        <div className="teams-list-scroll mb-4">
+                            {tournament.equipos?.length > 0 ? tournament.equipos.map(team => (
+                                <div key={team._id} className="d-flex justify-content-between align-items-center bg-dark p-2 mb-2 rounded">
+                                    <span className="text-white small">{team.nombre} ({team.miembros?.filter(m => m.estado === 'Aceptado').length || 1}/{tournament.tamanoEquipoMax})</span>
+                                    <button className="btn btn-outline-warning btn-sm" style={{fontSize: '0.7rem'}} onClick={() => handleJoinTeam(team._id)}>
+                                        SOLICITAR
+                                    </button>
+                                </div>
+                            )) : <p className="text-dim small">No hay equipos creados aún.</p>}
+                        </div>
+
+                        <button className="btn btn-view-all w-100" onClick={() => setShowTeamModal(false)}>CERRAR</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,5 +1,6 @@
 const Tournament = require('../models/Tournament');
 const Match = require('../models/Match');
+const Team = require('../models/Team');
 
 // Crear un nuevo torneo
 exports.createTournament = async (req, res) => {
@@ -75,7 +76,8 @@ exports.getTournamentById = async (req, res) => {
             .populate('organizador', 'username')
             .populate('participantes', 'username')
             .populate('ganador', 'username')
-            .populate('juego'); // <--- AÑADIR ESTO para tener el banner y logo
+            .populate('juego')
+            .populate('equipos'); 
         
         if (!tournament) {
             return res.status(404).json({ msg: 'Torneo no encontrado' });
@@ -91,25 +93,42 @@ exports.getTournamentById = async (req, res) => {
 // Generar Brackets (Solo para modalidad 1v1 inicialmente)
 exports.generateBrackets = async (req, res) => {
     try {
-        const tournament = await Tournament.findById(req.params.id).populate('participantes');
+        const tournament = await Tournament.findById(req.params.id)
+            .populate('participantes')
+            .populate('equipos');
         
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
-        if (tournament.participantes.length < 2) {
-            return res.status(400).json({ msg: 'Se necesitan al menos 2 participantes' });
+
+        let entities = [];
+        if (tournament.formato === 'Equipos') {
+            // Solo equipos que tengan al menos el capitán aceptado
+            entities = tournament.equipos; 
+        } else {
+            entities = tournament.participantes;
         }
 
-        // 1. Mezclar participantes aleatoriamente
-        const players = [...tournament.participantes].sort(() => 0.5 - Math.random());
+        if (entities.length < 2) return res.status(400).json({ msg: 'Faltan participantes o equipos' });
+
+        // Mezclar entidades
+        entities.sort(() => 0.5 - Math.random());
 
         // 2. Crear las partidas de la Ronda 1
         const matches = [];
-        for (let i = 0; i < players.length; i += 2) {
-            const match = new Match({
+        for (let i = 0; i < entities.length; i += 2) {
+            const matchData = {
                 torneo: tournament._id,
-                jugador1: players[i]._id,
-                jugador2: players[i+1] ? players[i+1]._id : null, // Por si es impar (bye)
                 ronda: 1
-            });
+            };
+            
+            if (tournament.formato === 'Equipos') {
+                matchData.equipo1 = entities[i]._id;
+                matchData.equipo2 = entities[i+1] ? entities[i+1]._id : null;
+            } else {
+                matchData.jugador1 = entities[i]._id;
+                matchData.jugador2 = entities[i+1] ? entities[i+1]._id : null;
+            }
+
+            const match = new Match(matchData);
             await match.save();
             matches.push(match);
         }
