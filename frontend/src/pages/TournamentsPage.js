@@ -41,6 +41,18 @@ const TournamentsPage = () => {
         return "TORNEOS";
     };
 
+    // Función para manejar la inscripción desde la lista
+    const handleQuickJoin = async (e, tournamentId) => {
+        e.stopPropagation(); // Evita que se abra la página de detalles al hacer clic
+        try {
+            await tournamentService.joinTournament(tournamentId); //
+            alert('Inscripción rápida realizada');
+            window.location.reload();
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al inscribirse');
+        }
+    };
+
     const renderSection = (title, status, limitKey) => {
         const sectionTournaments = filtered.filter(t => t.estado === status);
         const displayed = sectionTournaments.slice(0, limits[limitKey]);
@@ -67,6 +79,16 @@ const TournamentsPage = () => {
                                         <span><i className="bi bi-people me-1"></i> {t.participantes?.length}</span>
                                         <span>{new Date(t.fechaInicio).toLocaleDateString()}</span>
                                     </div>
+
+                                    {/* BOTÓN DE INSCRIPCIÓN RÁPIDA */}
+                                    {user?.rol === 'participante' && t.estado === 'Abierto' && !t.participantes.includes(user.id) && (
+                                        <button 
+                                            className="btn btn-accent btn-sm w-100 mt-3 fw-bold"
+                                            onClick={(e) => handleQuickJoin(e, t._id)}
+                                        >
+                                            INSCRIBIRSE
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

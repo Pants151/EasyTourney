@@ -48,6 +48,45 @@ const TournamentDetails = () => {
         }
     };
 
+    const handlePublish = async () => {
+    try {
+        await tournamentService.publishTournament(id);
+        alert('Torneo publicado correctamente.');
+        window.location.reload();
+    } catch (err) { alert('Error al publicar el torneo'); }
+};
+
+const handleGenerateBrackets = async () => {
+    try {
+        await tournamentService.generateBrackets(id);
+        alert('Torneo iniciado y brackets generados.');
+        window.location.reload();
+    } catch (err) { alert(err.response?.data?.msg || 'Error al generar brackets'); }
+};
+
+const handleAdvanceRound = async () => {
+    try {
+        const res = await tournamentService.advanceTournament(id);
+        alert(res.data.msg);
+        window.location.reload();
+    } catch (err) { alert(err.response?.data?.msg || 'Error al avanzar de ronda'); }
+};
+
+    const handleJoin = async () => {
+        try {
+            await tournamentService.joinTournament(id); //
+            alert('¡Inscripción realizada con éxito!');
+            window.location.reload();
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al inscribirse');
+        }
+    };
+
+    // Lógica para verificar si el usuario ya está inscrito
+    const isJoined = tournament.participantes.some(p => (p._id || p) === (user?.id || user?._id));
+    // Solo mostramos el botón si es participante, el torneo está abierto y no está unido
+    const showJoinButton = user?.rol === 'participante' && tournament.estado === 'Abierto' && !isJoined;
+
     // Agrupamos enfrentamientos por rondas para "FASES"
     const rounds = {};
     matches.forEach(m => {
@@ -69,6 +108,27 @@ const TournamentDetails = () => {
                             <h1 className="display-4 fw-bolder text-white text-uppercase">{tournament.nombre}</h1>
                         </div>
                     </div>
+
+                    {/* BOTONES PARA EL ORGANIZADOR */}
+                    {isOrganizer && (
+                        <div className="d-flex gap-2 mt-3">
+                            {tournament.estado === 'Borrador' && (
+                                <button className="btn btn-accent px-4 fw-bold" onClick={handlePublish}>
+                                    PUBLICAR TORNEO
+                                </button>
+                            )}
+                            {tournament.estado === 'Abierto' && tournament.participantes?.length >= 2 && (
+                                <button className="btn btn-accent px-4 fw-bold" onClick={handleGenerateBrackets}>
+                                    INICIAR Y GENERAR BRACKETS
+                                </button>
+                            )}
+                            {tournament.estado === 'En curso' && (
+                                <button className="btn btn-outline-warning px-4 fw-bold" onClick={handleAdvanceRound}>
+                                    AVANZAR RONDA / FINALIZAR
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -84,6 +144,18 @@ const TournamentDetails = () => {
                                 <li className="mb-2"><i className="bi bi-people text-accent me-2"></i> {tournament.participantes?.length} Inscritos</li>
                                 <li className="mb-2"><i className="bi bi-shield-check text-accent me-2"></i> {tournament.formato || tournament.modalidad}</li>
                             </ul>
+
+                            {/* BOTÓN DE INSCRIPCIÓN */}
+                            {showJoinButton && (
+                                <button className="btn btn-accent w-100 mt-3 fw-bold" onClick={handleJoin}>
+                                    INSCRIBIRSE AHORA
+                                </button>
+                            )}
+                            {isJoined && user?.rol === 'participante' && (
+                                <div className="alert alert-success mt-3 py-2 text-center small fw-bold">
+                                    <i className="bi bi-check-circle me-2"></i>ESTÁS INSCRITO
+                                </div>
+                            )}
                         </div>
                     </div>
 
