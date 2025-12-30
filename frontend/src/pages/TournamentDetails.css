@@ -170,63 +170,134 @@
     height: 0px;
 }
 
-/* Estructura de Árbol para Brackets */
+/* TournamentDetails.css - Nueva estructura de árbol */
+
+.brackets-container-wrapper {
+    overflow-x: auto;
+    padding: 40px 0;
+}
+
 .brackets-tree {
     display: flex;
-    flex-direction: row;
-    padding: 20px 0;
+    min-width: max-content;
 }
 
 .round-column {
     display: flex;
     flex-direction: column;
-    justify-content: space-around; /* Esto distribuye los matches para crear el efecto de árbol */
-    width: 240px;
+    width: 220px;
     margin-right: 50px;
 }
 
-.match-item {
+.round-title {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    color: #FF7300;
+}
+
+.matches-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; /* Clave para el efecto árbol */
+    flex-grow: 1;
+}
+
+.match-wrapper {
     position: relative;
-    padding: 12px;
+    display: flex;
+    align-items: center;
+    padding: 20px 0;
+    flex-grow: 1;
+}
+
+.match-item {
+    width: 100%;
     background: #111521;
-    border: 1px solid rgba(255, 115, 0, 0.3);
+    border: 1px solid rgba(255, 115, 0, 0.2);
     border-radius: 6px;
-    margin: 15px 0;
+    z-index: 2;
+    overflow: hidden;
 }
-
-/* Conector horizontal que sale del match */
-.match-item::after {
-    content: "";
-    position: absolute;
-    right: -50px;
-    top: 50%;
-    width: 50px;
-    height: 2px;
-    background: #FF7300;
-    z-index: 1;
-}
-
-.round-column:last-child .match-item::after { display: none; }
 
 .player-slot {
     padding: 8px 12px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
 }
 
-.player-slot:hover {
-    background: rgba(255, 115, 0, 0.2);
+.player-name-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
 }
 
+/* ESTILO PARA EL VS */
+.bracket-vs {
+    font-size: 0.55rem;
+    font-weight: 900;
+    color: #aab0c4;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 0;
+    letter-spacing: 1px;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* LÍNEAS CONECTORAS (EL ÁRBOL) */
+.match-wrapper::after {
+    content: "";
+    position: absolute;
+    right: -50px;
+    width: 50px;
+    height: 2px;
+    background: rgba(255, 115, 0, 0.3);
+    top: 50%;
+}
+
+/* Crea el "codo" vertical */
+.match-wrapper:nth-child(odd)::before {
+    content: "";
+    position: absolute;
+    right: -50px;
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 115, 0, 0.3);
+    top: 50%;
+}
+
+.match-wrapper:nth-child(even)::before {
+    content: "";
+    position: absolute;
+    right: -50px;
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 115, 0, 0.3);
+    bottom: 50%;
+}
+
+/* Ocultar líneas en la Gran Final */
+.round-column:last-child .match-wrapper::after,
+.round-column:last-child .match-wrapper::before {
+    display: none;
+}
+
+/* Ganadores */
 .is-winner {
-    background: rgba(255, 115, 0, 0.2) !important;
-    border: 1px solid #FF7300 !important;
+    background: rgba(255, 115, 0, 0.25) !important;
     color: #fff;
 }
 
-.cursor-pointer {
-    cursor: pointer;
-}
+.no-interaction { cursor: default; }
+.cursor-pointer { cursor: pointer; transition: background 0.2s; }
+.cursor-pointer:hover { background: rgba(255, 255, 255, 0.05) !important; }
 
 /* Modal de Equipos */
 .custom-modal-overlay {
