@@ -86,10 +86,21 @@ const CreateTournament = () => {
                                 )}
 
                                 <div className="col-md-6 mb-4">
-                                    <label className="form-label-custom">Límite de Participantes</label>
-                                    <input type="number" className="form-control form-control-custom" 
-                                        min="2" value={formData.limiteParticipantes}
-                                        onChange={e => setFormData({...formData, limiteParticipantes: e.target.value})} />
+                                    <label className="form-label-custom">
+                                        {formData.formato === 'Equipos' ? 'Límite de Equipos' : 'Límite de Participantes'}
+                                    </label>
+                                    <select 
+                                        name="limiteParticipantes" 
+                                        className="form-select form-select-custom" 
+                                        value={formData.limiteParticipantes}
+                                        onChange={e => setFormData({...formData, limiteParticipantes: e.target.value})}
+                                    >
+                                        {[2, 4, 8, 16, 32, 64].map(num => (
+                                            <option key={num} value={num}>
+                                                {num} {formData.formato === 'Equipos' ? 'Equipos' : 'Participantes'}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div className="col-md-6 mb-4">

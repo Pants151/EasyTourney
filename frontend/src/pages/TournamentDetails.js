@@ -4,6 +4,9 @@ import tournamentService from '../services/tournamentService';
 import { AuthContext } from '../context/AuthContext';
 import './TournamentDetails.css';
 
+// Añadir esta utilidad arriba
+const isPowerOfTwo = (n) => n > 1 && (n & (n - 1)) === 0;
+
 const TournamentDetails = () => {
     const { id } = useParams();
     const { user } = useContext(AuthContext);
@@ -39,6 +42,13 @@ const TournamentDetails = () => {
     if (!tournament) return <div className="text-center py-5 text-white">Cargando...</div>;
 
     const isOrganizer = user && tournament.organizador && (user.id === tournament.organizador._id || user.id === tournament.organizador);
+
+    // Determinamos el conteo según el formato
+    const currentCount = tournament.formato === 'Equipos' 
+        ? tournament.equipos?.length || 0 
+        : tournament.participantes?.length || 0;
+
+    const hasValidPowerOfTwo = isPowerOfTwo(currentCount);
 
     // Ejemplo de reporte visual de ganador
     const handleSetWinner = async (matchId, winnerId) => {
@@ -179,16 +189,26 @@ const handleAdvanceRound = async () => {
 
                     {/* BOTONES PARA EL ORGANIZADOR */}
                     {isOrganizer && (
-                        <div className="d-flex gap-2 mt-3">
+                        <div className="d-flex flex-column gap-2 mt-3">
                             {tournament.estado === 'Borrador' && (
                                 <button className="btn btn-accent px-4 fw-bold" onClick={handlePublish}>
                                     PUBLICAR TORNEO
                                 </button>
                             )}
-                            {tournament.estado === 'Abierto' && tournament.participantes?.length >= 2 && (
-                                <button className="btn btn-accent px-4 fw-bold" onClick={handleGenerateBrackets}>
-                                    INICIAR Y GENERAR BRACKETS
-                                </button>
+                            {tournament.estado === 'Abierto' && (
+                                <>
+                                    {!hasValidPowerOfTwo && currentCount > 0 && (
+                                        <div className="text-warning small fw-bold mb-1">
+                                            <i className="bi bi-exclamation-triangle me-1"></i>
+                                            Se requiere un número par exacto (2, 4, 8, 16...) para iniciar.
+                                        </div>
+                                    )}
+                                    <button className="btn btn-accent px-4 fw-bold" 
+                                        onClick={handleGenerateBrackets}
+                                        disabled={!hasValidPowerOfTwo}>
+                                        INICIAR Y GENERAR BRACKETS
+                                    </button>
+                                </>
                             )}
                             {tournament.estado === 'En curso' && (
                                 <button className="btn btn-outline-warning px-4 fw-bold" onClick={handleAdvanceRound}>
@@ -349,7 +369,9 @@ const handleAdvanceRound = async () => {
                                                                     className={`player-slot rounded ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p2 ? 'cursor-pointer' : 'no-interaction'}`}
                                                                     onClick={() => canSetWinner && p2 && handleSetWinner(m._id, p2._id)}
                                                                 >
-                                                                    <small className="fw-bold">{p2Name || (isTeams ? 'TBD' : 'BYE')}</small>
+                                                                    <small className="fw-bold">
+                                                                        {p2Name || (m.resultado === "BYE" ? "---" : (isTeams ? 'TBD' : 'BYE'))}
+                                                                    </small>
                                                                 </div>
                                                             </div>
                                                         );

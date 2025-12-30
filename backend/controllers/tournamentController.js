@@ -107,10 +107,22 @@ exports.generateBrackets = async (req, res) => {
 
             if (tournament.formato === 'Equipos') {
                 matchData.equipo1 = entities[i]._id;
-                matchData.equipo2 = entities[i + 1] ? entities[i + 1]._id : null;
+                if (entities[i + 1]) {
+                    matchData.equipo2 = entities[i + 1]._id;
+                } else {
+                    matchData.equipo2 = null;
+                    matchData.ganador = entities[i]._id;
+                    matchData.resultado = "BYE";
+                }
             } else {
                 matchData.jugador1 = entities[i]._id;
-                matchData.jugador2 = entities[i + 1] ? entities[i + 1]._id : null;
+                if (entities[i + 1]) {
+                    matchData.jugador2 = entities[i + 1]._id;
+                } else {
+                    matchData.jugador2 = null;
+                    matchData.ganador = entities[i]._id;
+                    matchData.resultado = "BYE";
+                }
             }
             await new Match(matchData).save();
         }
@@ -219,7 +231,6 @@ exports.advanceTournament = async (req, res) => {
         }
 
         const nextRound = currentRound + 1;
-        const nextMatches = [];
         for (let i = 0; i < winners.length; i += 2) {
             const matchData = {
                 torneo: tournament._id,
@@ -227,17 +238,23 @@ exports.advanceTournament = async (req, res) => {
                 ganadorTipo: tournament.formato === 'Equipos' ? 'Team' : 'User'
             };
 
+            const p1 = winners[i];
+            const p2 = winners[i + 1];
+
             if (tournament.formato === 'Equipos') {
-                matchData.equipo1 = winners[i];
-                matchData.equipo2 = winners[i + 1] || null;
+                matchData.equipo1 = p1;
+                matchData.equipo2 = p2 || null;
             } else {
-                matchData.jugador1 = winners[i];
-                matchData.jugador2 = winners[i + 1] || null;
+                matchData.jugador1 = p1;
+                matchData.jugador2 = p2 || null;
             }
 
-            const match = new Match(matchData);
-            await match.save();
-            nextMatches.push(match);
+            if (!p2) {
+                matchData.ganador = p1;
+                matchData.resultado = "BYE";
+            }
+
+            await new Match(matchData).save();
         }
         res.json({ msg: `Ronda ${nextRound} generada` });
     } catch (err) { res.status(500).send('Error al avanzar ronda'); }
