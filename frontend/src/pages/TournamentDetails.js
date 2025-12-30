@@ -56,12 +56,10 @@ const TournamentDetails = () => {
 
     const handleSetWinnerBR = async (winnerId) => {
         if (!isOrganizer) return;
-        if (window.confirm('¿Confirmar a este usuario como ganador?')) {
-            try {
-                await tournamentService.updateTournament(id, { ganador: winnerId, estado: 'Finalizado' });
-                window.location.reload();
-            } catch (err) { alert("Error al reportar ganador"); }
-        }
+        try {
+            await tournamentService.reportBRRoundWinner(id, { winnerId });
+            window.location.reload();
+        } catch (err) { alert("Error al reportar ganador de ronda"); }
     };
 
     const handlePublish = async () => {
@@ -266,15 +264,61 @@ const handleAdvanceRound = async () => {
                             {activeTab === 'fases' && (
                                 <div className="fases-content">
                                     {tournament.formato === 'Battle Royale' ? (
-                                        <div className="br-standings text-white bg-dark-secondary p-4 rounded">
-                                            <h5 className="mb-3 text-accent">Reportar Ganador de Ronda</h5>
-                                            <div className="d-flex flex-wrap">
-                                                {tournament.participantes.map(p => (
-                                                    <button key={p._id} className="btn btn-outline-light m-2" onClick={() => handleSetWinnerBR(p._id)}>
-                                                        {p.username} GANA RONDA
-                                                    </button>
-                                                ))}
+                                        <div className="br-phases-container text-white">
+                                            {/* HISTORIAL DE RONDAS */}
+                                            <div className="rounds-history mb-4 p-4 bg-dark-secondary rounded shadow-sm">
+                                                <h5 className="text-accent text-uppercase fw-bold mb-3">Historial de Rondas</h5>
+                                                <div className="d-flex flex-column gap-2">
+                                                    {tournament.ganadoresRondaBR?.length > 0 ? tournament.ganadoresRondaBR.map((g, index) => (
+                                                        <div key={index} className="d-flex justify-content-between border-bottom border-secondary pb-2">
+                                                            <span className="text-dim">Ronda {index + 1}</span>
+                                                            <span className="fw-bold text-white">🏆 {g.username || "Usuario"}</span>
+                                                        </div>
+                                                    )) : <p className="text-dim small">No se han jugado rondas aún.</p>}
+                                                </div>
+                                                <div className="mt-3 text-end">
+                                                    <small className="text-accent fw-bold">Objetivo: {tournament.alMejorDe} victorias</small>
+                                                </div>
                                             </div>
+
+                                            {/* PANEL DE CONTROL (Solo Organizador y torneo en curso) */}
+                                            {isOrganizer && tournament.estado === 'En curso' && (
+                                                <div className="organizer-controls p-4 bg-dark-secondary rounded border border-accent shadow-sm">
+                                                    <h5 className="text-white text-uppercase fw-bold mb-3">Seleccionar Ganador de Ronda</h5>
+                                                    <div className="d-flex flex-wrap gap-2">
+                                                        {tournament.participantes.map(p => {
+                                                            const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
+                                                            return (
+                                                                <button key={p._id} className="btn btn-outline-light d-flex flex-column align-items-center p-3" 
+                                                                    onClick={() => handleSetWinnerBR(p._id)} style={{ minWidth: '120px' }}>
+                                                                    <span className="fw-bold">{p.username}</span>
+                                                                    <span className="badge bg-accent mt-2">{wins} / {tournament.alMejorDe}</span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* VISTA PARA PARTICIPANTES (Contador de victorias) */}
+                                            {(!isOrganizer || tournament.estado === 'Finalizado') && (
+                                                <div className="participant-view p-4 bg-dark-secondary rounded shadow-sm">
+                                                    <h5 className="text-white text-uppercase fw-bold mb-3">Marcador Actual</h5>
+                                                    <div className="row">
+                                                        {tournament.participantes.map(p => {
+                                                            const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
+                                                            return (
+                                                                <div key={p._id} className="col-md-4 mb-2">
+                                                                    <div className="p-2 border border-secondary rounded text-center">
+                                                                        <div className="fw-bold">{p.username}</div>
+                                                                        <div className="text-accent">{wins} victorias</div>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ) : Object.keys(rounds).length > 0 ? (
                                         <div className="brackets-tree overflow-auto pb-4">

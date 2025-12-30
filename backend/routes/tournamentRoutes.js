@@ -27,5 +27,6 @@ router.put('/team/join/:teamId', auth, tournamentController.joinTeam); // Solici
 router.put('/team/respond/:teamId', auth, tournamentController.respondToTeamRequest); // Aceptar/Rechazar miembro
 router.put('/leave/:id', auth, tournamentController.leaveTournament); // Abandonar torneo
 router.delete('/:tournamentId/expel/:userId', auth, tournamentController.expelParticipant); // Expulsar participante (Organizador)
+router.put('/:id/br-round', auth, tournamentController.reportBRRoundWinner); // Reportar ganador de ronda Battle Royale
 
 module.exports = router;

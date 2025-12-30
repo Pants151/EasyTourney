@@ -6,7 +6,7 @@ const Team = require('../models/Team');
 exports.createTournament = async (req, res) => {
     try {
         // Extraemos 'formato' y 'tamanoEquipoMax' en lugar de modalidad
-        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes } = req.body;
+        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes, alMejorDe } = req.body;
 
         const newTournament = new Tournament({
             nombre,
@@ -18,7 +18,8 @@ exports.createTournament = async (req, res) => {
             ubicacion,
             fechaInicio,
             reglas,
-            organizador: req.user.id
+            organizador: req.user.id,
+            alMejorDe: formato === 'Battle Royale' ? (alMejorDe || 1) : 1
         });
 
         const tournament = await newTournament.save();
@@ -75,7 +76,8 @@ exports.getTournamentById = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id)
             .populate('organizador', 'username')
             .populate('participantes', 'username')
-            .populate({ path: 'ganador', options: { strictPopulate: false } }) // Fix error
+            .populate('ganadoresRondaBR', 'username')
+            .populate({ path: 'ganador', options: { strictPopulate: false } })
             .populate('juego')
             .populate({
                 path: 'equipos',
@@ -244,7 +246,7 @@ exports.advanceTournament = async (req, res) => {
 // Actualizar datos de un torneo
 exports.updateTournament = async (req, res) => {
     try {
-        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes } = req.body;
+        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes, alMejorDe } = req.body;
         let tournament = await Tournament.findById(req.params.id);
 
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
@@ -259,6 +261,7 @@ exports.updateTournament = async (req, res) => {
         tournament.ubicacion = ubicacion || tournament.ubicacion;
         tournament.fechaInicio = fechaInicio || tournament.fechaInicio;
         tournament.reglas = reglas || tournament.reglas;
+        tournament.alMejorDe = tournament.formato === 'Battle Royale' ? (alMejorDe || tournament.alMejorDe || 1) : 1;
 
         await tournament.save();
         res.json(tournament);
@@ -457,4 +460,29 @@ exports.respondToTeamRequest = async (req, res) => {
     } catch (err) {
         res.status(500).send('Error al procesar la respuesta del capitán');
     }
+};
+
+// Nueva función para reportar ganador de ronda en BR
+exports.reportBRRoundWinner = async (req, res) => {
+    try {
+        const { winnerId } = req.body;
+        const tournament = await Tournament.findById(req.params.id);
+
+        if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
+
+        tournament.ganadoresRondaBR.push(winnerId);
+
+        // Contar cuántas veces ha ganado este usuario
+        const victorias = tournament.ganadoresRondaBR.filter(id => id.toString() === winnerId).length;
+
+        // Si alcanza el objetivo, el torneo finaliza
+        if (victorias >= tournament.alMejorDe) {
+            tournament.estado = 'Finalizado';
+            tournament.ganador = winnerId;
+            tournament.ganadorTipo = 'User';
+        }
+
+        await tournament.save();
+        res.json(tournament);
+    } catch (err) { res.status(500).send('Error al reportar ronda'); }
 };

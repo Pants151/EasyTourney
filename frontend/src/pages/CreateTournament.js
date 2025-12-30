@@ -13,7 +13,8 @@ const CreateTournament = () => {
         tamanoEquipoMax: 2, 
         limiteParticipantes: 16,
         fechaInicio: '', 
-        reglas: ''
+        reglas: '',
+        alMejorDe: 1
     });
     const navigate = useNavigate();
 
@@ -72,6 +73,15 @@ const CreateTournament = () => {
                                         <input type="number" className="form-control form-control-custom" 
                                             min="1" max="6" value={formData.tamanoEquipoMax}
                                             onChange={e => setFormData({...formData, tamanoEquipoMax: e.target.value})} />
+                                    </div>
+                                )}
+
+                                {formData.formato === 'Battle Royale' && (
+                                    <div className="col-md-6 mb-4">
+                                        <label className="form-label-custom">Al mejor de (Victorias para ganar)</label>
+                                        <input type="number" className="form-control form-control-custom" 
+                                            min="1" value={formData.alMejorDe}
+                                            onChange={e => setFormData({...formData, alMejorDe: e.target.value})} />
                                     </div>
                                 )}
 
