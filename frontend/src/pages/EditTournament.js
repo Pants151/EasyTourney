@@ -8,41 +8,49 @@ const EditTournament = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
-    const [formData, setFormData] = useState({ nombre: '', juego: '', modalidad: '1v1', fechaInicio: '', reglas: '' });
+    const [tournamentStatus, setTournamentStatus] = useState('');
+    const [formData, setFormData] = useState({
+        nombre: '', juego: '', formato: '1v1', limiteParticipantes: 16,
+        tamanoEquipoMax: 1, alMejorDe: 1, ubicacion: 'Online', 
+        fechaInicio: '', reglas: '', plataformas: []
+    });
 
     useEffect(() => {
         const fetchData = async () => {
-            const [tData, gData] = await Promise.all([tournamentService.getTournamentById(id), gameService.getGames()]);
-            const formattedDate = new Date(tData.fechaInicio).toISOString().slice(0, 16);
-            setFormData({
-                nombre: tData.nombre,
-                juego: tData.juego?._id || tData.juego,
-                modalidad: tData.modalidad,
-                fechaInicio: formattedDate,
-                reglas: tData.reglas || ''
-            });
-            setGames(gData);
+            try {
+                const [tData, gData] = await Promise.all([
+                    tournamentService.getTournamentById(id),
+                    gameService.getGames()
+                ]);
+                const formattedDate = new Date(tData.fechaInicio).toISOString().slice(0, 16);
+                setTournamentStatus(tData.estado);
+                setFormData({
+                    nombre: tData.nombre,
+                    juego: tData.juego?._id || tData.juego,
+                    formato: tData.formato,
+                    limiteParticipantes: tData.limiteParticipantes,
+                    tamanoEquipoMax: tData.tamanoEquipoMax || 1,
+                    alMejorDe: tData.alMejorDe || 1,
+                    ubicacion: tData.ubicacion,
+                    fechaInicio: formattedDate,
+                    reglas: tData.reglas || '',
+                    plataformas: tData.plataformas || []
+                });
+                setGames(gData);
+            } catch (err) { console.error(err); }
         };
         fetchData();
     }, [id]);
 
-    const handleDelete = async () => {
-        if (window.confirm("¿Estás seguro de que deseas ELIMINAR este torneo? Esta acción es irreversible.")) {
-            try {
-                await tournamentService.deleteTournament(id);
-                alert("Torneo eliminado satisfactoriamente.");
-                navigate('/manage-my-tournaments');
-            } catch (err) { alert("Error al eliminar."); }
-        }
-    };
+    const isLocked = tournamentStatus !== 'Borrador';
 
     const onUpdate = async (e) => {
         e.preventDefault();
         try {
             await tournamentService.updateTournament(id, formData);
-            alert("Torneo actualizado.");
+            alert("Torneo actualizado correctamente.");
             navigate('/manage-my-tournaments');
-        } catch (err) { alert("Error al actualizar."); }
+        } catch (err) { alert(err.response?.data?.msg || "Error al actualizar."); }
     };
 
     return (
@@ -50,31 +58,65 @@ const EditTournament = () => {
             <div className="row justify-content-center">
                 <div className="col-lg-8">
                     <div className="form-container-custom p-4 p-md-5">
-                        <div className="d-flex justify-content-between align-items-center mb-4">
-                            <h2 className="text-uppercase fw-bolder m-0">Editar <span className="text-accent">Torneo</span></h2>
-                            <button type="button" className="btn btn-delete-custom px-4" onClick={handleDelete}>
-                                <i className="bi bi-trash me-2"></i>ELIMINAR
-                            </button>
-                        </div>
+                        <h2 className="text-uppercase fw-bolder mb-4">Editar <span className="text-accent">Torneo</span></h2>
+                        {isLocked && <div className="alert alert-info py-2 small">Los ajustes competitivos están bloqueados porque el torneo ya ha sido publicado.</div>}
+                        
                         <form onSubmit={onUpdate}>
-                            {/* ... (Mismos campos que CreateTournament pero con value={formData.xxx}) ... */}
                             <div className="mb-4">
                                 <label className="form-label-custom">Nombre del Torneo</label>
                                 <input type="text" className="form-control-custom form-control" value={formData.nombre} 
                                     onChange={e => setFormData({...formData, nombre: e.target.value})} required />
                             </div>
+
+                            <div className="row">
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">Juego</label>
+                                    <select className="form-select form-select-custom" value={formData.juego} 
+                                        disabled={isLocked} onChange={e => setFormData({...formData, juego: e.target.value})} required>
+                                        {games.map(g => <option key={g._id} value={g._id}>{g.nombre}</option>)}
+                                    </select>
+                                </div>
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">Formato</label>
+                                    <select className="form-select form-select-custom" value={formData.formato} 
+                                        disabled={isLocked} onChange={e => setFormData({...formData, formato: e.target.value})}>
+                                        <option value="1v1">1 vs 1</option>
+                                        <option value="Equipos">Por Equipos</option>
+                                        <option value="Battle Royale">Battle Royale</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-md-6 mb-4">
+                                    <label className="form-label-custom">{formData.formato === 'Equipos' ? 'Límite de Equipos' : 'Límite de Participantes'}</label>
+                                    <select className="form-select form-select-custom" value={formData.limiteParticipantes} 
+                                        disabled={isLocked} onChange={e => setFormData({...formData, limiteParticipantes: e.target.value})}>
+                                        {[2, 4, 8, 16, 32, 64].map(num => <option key={num} value={num}>{num}</option>)}
+                                    </select>
+                                </div>
+                                {formData.formato === 'Equipos' && (
+                                    <div className="col-md-6 mb-4">
+                                        <label className="form-label-custom">Jugadores por Equipo</label>
+                                        <input type="number" className="form-control-custom form-control" value={formData.tamanoEquipoMax} 
+                                            disabled={isLocked} onChange={e => setFormData({...formData, tamanoEquipoMax: e.target.value})} min="2" max="10" />
+                                    </div>
+                                )}
+                                {formData.formato === 'Battle Royale' && (
+                                    <div className="col-md-6 mb-4">
+                                        <label className="form-label-custom">Al mejor de (Victorias)</label>
+                                        <input type="number" className="form-control-custom form-control" value={formData.alMejorDe} 
+                                            disabled={isLocked} onChange={e => setFormData({...formData, alMejorDe: e.target.value})} min="1" />
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="mb-4">
-                                <label className="form-label-custom">Juego</label>
-                                <select className="form-select form-select-custom" value={formData.juego} 
-                                    onChange={e => setFormData({...formData, juego: e.target.value})} required>
-                                    {games.map(g => <option key={g._id} value={g._id}>{g.nombre}</option>)}
-                                </select>
+                                <label className="form-label-custom">Reglas</label>
+                                <textarea className="form-control-custom form-control" rows="4" value={formData.reglas} 
+                                    onChange={e => setFormData({...formData, reglas: e.target.value})}></textarea>
                             </div>
-                            <div className="mb-5">
-                                <label className="form-label-custom">Fecha de Inicio</label>
-                                <input type="datetime-local" className="form-control-custom form-control" value={formData.fechaInicio} 
-                                    onChange={e => setFormData({...formData, fechaInicio: e.target.value})} required />
-                            </div>
+
                             <div className="d-flex gap-3">
                                 <button type="submit" className="btn-accent flex-grow-1">GUARDAR CAMBIOS</button>
                                 <button type="button" className="btn btn-view-all" onClick={() => navigate(-1)}>CANCELAR</button>

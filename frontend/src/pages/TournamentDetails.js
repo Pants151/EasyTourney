@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import tournamentService from '../services/tournamentService';
 import { AuthContext } from '../context/AuthContext';
 import './TournamentDetails.css';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // Añadir esta utilidad arriba
 const isPowerOfTwo = (n) => n > 1 && (n & (n - 1)) === 0;
@@ -160,6 +162,52 @@ const handleAdvanceRound = async () => {
         } catch (err) { alert("Error al procesar solicitud"); }
     };
 
+    const exportToPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Título
+    doc.setFontSize(22);
+    doc.setTextColor(255, 115, 0); 
+    doc.text(tournament.nombre.toUpperCase(), pageWidth / 2, 20, { align: 'center' });
+
+    // Información General - USO DE autoTable(doc, ...)
+    autoTable(doc, {
+        startY: 40,
+        head: [['Característica', 'Detalle']],
+        body: [
+            ['Juego', tournament.juego?.nombre],
+            ['Organizador', tournament.organizador?.username || 'N/A'],
+            ['Fecha de Inicio', new Date(tournament.fechaInicio).toLocaleDateString()],
+            ['Formato', tournament.formato],
+            ['Participantes', tournament.participantes?.length],
+            ['Estado', tournament.estado.toUpperCase()],
+            ['CAMPEÓN', tournament.formato === 'Equipos' ? tournament.ganador?.nombre : tournament.ganador?.username]
+        ],
+        theme: 'striped',
+        headStyles: { fillColor: [255, 115, 0] }
+    });
+
+    // Resumen de Enfrentamientos
+    if (tournament.formato !== 'Battle Royale' && matches.length > 0) {
+        const matchesBody = matches.map(m => {
+            const p1 = tournament.formato === 'Equipos' ? m.equipo1?.nombre : m.jugador1?.username;
+            const p2 = tournament.formato === 'Equipos' ? m.equipo2?.nombre : m.jugador2?.username;
+            const win = tournament.formato === 'Equipos' ? m.ganador?.nombre : m.ganador?.username;
+            return [`Ronda ${m.ronda}`, `${p1 || 'TBD'} vs ${p2 || 'BYE'}`, win || 'Pendiente'];
+        });
+
+        doc.text("Resumen de Enfrentamientos", 14, doc.lastAutoTable.finalY + 15);
+        autoTable(doc, {
+            startY: doc.lastAutoTable.finalY + 20,
+            head: [['Ronda', 'Duelo', 'Resultado']],
+            body: matchesBody
+        });
+    }
+
+    doc.save(`Reporte_${tournament.nombre}.pdf`);
+};
+
     // Lógica para verificar si el usuario ya está inscrito
     const isJoined = tournament.participantes.some(p => (p._id || p) === (user?.id || user?._id));
     // Solo mostramos el botón si es participante, el torneo está abierto y no está unido
@@ -260,6 +308,11 @@ const handleAdvanceRound = async () => {
                             {isJoined && tournament.estado === 'Abierto' && user?.rol === 'participante' && (
                                 <button className="btn btn-outline-danger w-100 mt-2 btn-sm fw-bold" onClick={handleLeave}>
                                     ABANDONAR TORNEO
+                                </button>
+                            )}
+                            {tournament.estado === 'Finalizado' && user && (
+                                <button className="btn btn-outline-light w-100 mt-3 btn-sm fw-bold" onClick={exportToPDF}>
+                                    <i className="bi bi-file-earmark-pdf me-2"></i>EXPORTAR REPORTE (PDF)
                                 </button>
                             )}
                         </div>

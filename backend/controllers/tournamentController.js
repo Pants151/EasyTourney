@@ -263,22 +263,33 @@ exports.advanceTournament = async (req, res) => {
 // Actualizar datos de un torneo
 exports.updateTournament = async (req, res) => {
     try {
-        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes, alMejorDe } = req.body;
         let tournament = await Tournament.findById(req.params.id);
-
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
         if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
 
+        // PROTECCIÓN: Si el torneo ya no es Borrador, prohibir cambios estructurales
+        if (tournament.estado !== 'Borrador') {
+            const { juego, formato, limiteParticipantes, tamanoEquipoMax, alMejorDe } = req.body;
+            
+            const isChangingCritical = 
+                (juego && juego !== tournament.juego.toString()) ||
+                (formato && formato !== tournament.formato) ||
+                (limiteParticipantes && Number(limiteParticipantes) !== tournament.limiteParticipantes) ||
+                (tamanoEquipoMax && Number(tamanoEquipoMax) !== tournament.tamanoEquipoMax) ||
+                (alMejorDe && Number(alMejorDe) !== tournament.alMejorDe);
+
+            if (isChangingCritical) {
+                return res.status(400).json({ msg: 'No se pueden modificar ajustes competitivos una vez publicado el torneo' });
+            }
+        }
+
+        // Actualizar campos permitidos
+        const { nombre, plataformas, ubicacion, fechaInicio, reglas } = req.body;
         tournament.nombre = nombre || tournament.nombre;
-        tournament.juego = juego || tournament.juego;
         tournament.plataformas = plataformas || tournament.plataformas;
-        tournament.formato = formato || tournament.formato; // Actualizado
-        tournament.tamanoEquipoMax = formato === 'Equipos' ? tamanoEquipoMax : 1;
-        tournament.limiteParticipantes = limiteParticipantes || tournament.limiteParticipantes;
         tournament.ubicacion = ubicacion || tournament.ubicacion;
         tournament.fechaInicio = fechaInicio || tournament.fechaInicio;
         tournament.reglas = reglas || tournament.reglas;
-        tournament.alMejorDe = tournament.formato === 'Battle Royale' ? (alMejorDe || tournament.alMejorDe || 1) : 1;
 
         await tournament.save();
         res.json(tournament);
