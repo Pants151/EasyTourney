@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import gameService from '../services/gameService'; // Usamos el servicio de juegos
+import gameService from '../services/gameService';
 import { Link, useNavigate } from 'react-router-dom';
-import './Home.css'; // CSS Específico para esta página
-
-
+import './Home.css';
 
 const Home = () => {
     const [topGames, setTopGames] = useState([]);
     const navigate = useNavigate();
 
+    // Función para el desplazamiento suave hacia arriba
+    const handleScrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
     useEffect(() => {
-        // Cargar los 5 juegos para la barra horizontal
         const fetchTopGames = async () => {
             try {
                 const data = await gameService.getTop5Games();
@@ -29,11 +34,12 @@ const Home = () => {
             <section 
                 className="hero-section d-flex align-items-center justify-content-center"
                 style={{ 
-                    backgroundImage: `url('/assets/images/mi-fondo-hero.jpg')`,
+                    // Mantenemos tu ruta directa a public sin imports fallidos
+                    backgroundImage: "url('/assets/images/mi-fondo-hero.jpg')", 
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    backgroundAttachment: 'fixed' // Para el efecto de scroll
+                    backgroundAttachment: 'fixed'
                 }}
             >
                 {/* Fondo de imagen sutil o gradiente */}
@@ -52,7 +58,13 @@ const Home = () => {
                     <p className="hero-subtitle h4 mb-5 text-white animate-fade-up delay-2">
                         Compite. Gana. Escribe tu historia.
                     </p>
-                    <Link to="/register" className="btn btn-accent btn-lg animate-fade-up delay-3 text-white">
+                    
+                    {/* BOTÓN 1: Empieza tu legado con scroll suave */}
+                    <Link 
+                        to="/register" 
+                        className="btn btn-accent btn-lg animate-fade-up delay-3 text-white"
+                        onClick={handleScrollToTop}
+                    >
                         EMPIEZA TU LEGADO
                     </Link>
                 </div>
@@ -66,22 +78,30 @@ const Home = () => {
                         JUEGOS MÁS <span className="text-accent">POPULARES</span>
                     </h4>
 
-                    {/* Lista horizontal de carátulas */}
                     <div className="games-scroll-container mb-4">
                         {topGames.map(game => (
                             <div 
                                 key={game._id} 
                                 className="game-cover-item mx-2" 
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => navigate(`/tournaments?game=${game._id}`)}
+                                onClick={() => {
+                                    handleScrollToTop();
+                                    navigate(`/tournaments?game=${game._id}`);
+                                }}
                             >
                                 <img src={game.caratula} alt={game.nombre} className="img-fluid" />
                             </div>
                         ))}
                     </div>
 
-                    {/* Botón debajo de los juegos */}
-                    <button className="btn btn-view-all mt-2" onClick={() => navigate('/games')}>
+                    {/* BOTÓN 2: Ver todos los juegos con scroll suave */}
+                    <button 
+                        className="btn btn-view-all mt-2" 
+                        onClick={() => {
+                            handleScrollToTop();
+                            navigate('/games');
+                        }}
+                    >
                         Ver todos los juegos
                     </button>
                 </div>

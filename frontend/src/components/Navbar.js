@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'; // Añadimos useState
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Navbar.css';
@@ -7,55 +7,56 @@ const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
     
-    // Estado para controlar si el menú está abierto o cerrado
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    // Función para cerrar el menú cuando se hace clic en un enlace
-    const closeMenu = () => setIsMenuOpen(false);
+    const handleNavigation = () => {
+        setIsMenuOpen(false);
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
 
     const handleLogout = () => {
         logout();
-        closeMenu();
+        handleNavigation();
         navigate('/login');
     };
 
     return (
         <nav className="navbar navbar-expand-lg fixed-top custom-navbar">
             <div className="container">
-                {/* Logo */}
-                <Link className="navbar-brand py-0" to="/" onClick={closeMenu}>
+                {/* Logo - Ya cumple la función de ir a Inicio */}
+                <Link className="navbar-brand py-0" to="/" onClick={handleNavigation}>
                     <img src="/assets/images/logo-nav.png" alt="EasyTourney" className="nav-logo" />
                 </Link>
 
-                {/* BOTÓN HAMBURGUESA: Controlado por isMenuOpen */}
                 <button 
                     className={`navbar-toggler custom-toggler ${!isMenuOpen ? 'collapsed' : ''}`} 
                     type="button" 
                     onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                    aria-controls="navbarNav" 
                     aria-expanded={isMenuOpen} 
+                    aria-label="Toggle navigation"
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
-                {/* CONTENIDO COLAPSABLE: La clase 'show' controla la visibilidad */}
                 <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <Link className="nav-link nav-link-custom" to="/tournaments" onClick={closeMenu}>TORNEOS</Link>
+                            <Link className="nav-link nav-link-custom" to="/tournaments" onClick={handleNavigation}>TORNEOS</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link nav-link-custom" to="/games" onClick={closeMenu}>JUEGOS</Link>
+                            <Link className="nav-link nav-link-custom" to="/games" onClick={handleNavigation}>JUEGOS</Link>
                         </li>
                     </ul>
 
                     <ul className="navbar-nav align-items-lg-center">
-                        {user ? (
+                        {/* Mantenemos CUENTA solo si el usuario está logueado, eliminamos el 'else' de INICIO */}
+                        {user && (
                             <li className="nav-item">
-                                <Link className="nav-link nav-link-custom" to="/account" onClick={closeMenu}>CUENTA</Link>
-                            </li>
-                        ) : (
-                            <li className="nav-item">
-                                <Link className="nav-link nav-link-custom" to="/" onClick={closeMenu}>INICIO</Link>
+                                <Link className="nav-link nav-link-custom" to="/account" onClick={handleNavigation}>CUENTA</Link>
                             </li>
                         )}
                         
@@ -71,7 +72,7 @@ const Navbar = () => {
                                 <Link 
                                     className="btn btn-accent btn-sm w-100 w-lg-auto" 
                                     to="/login" 
-                                    onClick={closeMenu}
+                                    onClick={handleNavigation}
                                 >
                                     LOGIN / REGISTRO
                                 </Link>
