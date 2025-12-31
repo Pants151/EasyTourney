@@ -3,6 +3,8 @@ import gameService from '../services/gameService'; // Usamos el servicio de jueg
 import { Link, useNavigate } from 'react-router-dom';
 import './Home.css'; // CSS Específico para esta página
 
+
+
 const Home = () => {
     const [topGames, setTopGames] = useState([]);
     const navigate = useNavigate();
@@ -24,13 +26,24 @@ const Home = () => {
         <div className="home-wrapper">
 
             {/* --- SECCIÓN HERO --- */}
-            <section className="hero-section d-flex align-items-center justify-content-center">
+            <section 
+                className="hero-section d-flex align-items-center justify-content-center"
+                style={{ 
+                    backgroundImage: `url('/assets/images/mi-fondo-hero.jpg')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundAttachment: 'fixed' // Para el efecto de scroll
+                }}
+            >
                 {/* Fondo de imagen sutil o gradiente */}
                 <div className="hero-bg-overlay"></div>
 
                 <div className="hero-content text-center text-uppercase position-relative z-2">
-                    {/* Logo grande */}
-                    <img src="/assets/images/logo-big.png" alt="Logo Grande" className="hero-logo img-fluid mb-4 animate-fade-up" />
+                    {/* Envolvemos el logo en un contenedor para controlar su escala */}
+                    <div className="hero-logo-container mb-2 animate-fade-up">
+                        <img src="/assets/images/logo-big.png" alt="Logo Grande" className="hero-logo img-fluid" />
+                    </div>
 
                     {/* Texto en blanco puro */}
                     <h1 className="hero-title fw-bolder mb-3 animate-fade-up delay-1 text-white">
@@ -54,7 +67,7 @@ const Home = () => {
                     </h4>
 
                     {/* Lista horizontal de carátulas */}
-                    <div className="games-scroll-container d-flex justify-content-center mb-4">
+                    <div className="games-scroll-container mb-4">
                         {topGames.map(game => (
                             <div 
                                 key={game._id} 

@@ -4,8 +4,6 @@
 .hero-section {
     min-height: 100vh; /* Que ocupe toda la pantalla */
     position: relative;
-    background: url('https://images.unsplash.com/photo-1598550476439-6847785fcea6?q=80&w=2070') center/cover no-repeat fixed;
-    /* Eliminamos márgenes negativos que puedan causar saltos visuales */
     margin-top: 0; 
     display: flex;
     align-items: center;
@@ -25,13 +23,22 @@
     background: radial-gradient(circle at center, rgba(8, 11, 18, 0.6) 0%, rgba(8, 11, 18, 1) 90%);
 }
 
+/* === HERO SECTION MEJORADA === */
+.hero-logo-container {
+    max-width: 450px; /* Aumentado en escritorio */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
 .hero-logo {
-    max-width: 300px !important; /* Logo más pequeño */
-    margin-bottom: 5px !important; /* Casi pegado al texto */
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(255, 115, 0, 0.2));
 }
 
 .hero-title {
-    font-size: 4rem;
+    font-size: clamp(2.5rem, 8vw, 4.5rem); /* Tamaño fluido según pantalla */
+    line-height: 1;
     letter-spacing: 2px;
     color: #ffffff !important;
     font-weight: 900;
@@ -44,13 +51,6 @@
     color: #ffffff !important;
     margin-bottom: 30px !important;
 }
-
-/* Efecto de texto con borde para "LEYENDAS" (opcional, si no te gusta quítalo) */
-/* .outline-text {
-    color: transparent;
-    -webkit-text-stroke: 2px var(--color-accent);
-} */
-
 
 .btn-accent {
     background-color: #FF7300 !important;
@@ -81,27 +81,33 @@
 }
 
 .games-scroll-container {
-    /* Permite scroll horizontal si hay muchos juegos */
-    overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: 5px; /* Para ocultar la barra de scroll en algunos navegadores */
-    scrollbar-width: none; /* Firefox */
+    display: flex !important; /* Aseguramos que sea flex */
+    flex-wrap: wrap; /* CLAVE: permite que las portadas bajen a la siguiente fila en vez de estrujarse */
+    justify-content: center;
+    gap: 25px; /* Espacio uniforme entre portadas */
+    padding: 20px 10px;
+    overflow: visible; /* Quitamos el scroll horizontal para que se agrupen debajo */
 }
-.games-scroll-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+.game-cover-item {
+    flex: 0 0 auto; /* CLAVE: impide que el flexbox obligue a la portada a encogerse */
+    width: 200px; /* Tamaño base en escritorio ligeramente mayor */
+}
 
 .game-cover-item img {
-    height: 180px;  /* Altura fija */
-    width: 130px;   /* Ancho fijo */
-    object-fit: cover; /* Mantiene la proporción recortando si es necesario */
-    border-radius: 6px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 2px solid transparent;
+    width: 100%; /* Ocupa todo el contenedor del item */
+    height: 280px; /* Altura proporcional */
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
 .game-cover-item img:hover {
-    transform: translateY(-5px);
-    border-color: var(--color-accent);
-    box-shadow: 0 5px 15px rgba(255, 115, 0, 0.4);
+    transform: translateY(-10px) scale(1.05);
+    border-color: #FF7300;
+    box-shadow: 0 15px 30px rgba(255, 115, 0, 0.3);
 }
 
 /* Botón "Ver todos los juegos" adaptado al fondo oscuro */
@@ -146,7 +152,8 @@
 }
 
 .feature-title {
-    font-size: 3.5rem;
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    line-height: 1.1;
     text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
 }
 
@@ -174,11 +181,56 @@
 }
 
 /* Ajustes Responsive básicos */
+@media (max-width: 1200px) {
+    .game-cover-item { width: 170px; }
+    .game-cover-item img { height: 240px; }
+}
+
+@media (max-width: 991px) {
+    .hero-logo-container { max-width: 300px; }
+    .video-overlay-gradient {
+        /* Gradiente más oscuro en móviles para leer mejor el texto */
+        background: linear-gradient(180deg, rgba(8, 11, 18, 0.9) 0%, rgba(8, 11, 18, 0.7) 100%);
+    }
+}
+
 @media (max-width: 768px) {
-    .hero-title { font-size: 2.5rem; }
-    .feature-title { font-size: 2rem; }
     .popular-games-bar h4 { font-size: 1rem; }
-    .game-cover-item img { height: 80px; }
     .feature-icons { flex-direction: column; align-items: flex-start; }
-    .feature-item { margin-bottom: 20px; }
+    
+    .hero-section { min-height: 80vh; }
+    .hero-logo-container { max-width: 220px; }
+    
+    .games-scroll-container {
+        gap: 15px; /* Menos espacio en móvil */
+    }
+    .game-cover-item { 
+        width: 140px; /* Tamaño legible en móvil sin deformarse */
+    }
+    .game-cover-item img { 
+        height: 200px; 
+    }
+    .hero-title {
+        font-size: 2.5rem; /* Aseguramos que el título no rompa el diseño */
+    }
+    
+    .feature-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px;
+        border-radius: 10px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+/* Corrección para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .hero-title { font-size: 2.2rem; }
+    .game-cover-item { 
+        width: calc(50% - 20px); /* En móviles muy pequeños, mostrar 2 por fila */
+    }
+    .game-cover-item img { 
+        height: 210px; 
+    }
+    .btn-accent { width: 100%; padding: 15px; }
 }
