@@ -4,5 +4,30 @@
 }
 
 .main-footer p {
-    color: white !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Estilos para los enlaces del footer */
+.footer-link-item {
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.footer-link-item:hover {
+    color: #FF7300; /* Color de acento de la web */
+}
+
+/* Estilo para los enlaces que aún no tienen ruta */
+.footer-link-item.inactive {
+    color: rgba(255, 255, 255, 0.3);
+    cursor: default;
+}
+
+.footer-link-item.inactive:hover {
+    color: rgba(255, 255, 255, 0.3);
 }
