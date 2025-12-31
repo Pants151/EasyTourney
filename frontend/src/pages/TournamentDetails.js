@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import tournamentService from '../services/tournamentService';
 import { AuthContext } from '../context/AuthContext';
 import './TournamentDetails.css';
@@ -11,6 +11,7 @@ const isPowerOfTwo = (n) => n > 1 && (n & (n - 1)) === 0;
 
 const TournamentDetails = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const [tournament, setTournament] = useState(null);
     const [matches, setMatches] = useState([]);
@@ -280,6 +281,13 @@ const handleAdvanceRound = async () => {
             <header className="tournament-hero" style={{ backgroundImage: `url(${tournament.juego?.header})` }}>
                 <div className="hero-overlay-details"></div>
                 <div className="container hero-info-content">
+                    {/* BOTÓN DE VOLVER */}
+                    <div className="mb-3">
+                        <button className="btn btn-outline-light btn-sm" onClick={() => navigate(-1)}>
+                            <i className="bi bi-arrow-left me-2"></i> VOLVER
+                        </button>
+                    </div>
+
                     <div className="d-flex align-items-center mb-3">
                         <img src={tournament.juego?.logo} alt="Logo" className="game-logo-details me-4" />
                         <div>

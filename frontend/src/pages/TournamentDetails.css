@@ -354,3 +354,15 @@
     from { transform: scale(0.8); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
+
+.hero-info-content .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.hero-info-content .btn-outline-light:hover {
+    background-color: #ffffff;
+    color: #000000;
+}

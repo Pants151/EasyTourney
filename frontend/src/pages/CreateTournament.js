@@ -42,6 +42,7 @@ const CreateTournament = () => {
                     <div className="form-container-custom p-4 p-md-5">
                         <h2 className="text-uppercase fw-bolder mb-4">Crear <span className="text-accent">Torneo</span></h2>
                         <form onSubmit={onSubmit}>
+                            {/* ... (campos del formulario se mantienen igual) */}
                             <div className="mb-4">
                                 <label className="form-label-custom">Nombre del Evento</label>
                                 <input type="text" name="nombre" className="form-control-custom form-control" 
@@ -66,7 +67,6 @@ const CreateTournament = () => {
                                     </select>
                                 </div>
                                 
-                                {/* Selector dinámico para tamaño de equipo */}
                                 {formData.formato === 'Equipos' && (
                                     <div className="col-md-6 mb-4">
                                         <label className="form-label-custom">Integrantes por Equipo (1-6)</label>
@@ -114,7 +114,20 @@ const CreateTournament = () => {
                                 <textarea name="reglas" className="form-control-custom form-control" rows="5" 
                                     placeholder="Describe las reglas..." onChange={e => setFormData({...formData, reglas: e.target.value})}></textarea>
                             </div>
-                            <button type="submit" className="btn-accent w-100">PUBLICAR TORNEO</button>
+
+                            {/* ACCIONES DEL FORMULARIO: BOTÓN CANCELAR Y PUBLICAR */}
+                            <div className="d-flex gap-3 mt-4">
+                                <button 
+                                    type="button" 
+                                    className="btn btn-outline-light flex-grow-1 fw-bold text-uppercase" 
+                                    onClick={() => navigate(-1)}
+                                >
+                                    Cancelar
+                                </button>
+                                <button type="submit" className="btn-accent flex-grow-1">
+                                    PUBLICAR TORNEO
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

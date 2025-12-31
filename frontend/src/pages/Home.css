@@ -111,17 +111,23 @@
 }
 
 /* Botón "Ver todos los juegos" adaptado al fondo oscuro */
-.btn-view-all {
+.home-wrapper .btn-view-all {
     background-color: transparent !important;
     color: #ffffff !important;
-    border: 1px solid #ffffff !important; /* Borde blanco para que resalte en el fondo oscuro */
-    padding: 8px 25px !important;
+    border: 1px solid #ffffff !important;
+    padding: 10px 30px !important;
     font-weight: 700;
+    transition: all 0.3s ease-in-out !important; /* Animación suave */
 }
 
-.btn-view-all:hover {
+/* Forzamos el fondo blanco y texto negro en el Home */
+.home-wrapper .btn-view-all:hover {
     background-color: #ffffff !important;
+    background-image: none !important; /* Elimina posibles gradientes de Bootstrap */
     color: #000000 !important;
+    border-color: #ffffff !important;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(255, 255, 255, 0.4);
 }
 
 

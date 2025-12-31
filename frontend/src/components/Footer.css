@@ -1,6 +1,21 @@
+/* frontend/src/components/Footer.css */
+
 .main-footer {
     background-color: #0b0e11;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Control del tamaño del logo y efectos */
+.footer-logo {
+    height: 70px; /* Ajustado para que no sea excesivamente grande */
+    width: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: drop-shadow(0 0 5px rgba(255, 115, 0, 0.1));
+}
+
+.footer-logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(255, 115, 0, 0.3));
 }
 
 .main-footer p {
@@ -19,15 +34,5 @@
 }
 
 .footer-link-item:hover {
-    color: #FF7300; /* Color de acento de la web */
-}
-
-/* Estilo para los enlaces que aún no tienen ruta */
-.footer-link-item.inactive {
-    color: rgba(255, 255, 255, 0.3);
-    cursor: default;
-}
-
-.footer-link-item.inactive:hover {
-    color: rgba(255, 255, 255, 0.3);
+    color: #FF7300; /* Color de acento naranja */
 }
