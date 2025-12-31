@@ -1,27 +1,153 @@
+/* Estilos base del Navbar */
 .custom-navbar {
-    background-color: #000000 !important; /* Fondo negro puro */
-    height: 70px; /* Altura fija para el navbar */
-    display: flex;
-    align-items: center;
+    background-color: #000000 !important;
+    min-height: 70px;
     border-bottom: 1px solid rgba(255, 115, 0, 0.2);
     z-index: 10000 !important;
+    display: flex;
+    align-items: center;
 }
 
 .nav-logo {
-    height: 60px; /* Logo casi tan alto como el nav (70px) */
+    height: 50px;
     width: auto;
     transition: transform 0.3s ease;
+    /* Aseguramos que el logo no sea tapado por el toggler */
+    position: relative;
+    z-index: 10001; 
 }
 
-/* Si quieres que el logo sobresalga un poquito por debajo sin mover el nav: */
 .nav-logo:hover {
     transform: scale(1.1);
 }
 
+/* ESTILOS DE LOS ENLACES (Torneos, Juegos, Cuenta) */
 .nav-link-custom {
     color: #ffffff !important;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     letter-spacing: 1px;
+    position: relative;
+    padding: 0.5rem 1.2rem !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link-custom:hover {
+    color: #FF7300 !important; /* Naranja al pasar el ratón */
+}
+
+/* Línea decorativa inferior en escritorio */
+@media (min-width: 992px) {
+    .nav-link-custom::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 5px;
+        left: 50%;
+        background-color: #FF7300;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    .nav-link-custom:hover::after {
+        width: 60%;
+    }
+}
+
+/* PERSONALIZACIÓN DEL BOTÓN HAMBURGUESA */
+.custom-toggler {
+    border-color: rgba(255, 115, 0, 0.5) !important; /* Borde naranja tenue */
+    padding: 4px 8px;
+}
+
+.custom-toggler .navbar-toggler-icon {
+    /* Icono naranja */
+    /* Se cambió %3Base path por %3Cpath (que es el símbolo < en SVG) */
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 115, 0, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E") !important;
+}
+
+/* Efecto visual al presionar el botón de hamburguesa */
+.custom-toggler:focus {
+    box-shadow: none; /* Quitamos el borde azul feo por defecto */
+    outline: none;
+}
+
+.custom-toggler.collapsed .navbar-toggler-icon {
+    opacity: 0.8;
+}
+
+@media (max-width: 991px) {
+    .navbar-collapse {
+        position: fixed;
+        top: 70px;
+        right: 0;
+        width: 280px;
+        height: auto; 
+        max-height: calc(100vh - 80px);
+        background-color: #000000;
+        border-left: 1px solid rgba(255, 115, 0, 0.2);
+        border-bottom: 1px solid rgba(255, 115, 0, 0.2);
+        border-bottom-left-radius: 8px;
+        padding: 10px 20px 20px 20px;
+        
+        /* 1. Forzamos que el elemento siempre exista para que la animación de cierre se vea */
+        display: block !important; 
+        
+        /* 2. Estado oculto (hacia la derecha) */
+        transform: translateX(100%);
+        opacity: 0;
+        visibility: hidden; /* Esto evita clics cuando está escondido */
+
+        /* 3. Transición completa: añadimos visibility para el cierre suave */
+        transition: transform 0.3s ease-in-out, 
+                    opacity 0.3s ease-in-out, 
+                    visibility 0.3s linear;
+        
+        z-index: 9999;
+        overflow-y: auto;
+    }
+
+    /* 4. Estado visible (hacia adentro) */
+    .navbar-collapse.show {
+        transform: translateX(0);
+        opacity: 1;
+        visibility: visible;
+        /* Al abrir, visibility cambia instantáneamente; 
+           al cerrar, espera al tiempo de la transición */
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-link-custom {
+        padding: 12px 0 !important;
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .nav-link-custom:last-child {
+        border-bottom: none;
+    }
+    
+    /* Aseguramos que los botones de Login/Registro se ajusten */
+    .ms-lg-3 {
+        margin-left: 0 !important;
+        margin-top: 15px;
+        width: 100%;
+    }
+}
+
+/* Estilo para los botones pequeños al final (Cerrar sesión / Login) */
+.btn-outline-light.btn-sm, .btn-accent.btn-sm {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    border-radius: 4px;
 }

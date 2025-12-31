@@ -53,3 +53,27 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     padding-bottom: 30px;
 }
+
+.btn-view-more {
+    /* Cambiamos el fondo a uno más oscuro pero sólido o con más opacidad */
+    background: rgba(255, 115, 0, 0.1) !important; 
+    /* El borde naranja sólido hace que el botón "exista" visualmente */
+    border: 2px solid #FF7300 !important; 
+    /* Blanco puro para el texto */
+    color: #ffffff !important; 
+    text-transform: uppercase;
+    font-weight: 800; /* Un poco más de grosor */
+    letter-spacing: 2px;
+    padding: 14px 35px;
+    border-radius: 4px; /* Opcional: bordes menos redondeados para estilo eSports */
+    transition: all 0.3s ease-in-out;
+    opacity: 1 !important; /* Forzamos opacidad total por si se hereda algo */
+}
+
+.btn-view-more:hover {
+    background: #FF7300 !important; 
+    color: #ffffff !important;
+    border-color: #FF7300 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(255, 115, 0, 0.5);
+}

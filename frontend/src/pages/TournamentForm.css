@@ -15,17 +15,23 @@
 }
 
 .form-control-custom {
-    background: #080b12 !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
+    color: #ffffff !important;
     padding: 12px 15px;
     transition: all 0.3s;
 }
 
+/* El origen del problema de visibilidad de los placeholders */
+.form-control-custom::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-weight: 400;
+}
+
 .form-control-custom:focus {
+    background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: #FF7300 !important;
-    box-shadow: 0 0 10px rgba(255, 115, 0, 0.2) !important;
-    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(255, 115, 0, 0.25) !important;
 }
 
 .form-select-custom {
