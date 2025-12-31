@@ -17,6 +17,7 @@ const TournamentDetails = () => {
     const [activeTab, setActiveTab] = useState('fases'); // Estado para el mini-nav
     const [showTeamModal, setShowTeamModal] = useState(false);
     const [newTeamName, setNewTeamName] = useState("");
+    const [streamData, setStreamData] = useState({ plataforma: 'Twitch', url: '' });
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -51,6 +52,12 @@ const TournamentDetails = () => {
         : tournament.participantes?.length || 0;
 
     const hasValidPowerOfTwo = isPowerOfTwo(currentCount);
+
+    // 1. Determinamos si es Battle Royale
+    const isBR = tournament.formato === 'Battle Royale';
+
+    // 2. Ajustamos la validación del conteo
+    const canStartTournament = isBR ? currentCount >= 2 : hasValidPowerOfTwo;
 
     // Ejemplo de reporte visual de ganador
     const handleSetWinner = async (matchId, winnerId) => {
@@ -162,23 +169,59 @@ const handleAdvanceRound = async () => {
         } catch (err) { alert("Error al procesar solicitud"); }
     };
 
+    const handleAddStream = async () => {
+        try {
+            const updatedStreams = [...(tournament.streams || []), streamData];
+            await tournamentService.updateTournament(id, { streams: updatedStreams });
+            alert("Stream añadido correctamente");
+            window.location.reload();
+        } catch (err) { alert("Error al subir stream"); }
+    };
+
+    const handleDeleteStream = async (index) => {
+        if (!window.confirm("¿Estás seguro de eliminar este contenido?")) return;
+        try {
+            const updatedStreams = tournament.streams.filter((_, i) => i !== index);
+            await tournamentService.updateTournament(id, { streams: updatedStreams });
+            alert("Contenido eliminado");
+            window.location.reload();
+        } catch (err) { alert("Error al eliminar stream"); }
+    };
+
+    // Función auxiliar para obtener el ID de video/canal
+    const getEmbedURL = (s) => {
+    if (s.plataforma === 'Twitch') {
+        const urlParts = s.url.split('/');
+        // Si el enlace contiene 'videos', es un VOD (directo finalizado)
+        if (s.url.includes('/videos/')) {
+            const videoId = urlParts[urlParts.indexOf('videos') + 1].split('?')[0];
+            return `https://player.twitch.tv/?video=${videoId}&parent=${window.location.hostname}&autoplay=false`;
+        } else {
+            // Es un canal en directo
+            const channel = urlParts.filter(part => part !== "").pop();
+            return `https://player.twitch.tv/?channel=${channel}&parent=${window.location.hostname}&autoplay=false`;
+        }
+    } else {
+        // Lógica de YouTube
+        const videoId = s.url.split('v=').pop()?.split('&')[0] || s.url.split('/').pop();
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+};
+
     const exportToPDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Título
     doc.setFontSize(22);
     doc.setTextColor(255, 115, 0); 
     doc.text(tournament.nombre.toUpperCase(), pageWidth / 2, 20, { align: 'center' });
 
-    // Información General - USO DE autoTable(doc, ...)
+    // Tabla de Características
     autoTable(doc, {
         startY: 40,
         head: [['Característica', 'Detalle']],
         body: [
             ['Juego', tournament.juego?.nombre],
-            ['Organizador', tournament.organizador?.username || 'N/A'],
-            ['Fecha de Inicio', new Date(tournament.fechaInicio).toLocaleDateString()],
             ['Formato', tournament.formato],
             ['Participantes', tournament.participantes?.length],
             ['Estado', tournament.estado.toUpperCase()],
@@ -188,8 +231,22 @@ const handleAdvanceRound = async () => {
         headStyles: { fillColor: [255, 115, 0] }
     });
 
-    // Resumen de Enfrentamientos
-    if (tournament.formato !== 'Battle Royale' && matches.length > 0) {
+    // LÓGICA PARA BATTLE ROYALE EN EL PDF
+    if (tournament.formato === 'Battle Royale' && tournament.ganadoresRondaBR?.length > 0) {
+        const brBody = tournament.ganadoresRondaBR.map((g, index) => [
+            `Ronda ${index + 1}`, 
+            g.username || "Usuario"
+        ]);
+
+        doc.text("Historial de Rondas (Battle Royale)", 14, doc.lastAutoTable.finalY + 15);
+        autoTable(doc, {
+            startY: doc.lastAutoTable.finalY + 20,
+            head: [['Ronda', 'Ganador de Ronda']],
+            body: brBody
+        });
+    } 
+    // Lógica para 1v1 y Equipos (Brackets)
+    else if (matches.length > 0) {
         const matchesBody = matches.map(m => {
             const p1 = tournament.formato === 'Equipos' ? m.equipo1?.nombre : m.jugador1?.username;
             const p2 = tournament.formato === 'Equipos' ? m.equipo2?.nombre : m.jugador2?.username;
@@ -199,9 +256,7 @@ const handleAdvanceRound = async () => {
 
         doc.text("Resumen de Enfrentamientos", 14, doc.lastAutoTable.finalY + 15);
         autoTable(doc, {
-            startY: doc.lastAutoTable.finalY + 20,
-            head: [['Ronda', 'Duelo', 'Resultado']],
-            body: matchesBody
+            startY: doc.lastAutoTable.finalY + 20, head: [['Ronda', 'Duelo', 'Resultado']], body: matchesBody
         });
     }
 
@@ -245,16 +300,26 @@ const handleAdvanceRound = async () => {
                             )}
                             {tournament.estado === 'Abierto' && (
                                 <>
-                                    {!hasValidPowerOfTwo && currentCount > 0 && (
+                                    {/* El aviso de "número par exacto" SOLO sale si NO es Battle Royale */}
+                                    {!isBR && !hasValidPowerOfTwo && currentCount > 0 && (
                                         <div className="text-warning small fw-bold mb-1">
                                             <i className="bi bi-exclamation-triangle me-1"></i>
                                             Se requiere un número par exacto (2, 4, 8, 16...) para iniciar.
                                         </div>
                                     )}
+                                    
+                                    {/* El aviso para BR si hay menos de 2 personas */}
+                                    {isBR && currentCount < 2 && (
+                                        <div className="text-warning small fw-bold mb-1">
+                                            <i className="bi bi-exclamation-triangle me-1"></i>
+                                            Se requieren al menos 2 participantes para iniciar.
+                                        </div>
+                                    )}
+
                                     <button className="btn btn-accent px-4 fw-bold" 
                                         onClick={handleGenerateBrackets}
-                                        disabled={!hasValidPowerOfTwo}>
-                                        INICIAR Y GENERAR BRACKETS
+                                        disabled={!canStartTournament}>
+                                        {isBR ? 'INICIAR TORNEO' : 'INICIAR Y GENERAR BRACKETS'}
                                     </button>
                                 </>
                             )}
@@ -510,10 +575,74 @@ const handleAdvanceRound = async () => {
 
                             {/* VISTA STREAMS/VÍDEOS */}
                             {activeTab === 'streams' && (
-                                <div className="streams-tab-content text-center py-5 bg-dark-secondary rounded">
-                                    <i className="bi bi-broadcast fs-1 text-accent mb-3"></i>
-                                    <h5 className="text-white">Sin transmisiones activas</h5>
-                                    <p className="text-dim">Próximamente podrás ver aquí los directos de Twitch y vídeos de YouTube asociados.</p>
+                                <div className="streams-tab-content">
+                                    {/* FORMULARIO SOLO ORGANIZADOR */}
+                                    {isOrganizer && (
+                                        <div className="bg-dark-secondary p-4 rounded mb-4 border border-accent">
+                                            <h6 className="text-white text-uppercase fw-bold mb-3">Subir Stream / Vídeo</h6>
+                                            <div className="row g-2">
+                                                <div className="col-md-3">
+                                                    <select className="form-select form-select-custom" 
+                                                        onChange={e => setStreamData({...streamData, plataforma: e.target.value})}>
+                                                        <option value="Twitch">Twitch (Directo)</option>
+                                                        <option value="YouTube">YouTube (Vídeo)</option>
+                                                    </select>
+                                                </div>
+                                                <div className="col-md-7">
+                                                    <input type="text" className="form-control form-control-custom" 
+                                                        placeholder="URL del canal o vídeo..." 
+                                                        onChange={e => setStreamData({...streamData, url: e.target.value})} />
+                                                </div>
+                                                <div className="col-md-2">
+                                                    <button className="btn btn-accent w-100" onClick={handleAddStream}>AÑADIR</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* LISTADO DE STREAMS */}
+                                    <div className="row">
+                                        {tournament.streams?.length > 0 ? tournament.streams.map((s, i) => (
+                                            <div key={i} className="col-md-6 mb-4">
+                                                {/* Contenedor padre con posición relativa */}
+                                                <div className="position-relative">
+                                                    {/* El botón ahora está FUERA del div 'ratio' para que Bootstrap no lo expanda */}
+                                                    {isOrganizer && (
+                                                        <button 
+                                                            className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                                                            style={{ zIndex: 10, border: '1px solid rgba(255,255,255,0.2)' }}
+                                                            onClick={() => handleDeleteStream(i)}
+                                                            title="Eliminar contenido"
+                                                        >
+                                                            <i className="bi bi-trash"></i>
+                                                        </button>
+                                                    )}
+                                                    
+                                                    {/* Solo el iframe debe estar dentro del div 'ratio' */}
+                                                    <div className="ratio ratio-16x9 bg-black rounded overflow-hidden shadow">
+                                                        <iframe 
+                                                            src={getEmbedURL(s)} 
+                                                            allowFullScreen 
+                                                            title={`Stream ${i}`}
+                                                            style={{ border: 'none' }}
+                                                        ></iframe>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-2 small text-dim d-flex justify-content-between px-1">
+                                                    <span className="fw-bold text-accent">{s.plataforma}</span>
+                                                    <a href={s.url} target="_blank" rel="noreferrer" className="text-white-50 text-decoration-none hover-accent">
+                                                        Ver en {s.plataforma} <i className="bi bi-box-arrow-up-right ms-1" style={{fontSize: '0.7rem'}}></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        )) : (
+                                            <div className="text-center py-5 bg-dark-secondary rounded">
+                                                <i className="bi bi-broadcast fs-1 text-dim mb-3"></i>
+                                                <p className="text-dim">No hay contenido multimedia disponible aún.</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>

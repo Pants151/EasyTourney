@@ -17,7 +17,11 @@ const tournamentSchema = new mongoose.Schema({
     ganadorTipo: { type: String, enum: ['User', 'Team'], default: 'User' },
     participantes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     alMejorDe: { type: Number, default: 1 },
-    ganadoresRondaBR: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Historial de ganadores por ronda
+    ganadoresRondaBR: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    streams: [{
+        plataforma: { type: String, enum: ['Twitch', 'YouTube'] },
+        url: { type: String }
+    }],
 });
 
 module.exports = mongoose.model('Tournament', tournamentSchema);

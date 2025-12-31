@@ -93,9 +93,18 @@ exports.generateBrackets = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id).populate('participantes').populate('equipos');
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
+        // Validación mínima común
         let entities = tournament.formato === 'Equipos' ? [...tournament.equipos] : [...tournament.participantes];
-        if (entities.length < 2) return res.status(400).json({ msg: 'Mínimo 2 participantes/equipos' });
+        if (entities.length < 2) return res.status(400).json({ msg: 'Mínimo 2 participantes para iniciar' });
 
+        // LÓGICA ESPECÍFICA PARA BATTLE ROYALE
+        if (tournament.formato === 'Battle Royale') {
+            tournament.estado = 'En curso';
+            await tournament.save();
+            return res.json({ msg: 'Torneo de Battle Royale iniciado correctamente' });
+        }
+
+        // LÓGICA PARA 1V1 Y EQUIPOS (Brackets)
         entities.sort(() => 0.5 - Math.random());
 
         for (let i = 0; i < entities.length; i += 2) {
@@ -284,12 +293,13 @@ exports.updateTournament = async (req, res) => {
         }
 
         // Actualizar campos permitidos
-        const { nombre, plataformas, ubicacion, fechaInicio, reglas } = req.body;
+        const { nombre, plataformas, ubicacion, fechaInicio, reglas, streams } = req.body;
         tournament.nombre = nombre || tournament.nombre;
         tournament.plataformas = plataformas || tournament.plataformas;
         tournament.ubicacion = ubicacion || tournament.ubicacion;
         tournament.fechaInicio = fechaInicio || tournament.fechaInicio;
         tournament.reglas = reglas || tournament.reglas;
+        tournament.streams = streams || tournament.streams;
 
         await tournament.save();
         res.json(tournament);
