@@ -25,18 +25,41 @@ const Account = () => {
 
     const onUpdateProfile = async (e) => {
         e.preventDefault();
+        
+        // VALIDACIONES LOCALES
+        if (formData.username.trim().length < 3) {
+            alert('El nombre de usuario debe tener al menos 3 caracteres.');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            alert('Por favor, introduce un correo electrónico válido.');
+            return;
+        }
+
         try {
             await authService.updateProfile(formData);
-            alert('Perfil actualizado');
-        } catch (err) { alert('Error al actualizar perfil'); }
+            alert('Perfil actualizado con éxito');
+        } catch (err) { 
+            const errorMsg = err.response?.data?.msg || 'Error al actualizar perfil';
+            alert(errorMsg); 
+        }
     };
 
     const onChangePassword = async (e) => {
         e.preventDefault();
+
+        // VALIDACIÓN LOCAL
+        if (passwords.passwordNuevo.length < 6) {
+            alert('La nueva contraseña debe tener al menos 6 caracteres.');
+            return;
+        }
+
         try {
             await authService.changePassword(passwords);
             alert('Contraseña cambiada con éxito');
-            setPasswords({ passwordActual: '', passwordNuevo: '' }); // Limpiar campos
+            setPasswords({ passwordActual: '', passwordNuevo: '' });
         } catch (err) {
             alert(err.response?.data?.msg || 'Error al cambiar contraseña');
         }

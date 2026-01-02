@@ -9,14 +9,45 @@ const Register = () => {
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    const validateForm = () => {
+        const { username, email, password } = formData;
+        
+        // Validación Nombre de Usuario: Mínimo 3 caracteres
+        if (username.trim().length < 3) {
+            alert('El nombre de usuario debe tener al menos 3 caracteres.');
+            return false;
+        }
+
+        // Validación Básica de Email (regex)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Por favor, introduce un correo electrónico válido.');
+            return false;
+        }
+
+        // Validación Básica de Contraseña: Mínimo 6 caracteres
+        if (password.length < 6) {
+            alert('La contraseña debe tener al menos 6 caracteres.');
+            return false;
+        }
+
+        return true;
+    };
+
     const onSubmit = async e => {
         e.preventDefault();
+        
+        // Ejecutar validaciones locales antes de llamar al servidor
+        if (!validateForm()) return;
+
         try {
-            await authService.register(formData);
+            await authService.register(formData); //
             alert('Usuario registrado con éxito');
-            navigate('/login');
+            navigate('/login'); //
         } catch (err) {
-            alert('Error al registrar usuario.');
+            // Si el backend devuelve un error (como "usuario ya existe"), lo mostramos aquí
+            const errorMsg = err.response?.data?.msg || 'Error al registrar usuario.';
+            alert(errorMsg);
         }
     };
 
@@ -32,16 +63,34 @@ const Register = () => {
 
                         <form onSubmit={onSubmit}>
                             <div className="mb-3">
-                                <label className="form-label-custom">Nombre de Usuario</label>
-                                <input type="text" name="username" className="form-control form-control-custom" onChange={onChange} required />
+                                <label className="form-label-custom">Nombre de Usuario (Mín. 3 letras)</label>
+                                <input 
+                                    type="text" 
+                                    name="username" 
+                                    className="form-control form-control-custom" 
+                                    onChange={onChange} 
+                                    required 
+                                />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label-custom">Correo Electrónico</label>
-                                <input type="email" name="email" className="form-control form-control-custom" onChange={onChange} required />
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    className="form-control form-control-custom" 
+                                    onChange={onChange} 
+                                    required 
+                                />
                             </div>
                             <div className="mb-3">
-                                <label className="form-label-custom">Contraseña</label>
-                                <input type="password" name="password" className="form-control form-control-custom" onChange={onChange} required />
+                                <label className="form-label-custom">Contraseña (Mín. 6 caracteres)</label>
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    className="form-control form-control-custom" 
+                                    onChange={onChange} 
+                                    required 
+                                />
                             </div>
                             <div className="mb-4">
                                 <label className="form-label-custom">¿Qué quieres ser?</label>

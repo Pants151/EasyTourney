@@ -9,6 +9,7 @@ const EditTournament = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [tournamentStatus, setTournamentStatus] = useState('');
+    const [originalDate, setOriginalDate] = useState(''); // Guardamos la original
     const [formData, setFormData] = useState({
         nombre: '', juego: '', formato: '1v1', limiteParticipantes: 16,
         tamanoEquipoMax: 1, alMejorDe: 1, ubicacion: 'Online', 
@@ -23,6 +24,7 @@ const EditTournament = () => {
                     gameService.getGames()
                 ]);
                 const formattedDate = new Date(tData.fechaInicio).toISOString().slice(0, 16);
+                setOriginalDate(formattedDate); // Guardar fecha inicial
                 setTournamentStatus(tData.estado);
                 setFormData({
                     nombre: tData.nombre,
@@ -46,6 +48,13 @@ const EditTournament = () => {
 
     const onUpdate = async (e) => {
         e.preventDefault();
+        
+        // Validar fecha solo si es distinta a la que ya tenía el torneo
+        if (formData.fechaInicio !== originalDate && new Date(formData.fechaInicio) < new Date()) {
+            alert('Si cambias la fecha, esta no puede ser anterior a la actual.');
+            return;
+        }
+
         try {
             await tournamentService.updateTournament(id, formData);
             alert("Torneo actualizado correctamente.");

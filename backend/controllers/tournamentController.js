@@ -3,10 +3,22 @@ const Match = require('../models/Match');
 const Team = require('../models/Team');
 
 // Crear un nuevo torneo
+// Crear un nuevo torneo con validaciones
 exports.createTournament = async (req, res) => {
     try {
         // Extraemos 'formato' y 'tamanoEquipoMax' en lugar de modalidad
         const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes, alMejorDe } = req.body;
+
+        // 1. Validar nombre duplicado
+        const existingName = await Tournament.findOne({ nombre });
+        if (existingName) {
+            return res.status(400).json({ msg: 'Ya existe un torneo con este nombre.' });
+        }
+
+        // 2. Validar fecha (No puede ser pasada)
+        if (new Date(fechaInicio) < new Date()) {
+            return res.status(400).json({ msg: 'La fecha de inicio no puede ser anterior a la actual.' });
+        }
 
         const newTournament = new Tournament({
             nombre,
@@ -270,6 +282,7 @@ exports.advanceTournament = async (req, res) => {
 };
 
 // Actualizar datos de un torneo
+// Actualizar datos de un torneo con validaciones
 exports.updateTournament = async (req, res) => {
     try {
         let tournament = await Tournament.findById(req.params.id);
@@ -294,6 +307,26 @@ exports.updateTournament = async (req, res) => {
 
         // Actualizar campos permitidos
         const { nombre, plataformas, ubicacion, fechaInicio, reglas, streams } = req.body;
+
+        // 1. Validar nombre duplicado (si se está cambiando)
+        if (nombre && nombre !== tournament.nombre) {
+            const existingName = await Tournament.findOne({ nombre, _id: { $ne: req.params.id } });
+            if (existingName) {
+                return res.status(400).json({ msg: 'Ese nombre de torneo ya está en uso por otro evento.' });
+            }
+        }
+
+        // 2. Validar fecha SOLO si el usuario la ha modificado
+        if (fechaInicio) {
+            const nuevaFecha = new Date(fechaInicio);
+            const fechaAntigua = new Date(tournament.fechaInicio);
+
+            // Solo bloqueamos si la fecha cambia y la nueva es anterior a "ahora"
+            if (nuevaFecha.getTime() !== fechaAntigua.getTime() && nuevaFecha < new Date()) {
+                return res.status(400).json({ msg: 'La nueva fecha no puede ser anterior a la actual.' });
+            }
+        }
+
         tournament.nombre = nombre || tournament.nombre;
         tournament.plataformas = plataformas || tournament.plataformas;
         tournament.ubicacion = ubicacion || tournament.ubicacion;
