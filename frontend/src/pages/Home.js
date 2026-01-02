@@ -124,10 +124,10 @@ const Home = () => {
                         {/* Texto e Iconos a la izquierda */}
                         <div className="col-lg-6 text-white">
                             <h2 className="feature-title text-uppercase fw-bolder mb-4 lh-1">
-                                VIVE LA <span className="text-accent">INTENSIDAD</span> DE LA COMPETICIÓN PROFESIONAL
+                                VIVE LA <span className="text-accent">INTENSIDAD</span> DE LA COMPETICIÓN AMATEUR
                             </h2>
                             <p className="lead text-dim mb-5">
-                                Participa en torneos diarios, sube en el ranking y consigue premios exclusivos. Tu camino al estrellato comienza aquí.
+                                Crea torneos, participa en ellos y demuestra quien manda. Tu camino al estrellato comienza aquí.
                             </p>
 
                             <div className="d-flex feature-icons">
@@ -135,14 +135,14 @@ const Home = () => {
                                     <img src="/assets/images/icon-trophy.png" alt="Trofeo" height="50" className="me-3" />
                                     <div>
                                         <h5 className="fw-bold mb-0">TORNEOS ÉPICOS</h5>
-                                        <small className="text-dim">Premios reales</small>
+                                        <small className="text-dim">Juega y compite</small>
                                     </div>
                                 </div>
                                 <div className="feature-item d-flex align-items-center">
                                     <img src="/assets/images/icon-controller.png" alt="Mando" height="50" className="me-3" />
                                     <div>
-                                        <h5 className="fw-bold mb-0">TODAS LAS PLATAFORMAS</h5>
-                                        <small className="text-dim">Juega donde quieras</small>
+                                        <h5 className="fw-bold mb-0">PLATAFORMAS MÚLTIPLES</h5>
+                                        <small className="text-dim">Montones de plataformas disponibles</small>
                                     </div>
                                 </div>
                             </div>

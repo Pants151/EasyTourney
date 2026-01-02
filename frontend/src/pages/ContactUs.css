@@ -1,7 +1,14 @@
 .contact-page-wrapper {
     background-color: #0b0e11;
-    min-height: 75vh;
+    padding-top: 120px;
+    padding-bottom: 80px;
+    margin-top: 0 !important;
+    min-height: 100vh;
     color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .contact-main-logo {
@@ -41,6 +48,9 @@
 }
 
 @media (max-width: 768px) {
+    .contact-page-wrapper {
+        padding-top: 100px;
+    }
     .contact-email-link {
         font-size: 1.4rem;
     }

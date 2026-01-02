@@ -386,7 +386,16 @@ const handleAdvanceRound = async () => {
                             <ul className="list-unstyled text-white small">
                                 <li className="mb-2"><i className="bi bi-controller text-accent me-2"></i> {tournament.juego?.nombre}</li>
                                 <li className="mb-2"><i className="bi bi-calendar-event text-accent me-2"></i> {new Date(tournament.fechaInicio).toLocaleDateString()}</li>
-                                <li className="mb-2"><i className="bi bi-people text-accent me-2"></i> {tournament.participantes?.length} Inscritos</li>
+                                <li className="mb-2">
+                                    <i className="bi bi-people text-accent me-2"></i> 
+                                    {currentCount} / {tournament.limiteParticipantes} {tournament.formato === 'Equipos' ? 'Equipos' : 'Inscritos'}
+                                </li>
+                                <li className="mb-2">
+                                    <i className="bi bi-pc-display text-accent me-2"></i> 
+                                    {tournament.plataformas?.length > 0 
+                                        ? tournament.plataformas.join(', ') 
+                                        : (tournament.juego?.plataformas?.join(', ') || 'Multiplataforma')}
+                                </li>
                                 <li className="mb-2"><i className="bi bi-shield-check text-accent me-2"></i> {tournament.formato || tournament.modalidad}</li>
                             </ul>
 
