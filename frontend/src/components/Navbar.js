@@ -50,6 +50,12 @@ const Navbar = () => {
                         <li className="nav-item">
                             <Link className="nav-link nav-link-custom" to="/games" onClick={handleNavigation}>JUEGOS</Link>
                         </li>
+                        {/* NUEVO: Acceso administrativo para Usuarios */}
+                        {user && user.rol === 'administrador' && (
+                            <li className="nav-item">
+                                <Link className="nav-link nav-link-custom text-warning fw-bold" to="/admin-users" onClick={handleNavigation}>USUARIOS</Link>
+                            </li>
+                        )}
                     </ul>
 
                     <ul className="navbar-nav align-items-lg-center">

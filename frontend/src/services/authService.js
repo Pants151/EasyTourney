@@ -25,4 +25,7 @@ const deleteAccount = async () => (await axios.delete(API_URL + 'profile', getAu
 const changePassword = async (passwords) => 
     (await axios.put(API_URL + 'change-password', passwords, getAuthHeaders())).data;
 
-export default { register, login, getProfile, updateProfile, deleteAccount, changePassword };
+const getAllUsers = async () => (await axios.get(API_URL + 'users', getAuthHeaders())).data;
+const deleteUserByAdmin = async (id) => (await axios.delete(`${API_URL}users/${id}`, getAuthHeaders())).data;
+
+export default { register, login, getProfile, updateProfile, deleteAccount, changePassword, getAllUsers, deleteUserByAdmin };
