@@ -9,6 +9,8 @@ const EditTournament = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [tournamentStatus, setTournamentStatus] = useState('');
+    const [submitError, setSubmitError] = useState('');
+    const [errors, setErrors] = useState({});
     const [originalDate, setOriginalDate] = useState(''); // Guardamos la original
     const [formData, setFormData] = useState({
         nombre: '', juego: '', formato: '1v1', limiteParticipantes: 16,
@@ -48,10 +50,18 @@ const EditTournament = () => {
 
     const onUpdate = async (e) => {
         e.preventDefault();
+        setSubmitError('');
+        setErrors({});
         
-        // Validar fecha solo si es distinta a la que ya tenía el torneo
+        let tempErrors = {};
+        if (!formData.nombre.trim()) tempErrors.nombre = "El nombre es obligatorio";
+
         if (formData.fechaInicio !== originalDate && new Date(formData.fechaInicio) < new Date()) {
-            alert('Si cambias la fecha, esta no puede ser anterior a la actual.');
+            tempErrors.fechaInicio = "La fecha no puede ser anterior a la actual";
+        }
+
+        if (Object.keys(tempErrors).length > 0) {
+            setErrors(tempErrors);
             return;
         }
 
@@ -59,7 +69,9 @@ const EditTournament = () => {
             await tournamentService.updateTournament(id, formData);
             alert("Torneo actualizado correctamente.");
             navigate('/manage-my-tournaments');
-        } catch (err) { alert(err.response?.data?.msg || "Error al actualizar."); }
+        } catch (err) { 
+            setSubmitError(err.response?.data?.msg || "Error al actualizar."); 
+        }
     };
 
     return (
@@ -68,13 +80,15 @@ const EditTournament = () => {
                 <div className="col-lg-8">
                     <div className="form-container-custom p-4 p-md-5">
                         <h2 className="text-uppercase fw-bolder mb-4">Editar <span className="text-accent">Torneo</span></h2>
+                        {submitError && <div className="form-alert form-alert-danger">{submitError}</div>}
                         {isLocked && <div className="alert alert-info py-2 small">Los ajustes competitivos están bloqueados porque el torneo ya ha sido publicado.</div>}
                         
                         <form onSubmit={onUpdate}>
                             <div className="mb-4">
                                 <label className="form-label-custom">Nombre del Torneo</label>
-                                <input type="text" className="form-control-custom form-control" value={formData.nombre} 
+                                <input type="text" className={`form-control-custom form-control ${errors.nombre ? 'is-invalid' : ''}`} value={formData.nombre} 
                                     onChange={e => setFormData({...formData, nombre: e.target.value})} required />
+                                {errors.nombre && <span className="error-feedback">{errors.nombre}</span>}
                             </div>
 
                             <div className="row">
@@ -118,6 +132,14 @@ const EditTournament = () => {
                                             disabled={isLocked} onChange={e => setFormData({...formData, alMejorDe: e.target.value})} min="1" />
                                     </div>
                                 )}
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="form-label-custom">Fecha de Inicio</label>
+                                <input type="datetime-local" className={`form-control-custom form-control ${errors.fechaInicio ? 'is-invalid' : ''}`} 
+                                    value={formData.fechaInicio} 
+                                    onChange={e => setFormData({...formData, fechaInicio: e.target.value})} required />
+                                {errors.fechaInicio && <span className="error-feedback">{errors.fechaInicio}</span>}
                             </div>
 
                             <div className="mb-4">

@@ -6,8 +6,7 @@ const Team = require('../models/Team');
 // Crear un nuevo torneo con validaciones
 exports.createTournament = async (req, res) => {
     try {
-        // Extraemos 'formato' y 'tamanoEquipoMax' en lugar de modalidad
-        const { nombre, juego, plataformas, formato, tamanoEquipoMax, ubicacion, fechaInicio, reglas, limiteParticipantes, alMejorDe } = req.body;
+        const { nombre, fechaInicio, formato, tamanoEquipoMax, alMejorDe } = req.body;
 
         // 1. Validar nombre duplicado
         const existingName = await Tournament.findOne({ nombre });
@@ -21,15 +20,8 @@ exports.createTournament = async (req, res) => {
         }
 
         const newTournament = new Tournament({
-            nombre,
-            juego,
-            plataformas,
-            formato, // Sincronizado con el modelo
+            ...req.body,
             tamanoEquipoMax: formato === 'Equipos' ? tamanoEquipoMax : 1,
-            limiteParticipantes,
-            ubicacion,
-            fechaInicio,
-            reglas,
             organizador: req.user.id,
             alMejorDe: formato === 'Battle Royale' ? (alMejorDe || 1) : 1
         });
@@ -289,6 +281,8 @@ exports.updateTournament = async (req, res) => {
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
         if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
 
+        const { nombre, fechaInicio } = req.body;
+
         // PROTECCIÓN: Si el torneo ya no es Borrador, prohibir cambios estructurales
         if (tournament.estado !== 'Borrador') {
             const { juego, formato, limiteParticipantes, tamanoEquipoMax, alMejorDe } = req.body;
@@ -305,35 +299,22 @@ exports.updateTournament = async (req, res) => {
             }
         }
 
-        // Actualizar campos permitidos
-        const { nombre, plataformas, ubicacion, fechaInicio, reglas, streams } = req.body;
-
-        // 1. Validar nombre duplicado (si se está cambiando)
+        // Validar nombre duplicado (si el nombre ha cambiado)
         if (nombre && nombre !== tournament.nombre) {
             const existingName = await Tournament.findOne({ nombre, _id: { $ne: req.params.id } });
             if (existingName) {
-                return res.status(400).json({ msg: 'Ese nombre de torneo ya está en uso por otro evento.' });
+                return res.status(400).json({ msg: 'Este nombre ya está en uso por otro torneo.' });
             }
         }
 
-        // 2. Validar fecha SOLO si el usuario la ha modificado
-        if (fechaInicio) {
-            const nuevaFecha = new Date(fechaInicio);
-            const fechaAntigua = new Date(tournament.fechaInicio);
-
-            // Solo bloqueamos si la fecha cambia y la nueva es anterior a "ahora"
-            if (nuevaFecha.getTime() !== fechaAntigua.getTime() && nuevaFecha < new Date()) {
+        // Validar fecha solo si se cambia
+        if (fechaInicio && new Date(fechaInicio).getTime() !== new Date(tournament.fechaInicio).getTime()) {
+            if (new Date(fechaInicio) < new Date()) {
                 return res.status(400).json({ msg: 'La nueva fecha no puede ser anterior a la actual.' });
             }
         }
 
-        tournament.nombre = nombre || tournament.nombre;
-        tournament.plataformas = plataformas || tournament.plataformas;
-        tournament.ubicacion = ubicacion || tournament.ubicacion;
-        tournament.fechaInicio = fechaInicio || tournament.fechaInicio;
-        tournament.reglas = reglas || tournament.reglas;
-        tournament.streams = streams || tournament.streams;
-
+        Object.assign(tournament, req.body);
         await tournament.save();
         res.json(tournament);
     } catch (err) {

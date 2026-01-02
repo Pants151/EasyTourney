@@ -16,6 +16,8 @@ const CreateTournament = () => {
         reglas: '',
         alMejorDe: 1
     });
+    const [errors, setErrors] = useState({});
+    const [serverError, setServerError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -26,13 +28,28 @@ const CreateTournament = () => {
         fetchGames();
     }, []);
 
+    const validate = () => {
+        let tempErrors = {};
+        if (!formData.nombre.trim()) tempErrors.nombre = "El nombre es obligatorio";
+        if (!formData.fechaInicio) tempErrors.fechaInicio = "La fecha es obligatoria";
+        else if (new Date(formData.fechaInicio) < new Date()) {
+            tempErrors.fechaInicio = "La fecha no puede ser anterior a la actual";
+        }
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    };
+
     const onSubmit = async e => {
         e.preventDefault();
+        setServerError('');
+        if (!validate()) return;
+
         try {
             await tournamentService.createTournament(formData);
-            alert('¡Torneo creado!');
             navigate('/manage-my-tournaments');
-        } catch (err) { alert('Error al crear'); }
+        } catch (err) {
+            setServerError(err.response?.data?.msg || 'Error al crear el torneo');
+        }
     };
 
     return (
@@ -41,12 +58,14 @@ const CreateTournament = () => {
                 <div className="col-lg-8">
                     <div className="form-container-custom p-4 p-md-5">
                         <h2 className="text-uppercase fw-bolder mb-4">Crear <span className="text-accent">Torneo</span></h2>
+                        {serverError && <div className="form-alert form-alert-danger">{serverError}</div>}
                         <form onSubmit={onSubmit}>
                             {/* ... (campos del formulario se mantienen igual) */}
                             <div className="mb-4">
                                 <label className="form-label-custom">Nombre del Evento</label>
-                                <input type="text" name="nombre" className="form-control-custom form-control" 
+                                <input type="text" name="nombre" className={`form-control-custom form-control ${errors.nombre ? 'is-invalid' : ''}`} 
                                     placeholder="Ej: Copa de Invierno 2024" onChange={e => setFormData({...formData, nombre: e.target.value})} required />
+                                {errors.nombre && <span className="error-feedback">{errors.nombre}</span>}
                             </div>
                             <div className="mb-4">
                                 <label className="form-label-custom">Juego Oficial</label>
@@ -105,8 +124,9 @@ const CreateTournament = () => {
 
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Fecha de Inicio</label>
-                                    <input type="datetime-local" name="fechaInicio" className="form-control-custom form-control" 
+                                    <input type="datetime-local" name="fechaInicio" className={`form-control-custom form-control ${errors.fechaInicio ? 'is-invalid' : ''}`} 
                                         onChange={e => setFormData({...formData, fechaInicio: e.target.value})} required />
+                                    {errors.fechaInicio && <span className="error-feedback">{errors.fechaInicio}</span>}
                                 </div>
                             </div>
                             <div className="mb-5">
