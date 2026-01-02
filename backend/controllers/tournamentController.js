@@ -1,6 +1,7 @@
 const Tournament = require('../models/Tournament');
 const Match = require('../models/Match');
 const Team = require('../models/Team');
+const User = require('../models/User');
 
 // Crear un nuevo torneo
 // Crear un nuevo torneo con validaciones
@@ -66,6 +67,9 @@ exports.joinTournament = async (req, res) => {
         // Añadir el usuario al array de participantes
         tournament.participantes.push(req.user.id);
         await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(req.params.id).emit('participantUpdated');
 
         res.json({ msg: 'Inscripción realizada con éxito', participantes: tournament.participantes });
     } catch (err) {
@@ -142,6 +146,10 @@ exports.generateBrackets = async (req, res) => {
 
         tournament.estado = 'En curso';
         await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(req.params.id).emit('bracketUpdated');
+
         res.json({ msg: 'Brackets generados correctamente' });
     } catch (err) {
         console.error(err);
@@ -219,6 +227,10 @@ exports.updateMatchResult = async (req, res) => {
         match.resultado = resultado;
 
         await match.save();
+
+        const io = req.app.get('socketio');
+        io.to(match.torneo._id.toString()).emit('bracketUpdated');
+
         res.json(match);
     } catch (err) { res.status(500).send('Error al actualizar resultado'); }
 };
@@ -240,6 +252,18 @@ exports.advanceTournament = async (req, res) => {
             tournament.ganador = winners[0];
             tournament.ganadorTipo = tournament.formato === 'Equipos' ? 'Team' : 'User';
             await tournament.save();
+
+            const io = req.app.get('socketio');
+            let winnerName = 'Ganador';
+            if (tournament.ganadorTipo === 'Team') {
+                const team = await Team.findById(winners[0]);
+                if (team) winnerName = team.nombre;
+            } else {
+                const user = await User.findById(winners[0]);
+                if (user) winnerName = user.username;
+            }
+            io.to(req.params.id).emit('tournamentFinished', { winnerName });
+
             return res.json({ msg: '¡Torneo finalizado!' });
         }
 
@@ -269,6 +293,10 @@ exports.advanceTournament = async (req, res) => {
 
             await new Match(matchData).save();
         }
+
+        const io = req.app.get('socketio');
+        io.to(req.params.id).emit('bracketUpdated');
+
         res.json({ msg: `Ronda ${nextRound} generada` });
     } catch (err) { res.status(500).send('Error al avanzar ronda'); }
 };
@@ -363,6 +391,9 @@ exports.createTeam = async (req, res) => {
         if (!tournament.participantes.includes(req.user.id)) tournament.participantes.push(req.user.id);
         await tournament.save();
 
+        const io = req.app.get('socketio');
+        io.to(req.params.id).emit('participantUpdated');
+
         res.json(team);
     } catch (err) { res.status(500).send('Error al crear equipo'); }
 };
@@ -389,6 +420,10 @@ exports.leaveTournament = async (req, res) => {
         }
 
         await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(req.params.id).emit('participantUpdated');
+
         res.json({ msg: 'Has abandonado el torneo' });
     } catch (err) { res.status(500).send('Error al abandonar'); }
 };
@@ -421,6 +456,10 @@ exports.handleExitTournament = async (req, res) => {
         }
 
         await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(id).emit('participantUpdated');
+
         res.json({ msg: 'Operación realizada correctamente' });
     } catch (err) {
         res.status(500).send('Error al procesar la salida');
@@ -450,6 +489,10 @@ exports.expelParticipant = async (req, res) => {
         }
 
         await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(tournamentId).emit('participantUpdated');
+
         res.json({ msg: 'Participante expulsado' });
     } catch (err) { res.status(500).send('Error al expulsar'); }
 };
@@ -502,6 +545,9 @@ exports.respondToTeamRequest = async (req, res) => {
             if (!tournament.participantes.includes(userId)) {
                 tournament.participantes.push(userId);
                 await tournament.save();
+
+                const io = req.app.get('socketio');
+                io.to(team.torneo.toString()).emit('participantUpdated');
             }
         } else {
             team.miembros = team.miembros.filter(m => m.usuario.toString() !== userId);
@@ -532,9 +578,17 @@ exports.reportBRRoundWinner = async (req, res) => {
             tournament.estado = 'Finalizado';
             tournament.ganador = winnerId;
             tournament.ganadorTipo = 'User';
+
+            const io = req.app.get('socketio');
+            const user = await User.findById(winnerId);
+            io.to(req.params.id).emit('tournamentFinished', { winnerName: user ? user.username : 'Ganador' });
         }
 
         await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(req.params.id).emit('bracketUpdated');
+
         res.json(tournament);
     } catch (err) { res.status(500).send('Error al reportar ronda'); }
 };

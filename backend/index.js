@@ -1,5 +1,7 @@
 const express = require('express');
+const http = require('http');
 const mongoose = require('mongoose');
+const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -14,6 +16,23 @@ const tournamentRoutes = require('./routes/tournamentRoutes');
 
 
 const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000", // URL del frontend
+        methods: ["GET", "POST"]
+    }
+});
+
+io.on('connection', (socket) => {
+    socket.on('joinTournament', (tournamentId) => {
+        socket.join(tournamentId);
+    });
+});
+
+// Hacer io accesible en los controladores
+app.set('socketio', io);
 
 // Middlewares
 app.use(cors());
@@ -34,6 +53,6 @@ app.get('/', (req, res) => {
 
 // Arrancar el servidor
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

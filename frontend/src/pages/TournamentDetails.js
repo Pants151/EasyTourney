@@ -5,6 +5,9 @@ import { AuthContext } from '../context/AuthContext';
 import './TournamentDetails.css';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 // Añadir esta utilidad arriba
 const isPowerOfTwo = (n) => n > 1 && (n & (n - 1)) === 0;
@@ -20,27 +23,61 @@ const TournamentDetails = () => {
     const [newTeamName, setNewTeamName] = useState("");
     const [streamData, setStreamData] = useState({ plataforma: 'Twitch', url: '' });
 
+    // Fix scroll al montar el componente
     useEffect(() => {
-        const fetchAll = async () => {
-            try {
-                const [tData, mData] = await Promise.all([
-                    tournamentService.getTournamentById(id),
-                    tournamentService.getTournamentMatches(id)
-                ]);
+        window.scrollTo(0, 0);
+    }, []);
 
-                // Enriquecer participantes con nombre de equipo si aplica
-                if (tData.formato === 'Equipos' && tData.equipos) {
-                    tData.participantes = tData.participantes.map(p => {
-                        const team = tData.equipos.find(t => t.miembros.some(m => (m.usuario._id || m.usuario) === p._id));
-                        return { ...p, equipoNombre: team ? team.nombre : null };
-                    });
-                }
+    const fetchAll = async () => {
+        try {
+            const [tData, mData] = await Promise.all([
+                tournamentService.getTournamentById(id),
+                tournamentService.getTournamentMatches(id)
+            ]);
 
-                setTournament(tData);
-                setMatches(mData);
-            } catch (err) { console.error(err); }
-        };
+            // Enriquecer participantes con nombre de equipo si aplica
+            if (tData.formato === 'Equipos' && tData.equipos) {
+                tData.participantes = tData.participantes.map(p => {
+                    const team = tData.equipos.find(t => t.miembros.some(m => (m.usuario._id || m.usuario) === p._id));
+                    return { ...p, equipoNombre: team ? team.nombre : null };
+                });
+            }
+
+            setTournament(tData);
+            setMatches(mData);
+        } catch (err) { console.error(err); }
+    };
+
+    useEffect(() => {
         fetchAll();
+        
+        // Socket.io logic
+        socket.emit('joinTournament', id);
+        
+        const handleBracketUpdate = () => {
+            console.log("Actualización de brackets recibida");
+            fetchAll();
+        };
+
+        const handleParticipantUpdate = () => {
+            console.log("Nuevo participante detectado");
+            fetchAll();
+        };
+
+        const handleTournamentFinished = (data) => {
+            console.log("¡Torneo finalizado!");
+            fetchAll();
+        };
+
+        socket.on('bracketUpdated', handleBracketUpdate);
+        socket.on('participantUpdated', handleParticipantUpdate);
+        socket.on('tournamentFinished', handleTournamentFinished);
+
+        return () => {
+            socket.off('bracketUpdated', handleBracketUpdate);
+            socket.off('participantUpdated', handleParticipantUpdate);
+            socket.off('tournamentFinished', handleTournamentFinished);
+        };
     }, [id]);
 
     if (!tournament) return <div className="text-center py-5 text-white">Cargando...</div>;
@@ -67,7 +104,7 @@ const TournamentDetails = () => {
         // Cambiamos 'reportWinner' por 'updateMatchResult'
         // Cambiamos el campo 'ganador' por 'ganadorId'
         await tournamentService.updateMatchResult(matchId, { ganadorId: winnerId }); 
-        window.location.reload();
+        // No recargamos, esperamos el evento del socket
     } catch (err) { 
         console.error(err);
         alert("Error al reportar ganador"); 
@@ -78,7 +115,7 @@ const TournamentDetails = () => {
         if (!isOrganizer) return;
         try {
             await tournamentService.reportBRRoundWinner(id, { winnerId });
-            window.location.reload();
+            // No recargamos, esperamos el evento del socket
         } catch (err) { alert("Error al reportar ganador de ronda"); }
     };
 
@@ -93,8 +130,7 @@ const TournamentDetails = () => {
 const handleGenerateBrackets = async () => {
     try {
         await tournamentService.generateBrackets(id);
-        alert('Torneo iniciado y brackets generados.');
-        window.location.reload();
+        // No recargamos, esperamos el evento del socket
     } catch (err) { alert(err.response?.data?.msg || 'Error al generar brackets'); }
 };
 
@@ -102,7 +138,7 @@ const handleAdvanceRound = async () => {
     try {
         const res = await tournamentService.advanceTournament(id);
         alert(res.data.msg);
-        window.location.reload();
+        // No recargamos, esperamos el evento del socket
     } catch (err) { alert(err.response?.data?.msg || 'Error al avanzar de ronda'); }
 };
 
