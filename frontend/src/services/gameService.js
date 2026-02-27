@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/games/';
+const API_URL = 'https://easytourney.onrender.com/api/games/';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('userToken');

@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://easytourney.onrender.com');
 
 // Añadir esta utilidad arriba
 const isPowerOfTwo = (n) => n > 1 && (n & (n - 1)) === 0;
