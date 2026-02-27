@@ -240,3 +240,37 @@
     }
     .btn-accent { width: 100%; padding: 15px; }
 }
+
+/* Estilo para el botón de descargar app */
+.hero-buttons .btn-download-app {
+    background-color: #28a745 !important; /* Verde éxito, forzado */
+    color: white;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-download-app:hover {
+    background-color: #218838;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+/* Responsividad: Controlar que los botones se apilen en móviles */
+@media (max-width: 576px) {
+    .hero-buttons {
+        flex-direction: column; /* Apilar verticalmente */
+        align-items: center;
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    .hero-buttons .btn {
+        width: 100%; /* Botones de ancho completo en móvil */
+        margin-left: 0 !important; /* Eliminar márgenes laterales */
+        margin-bottom: 10px;
+    }
+}

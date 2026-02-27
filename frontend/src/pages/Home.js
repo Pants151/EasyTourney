@@ -6,6 +6,39 @@ import './Home.css';
 const Home = () => {
     const [topGames, setTopGames] = useState([]);
     const navigate = useNavigate();
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
+    const [isInstalled, setIsInstalled] = useState(false);
+
+    useEffect(() => {
+        // 1. Detectar si ya estamos dentro de la App (modo standalone)
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            setIsInstalled(true);
+        }
+
+        // 2. Capturar el evento de instalación disponible
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+        });
+
+        // 3. Detectar si se instaló con éxito para ocultar el botón
+        window.addEventListener('appinstalled', () => {
+            setIsInstalled(true);
+            setDeferredPrompt(null);
+        });
+    }, []);
+
+    const handleInstallClick = async () => {
+        if (!deferredPrompt) {
+            alert("Para instalar en iOS: Pulsa 'Compartir' y 'Añadir a pantalla de inicio'. En PC, busca el icono en la barra de direcciones.");
+            return;
+        }
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            setDeferredPrompt(null);
+        }
+    };
 
     // Función para el desplazamiento suave hacia arriba
     const handleScrollToTop = () => {
@@ -31,11 +64,11 @@ const Home = () => {
         <div className="home-wrapper">
 
             {/* --- SECCIÓN HERO --- */}
-            <section 
+            <section
                 className="hero-section d-flex align-items-center justify-content-center"
-                style={{ 
+                style={{
                     // Mantenemos tu ruta directa a public sin imports fallidos
-                    backgroundImage: "url('/assets/images/mi-fondo-hero.jpg')", 
+                    backgroundImage: "url('/assets/images/mi-fondo-hero.jpg')",
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
@@ -58,15 +91,27 @@ const Home = () => {
                     <p className="hero-subtitle h4 mb-5 text-white animate-fade-up delay-2">
                         Compite. Gana. Escribe tu historia.
                     </p>
-                    
-                    {/* BOTÓN 1: Empieza tu legado con scroll suave */}
-                    <Link 
-                        to="/register" 
-                        className="btn btn-accent btn-lg animate-fade-up delay-3 text-white"
-                        onClick={handleScrollToTop}
-                    >
-                        EMPIEZA TU LEGADO
-                    </Link>
+
+                    <div className="hero-buttons d-flex justify-content-center flex-wrap gap-3">
+                        {/* BOTÓN 1: Empieza tu legado con scroll suave */}
+                        <Link
+                            to="/register"
+                            className="btn btn-accent btn-lg animate-fade-up delay-3 text-white"
+                            onClick={handleScrollToTop}
+                        >
+                            EMPIEZA TU LEGADO
+                        </Link>
+
+                        {/* BOTÓN NUEVO: Solo aparece si NO está instalada */}
+                        {!isInstalled && (
+                            <button
+                                onClick={handleInstallClick}
+                                className="btn btn-download-app btn-lg animate-fade-up delay-3"
+                            >
+                                DESCARGAR APP
+                            </button>
+                        )}
+                    </div>
                 </div>
             </section>
 
@@ -80,9 +125,9 @@ const Home = () => {
 
                     <div className="games-scroll-container mb-4">
                         {topGames.map(game => (
-                            <div 
-                                key={game._id} 
-                                className="game-cover-item mx-2" 
+                            <div
+                                key={game._id}
+                                className="game-cover-item mx-2"
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => {
                                     handleScrollToTop();
@@ -95,8 +140,8 @@ const Home = () => {
                     </div>
 
                     {/* BOTÓN 2: Ver todos los juegos con scroll suave */}
-                    <button 
-                        className="btn btn-view-all mt-2" 
+                    <button
+                        className="btn btn-view-all mt-2"
                         onClick={() => {
                             handleScrollToTop();
                             navigate('/games');
