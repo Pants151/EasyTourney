@@ -1,7 +1,6 @@
-const CACHE_NAME = 'easytourney-cache-v2'; // <- Hemos subido a v2
+const CACHE_NAME = 'easytourney-cache-v3'; // <- Hemos subido a v2
 const urlsToCache = [
   '/',
-  '/index.html',
   '/manifest.json',
   '/favicon.ico'
 ];
@@ -23,6 +22,14 @@ self.addEventListener('fetch', (event) => {
   // no hacemos nada y dejamos que el navegador la maneje normalmente.
   if (event.request.url.includes('/socket.io/') || event.request.url.includes('/api/')) {
     return; // Salimos de la función
+  }
+
+  // Siempre ir a la red primero
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/index.html'))
+    );
+    return;
   }
 
   // Para el resto (imágenes, CSS, HTML), buscamos en la caché
