@@ -8,6 +8,8 @@ const adminAuth = require('../middleware/adminAuth');
 router.post('/register', authController.register);
 // Ruta: POST /api/auth/login
 router.post('/login', authController.login);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password/:token', authController.resetPassword);
 router.get('/profile', auth, authController.getUserProfile);
 router.put('/profile', auth, authController.updateUserProfile);
 router.delete('/profile', auth, authController.deleteUser);

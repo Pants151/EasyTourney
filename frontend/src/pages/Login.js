@@ -33,21 +33,25 @@ const Login = () => {
                             <img src="/assets/images/logo-nav.png" alt="Logo" height="50" className="mb-3" />
                             <h2 className="text-uppercase fw-bolder text-white">Iniciar <span className="text-accent">Sesión</span></h2>
                         </div>
-                        
+
                         <form onSubmit={onSubmit}>
                             <div className="mb-4">
                                 <label className="form-label-custom">Correo Electrónico</label>
-                                <input type="email" name="email" className="form-control form-control-custom" 
+                                <input type="email" name="email" className="form-control form-control-custom"
                                     placeholder="tu@email.com" onChange={onChange} required />
                             </div>
                             <div className="mb-4">
                                 <label className="form-label-custom">Contraseña</label>
-                                <input type="password" name="password" className="form-control form-control-custom" 
+                                <input type="password" name="password" className="form-control form-control-custom"
                                     placeholder="********" onChange={onChange} required />
                             </div>
-                            
+
                             <button type="submit" className="btn-accent w-100 mb-4">ENTRAR</button>
-                            
+
+                            <div className="text-center mb-3">
+                                <Link to="/forgot-password" className="text-white small text-decoration-none">¿Olvidaste tu contraseña?</Link>
+                            </div>
+
                             <div className="text-center">
                                 <p className="text-white small mb-0">
                                     ¿No tienes cuenta? <Link to="/register" className="text-accent fw-bold text-decoration-none">Regístrate aquí</Link>

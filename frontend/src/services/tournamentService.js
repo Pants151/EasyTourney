@@ -1,6 +1,7 @@
 import axios from 'axios';
+import config from '../config';
 
-const API_URL = 'https://easytourney.onrender.com/api/tournaments/';
+const API_URL = `${config.API_URL}/tournaments/`;
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('userToken');
@@ -34,11 +35,11 @@ const leaveTournament = async (id) => axios.put(`${API_URL}leave/${id}`, {}, get
 const expelParticipant = async (tId, uId) => axios.delete(`${API_URL}${tId}/expel/${uId}`, getAuthHeaders());
 const reportBRRoundWinner = async (id, data) => axios.put(`${API_URL}${id}/br-round`, data, getAuthHeaders());
 
-export default { 
-    createTournament, 
-    getTournaments, 
-    getTournamentById, 
-    joinTournament, 
+export default {
+    createTournament,
+    getTournaments,
+    getTournamentById,
+    joinTournament,
     generateBrackets,
     publishTournament,
     getTournamentMatches,

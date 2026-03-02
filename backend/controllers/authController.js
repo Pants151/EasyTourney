@@ -4,6 +4,8 @@ const Match = require('../models/Match');
 const Team = require('../models/Team');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 
 // Lógica de Registro
 exports.register = async (req, res) => {
@@ -199,7 +201,7 @@ exports.getAllUsers = async (req, res) => {
         const users = await User.find({ _id: { $ne: req.user.id } })
             .select('-password')
             .sort({ username: 1 });
-            
+
         res.json(users);
     } catch (err) {
         console.error(err.message);
@@ -222,5 +224,91 @@ exports.deleteUserByAdmin = async (req, res) => {
         res.json({ msg: `El usuario ${userToDelete.username} y sus datos han sido eliminados` });
     } catch (err) {
         res.status(500).send('Error al eliminar el usuario');
+    }
+};
+
+// Solicitar recuperación de contraseña
+exports.forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ msg: 'No existe ningún usuario con ese correo electrónico' });
+        }
+
+        // 1. Generar token de reseteo aleatorio
+        const resetToken = crypto.randomBytes(20).toString('hex');
+
+        // 2. Guardar token y expiración en el usuario (1 hora de validez)
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = Date.now() + 3600000; // 1 hora en ms
+        await user.save();
+
+        // 3. Generar URL de reseteo
+        // Se asume que en el FRONTEND_URL está la URL de la aplicación React (ej. http://localhost:3000)
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+
+        // 4. Crear mensaje y enviar correo
+        const message = `Has recibido este correo porque tú (o alguien más) ha solicitado el restablecimiento de la contraseña en EasyTourney.\n\nPor favor, haz clic en el siguiente enlace, o pégalo en tu navegador para completar el proceso:\n\n${resetUrl}\n\nSi no fuiste tú, por favor ignora este correo y tu contraseña permanecerá sin cambios.\n`;
+
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'EasyTourney - Recuperación de Contraseña',
+                message
+            });
+
+            res.status(200).json({ msg: 'Correo de recuperación enviado exitosamente' });
+        } catch (error) {
+            console.error('Error enviando correo:', error);
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save();
+
+            return res.status(500).json({ msg: 'Hubo un error al enviar el correo. Por favor inténtelo de nuevo más tarde.' });
+        }
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+};
+
+// Restablecer contraseña con el token
+exports.resetPassword = async (req, res) => {
+    try {
+        // 1. Buscar usuario con ese token que además no haya expirado
+        const user = await User.findOne({
+            resetPasswordToken: req.params.token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ msg: 'El token de recuperación de contraseña es inválido o ha expirado.' });
+        }
+
+        // 2. Validar contraseña
+        const { password } = req.body;
+        if (!password || password.length < 6) {
+            return res.status(400).json({ msg: 'La nueva contraseña debe tener al menos 6 caracteres.' });
+        }
+
+        // 3. Hashear la nueva contraseña y guardarla
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        // 4. Limpiar los campos del token para que no se reusen
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        await user.save();
+
+        res.status(200).json({ msg: 'La contraseña se ha restablecido correctamente. Ya puedes iniciar sesión.' });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al restablecer la contraseña');
     }
 };
