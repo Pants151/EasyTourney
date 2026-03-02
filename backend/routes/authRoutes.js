@@ -21,4 +21,7 @@ router.get('/users', [auth, adminAuth], authController.getAllUsers);
 // Ruta: DELETE /api/auth/users/:id - Eliminar cualquier usuario (Solo Admin)
 router.delete('/users/:id', [auth, adminAuth], authController.deleteUserByAdmin);
 
+// Ruta: PUT /api/auth/users/:id - Actualizar cualquier usuario (Solo Admin)
+router.put('/users/:id', [auth, adminAuth], authController.updateUserByAdmin);
+
 module.exports = router;

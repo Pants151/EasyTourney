@@ -227,6 +227,37 @@ exports.deleteUserByAdmin = async (req, res) => {
     }
 };
 
+// Actualizar usuario por administrador
+exports.updateUserByAdmin = async (req, res) => {
+    const { username, email, rol } = req.body;
+    try {
+        let user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
+        // Validar si el nuevo username ya existe en OTRO usuario
+        if (username && username !== user.username) {
+            const existingUsername = await User.findOne({ username, _id: { $ne: req.params.id } });
+            if (existingUsername) return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' });
+        }
+
+        // Validar si el nuevo email ya existe en OTRO usuario
+        if (email && email !== user.email) {
+            const existingEmail = await User.findOne({ email, _id: { $ne: req.params.id } });
+            if (existingEmail) return res.status(400).json({ msg: 'El correo electrónico ya está en uso.' });
+        }
+
+        user.username = username || user.username;
+        user.email = email || user.email;
+        if (rol) user.rol = rol;
+
+        await user.save();
+        res.json({ _id: user.id, username: user.username, email: user.email, rol: user.rol });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al actualizar el usuario');
+    }
+};
+
 // Solicitar recuperación de contraseña
 exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
