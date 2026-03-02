@@ -6,8 +6,9 @@ import './TournamentDetails.css';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import io from 'socket.io-client';
+import config from '../config';
 
-const socket = io('https://easytourney.onrender.com');
+const socket = io(config.SOCKET_URL);
 
 // Añadir esta utilidad arriba
 const isPowerOfTwo = (n) => n > 1 && (n & (n - 1)) === 0;
@@ -22,6 +23,7 @@ const TournamentDetails = () => {
     const [showTeamModal, setShowTeamModal] = useState(false);
     const [newTeamName, setNewTeamName] = useState("");
     const [streamData, setStreamData] = useState({ plataforma: 'Twitch', url: '' });
+    const [isGenerating, setIsGenerating] = useState(false); // Estado para evitar doble clic
 
     // Fix scroll al montar el componente
     useEffect(() => {
@@ -50,10 +52,10 @@ const TournamentDetails = () => {
 
     useEffect(() => {
         fetchAll();
-        
+
         // Socket.io logic
         socket.emit('joinTournament', id);
-        
+
         const handleBracketUpdate = () => {
             console.log("Actualización de brackets recibida");
             fetchAll();
@@ -85,8 +87,8 @@ const TournamentDetails = () => {
     const isOrganizer = user && tournament.organizador && (user.id === tournament.organizador._id || user.id === tournament.organizador);
 
     // Determinamos el conteo según el formato
-    const currentCount = tournament.formato === 'Equipos' 
-        ? tournament.equipos?.length || 0 
+    const currentCount = tournament.formato === 'Equipos'
+        ? tournament.equipos?.length || 0
         : tournament.participantes?.length || 0;
 
     const hasValidPowerOfTwo = isPowerOfTwo(currentCount);
@@ -99,48 +101,53 @@ const TournamentDetails = () => {
 
     // Ejemplo de reporte visual de ganador
     const handleSetWinner = async (matchId, winnerId) => {
-    if (!isOrganizer) return;
-    try {
-        // Cambiamos 'reportWinner' por 'updateMatchResult'
-        // Cambiamos el campo 'ganador' por 'ganadorId'
-        await tournamentService.updateMatchResult(matchId, { ganadorId: winnerId }); 
-        // No recargamos, esperamos el evento del socket
-    } catch (err) { 
-        console.error(err);
-        alert("Error al reportar ganador"); 
-    }
-};
+        if (!isOrganizer) return;
+        try {
+            // Cambiamos 'reportWinner' por 'updateMatchResult'
+            // Cambiamos el campo 'ganador' por 'ganadorId'
+            await tournamentService.updateMatchResult(matchId, { ganadorId: winnerId });
+            await fetchAll();
+        } catch (err) {
+            console.error(err);
+            alert("Error al reportar ganador");
+        }
+    };
 
     const handleSetWinnerBR = async (winnerId) => {
         if (!isOrganizer) return;
         try {
             await tournamentService.reportBRRoundWinner(id, { winnerId });
-            // No recargamos, esperamos el evento del socket
+            await fetchAll();
         } catch (err) { alert("Error al reportar ganador de ronda"); }
     };
 
     const handlePublish = async () => {
-    try {
-        await tournamentService.publishTournament(id);
-        alert('Torneo publicado correctamente.');
-        window.location.reload();
-    } catch (err) { alert('Error al publicar el torneo'); }
-};
+        try {
+            await tournamentService.publishTournament(id);
+            alert('Torneo publicado correctamente.');
+            window.location.reload();
+        } catch (err) { alert('Error al publicar el torneo'); }
+    };
 
-const handleGenerateBrackets = async () => {
-    try {
-        await tournamentService.generateBrackets(id);
-        // No recargamos, esperamos el evento del socket
-    } catch (err) { alert(err.response?.data?.msg || 'Error al generar brackets'); }
-};
+    const handleGenerateBrackets = async () => {
+        try {
+            setIsGenerating(true);
+            await tournamentService.generateBrackets(id);
+            await fetchAll();
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al generar brackets');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
-const handleAdvanceRound = async () => {
-    try {
-        const res = await tournamentService.advanceTournament(id);
-        alert(res.data.msg);
-        // No recargamos, esperamos el evento del socket
-    } catch (err) { alert(err.response?.data?.msg || 'Error al avanzar de ronda'); }
-};
+    const handleAdvanceRound = async () => {
+        try {
+            const res = await tournamentService.advanceTournament(id);
+            alert(res.data.msg);
+            await fetchAll();
+        } catch (err) { alert(err.response?.data?.msg || 'Error al avanzar de ronda'); }
+    };
 
     const handleJoin = async () => {
         try {
@@ -178,16 +185,16 @@ const handleAdvanceRound = async () => {
     };
 
     const handleExpulsar = async (userId) => {
-    if (!window.confirm("¿Estás seguro de expulsar a este participante?")) return;
-    try {
-        // Cambiamos kickParticipant por expelParticipant
-        await tournamentService.expelParticipant(id, userId); 
-        alert("Participante expulsado.");
-        window.location.reload();
-    } catch (err) {
-        alert(err.response?.data?.msg || "Error al expulsar");
-    }
-};
+        if (!window.confirm("¿Estás seguro de expulsar a este participante?")) return;
+        try {
+            // Cambiamos kickParticipant por expelParticipant
+            await tournamentService.expelParticipant(id, userId);
+            alert("Participante expulsado.");
+            window.location.reload();
+        } catch (err) {
+            alert(err.response?.data?.msg || "Error al expulsar");
+        }
+    };
 
     const handleLeave = async () => {
         if (!window.confirm("¿Seguro que quieres abandonar el torneo? Si eres capitán, el equipo se disolverá.")) return;
@@ -227,78 +234,78 @@ const handleAdvanceRound = async () => {
 
     // Función auxiliar para obtener el ID de video/canal
     const getEmbedURL = (s) => {
-    if (s.plataforma === 'Twitch') {
-        const urlParts = s.url.split('/');
-        // Si el enlace contiene 'videos', es un VOD (directo finalizado)
-        if (s.url.includes('/videos/')) {
-            const videoId = urlParts[urlParts.indexOf('videos') + 1].split('?')[0];
-            return `https://player.twitch.tv/?video=${videoId}&parent=${window.location.hostname}&autoplay=false`;
+        if (s.plataforma === 'Twitch') {
+            const urlParts = s.url.split('/');
+            // Si el enlace contiene 'videos', es un VOD (directo finalizado)
+            if (s.url.includes('/videos/')) {
+                const videoId = urlParts[urlParts.indexOf('videos') + 1].split('?')[0];
+                return `https://player.twitch.tv/?video=${videoId}&parent=${window.location.hostname}&autoplay=false`;
+            } else {
+                // Es un canal en directo
+                const channel = urlParts.filter(part => part !== "").pop();
+                return `https://player.twitch.tv/?channel=${channel}&parent=${window.location.hostname}&autoplay=false`;
+            }
         } else {
-            // Es un canal en directo
-            const channel = urlParts.filter(part => part !== "").pop();
-            return `https://player.twitch.tv/?channel=${channel}&parent=${window.location.hostname}&autoplay=false`;
+            // Lógica de YouTube
+            const videoId = s.url.split('v=').pop()?.split('&')[0] || s.url.split('/').pop();
+            return `https://www.youtube.com/embed/${videoId}`;
         }
-    } else {
-        // Lógica de YouTube
-        const videoId = s.url.split('v=').pop()?.split('&')[0] || s.url.split('/').pop();
-        return `https://www.youtube.com/embed/${videoId}`;
-    }
-};
+    };
 
     const exportToPDF = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
 
-    doc.setFontSize(22);
-    doc.setTextColor(255, 115, 0); 
-    doc.text(tournament.nombre.toUpperCase(), pageWidth / 2, 20, { align: 'center' });
+        doc.setFontSize(22);
+        doc.setTextColor(255, 115, 0);
+        doc.text(tournament.nombre.toUpperCase(), pageWidth / 2, 20, { align: 'center' });
 
-    // Tabla de Características
-    autoTable(doc, {
-        startY: 40,
-        head: [['Característica', 'Detalle']],
-        body: [
-            ['Juego', tournament.juego?.nombre],
-            ['Formato', tournament.formato],
-            ['Participantes', tournament.participantes?.length],
-            ['Estado', tournament.estado.toUpperCase()],
-            ['CAMPEÓN', tournament.formato === 'Equipos' ? tournament.ganador?.nombre : tournament.ganador?.username]
-        ],
-        theme: 'striped',
-        headStyles: { fillColor: [255, 115, 0] }
-    });
-
-    // LÓGICA PARA BATTLE ROYALE EN EL PDF
-    if (tournament.formato === 'Battle Royale' && tournament.ganadoresRondaBR?.length > 0) {
-        const brBody = tournament.ganadoresRondaBR.map((g, index) => [
-            `Ronda ${index + 1}`, 
-            g.username || "Usuario"
-        ]);
-
-        doc.text("Historial de Rondas (Battle Royale)", 14, doc.lastAutoTable.finalY + 15);
+        // Tabla de Características
         autoTable(doc, {
-            startY: doc.lastAutoTable.finalY + 20,
-            head: [['Ronda', 'Ganador de Ronda']],
-            body: brBody
-        });
-    } 
-    // Lógica para 1v1 y Equipos (Brackets)
-    else if (matches.length > 0) {
-        const matchesBody = matches.map(m => {
-            const p1 = tournament.formato === 'Equipos' ? m.equipo1?.nombre : m.jugador1?.username;
-            const p2 = tournament.formato === 'Equipos' ? m.equipo2?.nombre : m.jugador2?.username;
-            const win = tournament.formato === 'Equipos' ? m.ganador?.nombre : m.ganador?.username;
-            return [`Ronda ${m.ronda}`, `${p1 || 'TBD'} vs ${p2 || 'BYE'}`, win || 'Pendiente'];
+            startY: 40,
+            head: [['Característica', 'Detalle']],
+            body: [
+                ['Juego', tournament.juego?.nombre],
+                ['Formato', tournament.formato],
+                ['Participantes', tournament.participantes?.length],
+                ['Estado', tournament.estado.toUpperCase()],
+                ['CAMPEÓN', tournament.formato === 'Equipos' ? tournament.ganador?.nombre : tournament.ganador?.username]
+            ],
+            theme: 'striped',
+            headStyles: { fillColor: [255, 115, 0] }
         });
 
-        doc.text("Resumen de Enfrentamientos", 14, doc.lastAutoTable.finalY + 15);
-        autoTable(doc, {
-            startY: doc.lastAutoTable.finalY + 20, head: [['Ronda', 'Duelo', 'Resultado']], body: matchesBody
-        });
-    }
+        // LÓGICA PARA BATTLE ROYALE EN EL PDF
+        if (tournament.formato === 'Battle Royale' && tournament.ganadoresRondaBR?.length > 0) {
+            const brBody = tournament.ganadoresRondaBR.map((g, index) => [
+                `Ronda ${index + 1}`,
+                g.username || "Usuario"
+            ]);
 
-    doc.save(`Reporte_${tournament.nombre}.pdf`);
-};
+            doc.text("Historial de Rondas (Battle Royale)", 14, doc.lastAutoTable.finalY + 15);
+            autoTable(doc, {
+                startY: doc.lastAutoTable.finalY + 20,
+                head: [['Ronda', 'Ganador de Ronda']],
+                body: brBody
+            });
+        }
+        // Lógica para 1v1 y Equipos (Brackets)
+        else if (matches.length > 0) {
+            const matchesBody = matches.map(m => {
+                const p1 = tournament.formato === 'Equipos' ? m.equipo1?.nombre : m.jugador1?.username;
+                const p2 = tournament.formato === 'Equipos' ? m.equipo2?.nombre : m.jugador2?.username;
+                const win = tournament.formato === 'Equipos' ? m.ganador?.nombre : m.ganador?.username;
+                return [`Ronda ${m.ronda}`, `${p1 || 'TBD'} vs ${p2 || 'BYE'}`, win || 'Pendiente'];
+            });
+
+            doc.text("Resumen de Enfrentamientos", 14, doc.lastAutoTable.finalY + 15);
+            autoTable(doc, {
+                startY: doc.lastAutoTable.finalY + 20, head: [['Ronda', 'Duelo', 'Resultado']], body: matchesBody
+            });
+        }
+
+        doc.save(`Reporte_${tournament.nombre}.pdf`);
+    };
 
     // Lógica para verificar si el usuario ya está inscrito
     const isJoined = tournament.participantes.some(p => (p._id || p) === (user?.id || user?._id));
@@ -351,8 +358,7 @@ const handleAdvanceRound = async () => {
                                             Se requiere un número par exacto (2, 4, 8, 16...) para iniciar.
                                         </div>
                                     )}
-                                    
-                                    {/* El aviso para BR si hay menos de 2 personas */}
+
                                     {isBR && currentCount < 2 && (
                                         <div className="text-warning small fw-bold mb-1">
                                             <i className="bi bi-exclamation-triangle me-1"></i>
@@ -360,10 +366,14 @@ const handleAdvanceRound = async () => {
                                         </div>
                                     )}
 
-                                    <button className="btn btn-accent px-4 fw-bold" 
+                                    <button className="btn btn-accent px-4 fw-bold"
                                         onClick={handleGenerateBrackets}
-                                        disabled={!canStartTournament}>
-                                        {isBR ? 'INICIAR TORNEO' : 'INICIAR Y GENERAR BRACKETS'}
+                                        disabled={!canStartTournament || isGenerating}>
+                                        {isGenerating ? (
+                                            <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>GENERANDO...</>
+                                        ) : (
+                                            isBR ? 'INICIAR TORNEO' : 'INICIAR Y GENERAR BRACKETS'
+                                        )}
                                     </button>
                                 </>
                             )}
@@ -387,13 +397,13 @@ const handleAdvanceRound = async () => {
                                 <li className="mb-2"><i className="bi bi-controller text-accent me-2"></i> {tournament.juego?.nombre}</li>
                                 <li className="mb-2"><i className="bi bi-calendar-event text-accent me-2"></i> {new Date(tournament.fechaInicio).toLocaleDateString()}</li>
                                 <li className="mb-2">
-                                    <i className="bi bi-people text-accent me-2"></i> 
+                                    <i className="bi bi-people text-accent me-2"></i>
                                     {currentCount} / {tournament.limiteParticipantes} {tournament.formato === 'Equipos' ? 'Equipos' : 'Inscritos'}
                                 </li>
                                 <li className="mb-2">
-                                    <i className="bi bi-pc-display text-accent me-2"></i> 
-                                    {tournament.plataformas?.length > 0 
-                                        ? tournament.plataformas.join(', ') 
+                                    <i className="bi bi-pc-display text-accent me-2"></i>
+                                    {tournament.plataformas?.length > 0
+                                        ? tournament.plataformas.join(', ')
                                         : (tournament.juego?.plataformas?.join(', ') || 'Multiplataforma')}
                                 </li>
                                 <li className="mb-2"><i className="bi bi-shield-check text-accent me-2"></i> {tournament.formato || tournament.modalidad}</li>
@@ -405,8 +415,8 @@ const handleAdvanceRound = async () => {
                                     <div className="fs-1 mb-1">🏆</div>
                                     <h6 className="text-accent fw-bold text-uppercase mb-1" style={{ letterSpacing: '1px', fontSize: '0.8rem' }}>Campeón</h6>
                                     <h5 className="text-white fw-bolder mb-0">
-                                        {tournament.formato === 'Equipos' 
-                                            ? (tournament.ganador.nombre || "Equipo Desconocido") 
+                                        {tournament.formato === 'Equipos'
+                                            ? (tournament.ganador.nombre || "Equipo Desconocido")
                                             : (tournament.ganador.username || "Usuario Desconocido")}
                                     </h5>
                                 </div>
@@ -440,7 +450,7 @@ const handleAdvanceRound = async () => {
                     <div className="col-lg-9">
                         <div className="tournament-mini-nav d-flex gap-4 mb-4 border-bottom border-secondary pb-2">
                             {['fases', 'información', 'participantes', 'streams'].map(tab => (
-                                <button 
+                                <button
                                     key={tab}
                                     className={`nav-tab-btn ${activeTab === tab ? 'active' : ''}`}
                                     onClick={() => setActiveTab(tab)}
@@ -480,7 +490,7 @@ const handleAdvanceRound = async () => {
                                                         {tournament.participantes.map(p => {
                                                             const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
                                                             return (
-                                                                <button key={p._id} className="btn btn-outline-light d-flex flex-column align-items-center p-3" 
+                                                                <button key={p._id} className="btn btn-outline-light d-flex flex-column align-items-center p-3"
                                                                     onClick={() => handleSetWinnerBR(p._id)} style={{ minWidth: '120px' }}>
                                                                     <span className="fw-bold">{p.username}</span>
                                                                     <span className="badge bg-accent mt-2">{wins} / {tournament.alMejorDe}</span>
@@ -529,17 +539,17 @@ const handleAdvanceRound = async () => {
                                                                 return (
                                                                     <div key={m._id} className="match-wrapper">
                                                                         <div className="match-item shadow-sm">
-                                                                            <div 
+                                                                            <div
                                                                                 className={`player-slot rounded-top ${m.ganador?._id === p1?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p1 ? 'cursor-pointer' : 'no-interaction'}`}
                                                                                 onClick={() => canSetWinner && p1 && handleSetWinner(m._id, p1._id)}
                                                                             >
                                                                                 <span className="player-name-text">{p1Name || 'TBD'}</span>
                                                                             </div>
-                                                                            
+
                                                                             {/* DIV DEL VS ENTRE LOS DOS NOMBRES */}
                                                                             <div className="bracket-vs">VS</div>
-                                                                            
-                                                                            <div 
+
+                                                                            <div
                                                                                 className={`player-slot rounded-bottom ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p2 ? 'cursor-pointer' : 'no-interaction'}`}
                                                                                 onClick={() => canSetWinner && p2 && handleSetWinner(m._id, p2._id)}
                                                                             >
@@ -617,7 +627,7 @@ const handleAdvanceRound = async () => {
                                                 )}
                                                 {/* Botón de expulsar para el organizador si el torneo no ha empezado */}
                                                 {isOrganizer && tournament.estado === 'Abierto' && (
-                                                    <button className="btn btn-link text-danger btn-sm p-0 mt-2" 
+                                                    <button className="btn btn-link text-danger btn-sm p-0 mt-2"
                                                         onClick={() => handleExpulsar(p._id)}>EXPULSAR</button>
                                                 )}
                                             </div>
@@ -635,16 +645,16 @@ const handleAdvanceRound = async () => {
                                             <h6 className="text-white text-uppercase fw-bold mb-3">Subir Stream / Vídeo</h6>
                                             <div className="row g-2">
                                                 <div className="col-md-3">
-                                                    <select className="form-select form-select-custom" 
-                                                        onChange={e => setStreamData({...streamData, plataforma: e.target.value})}>
+                                                    <select className="form-select form-select-custom"
+                                                        onChange={e => setStreamData({ ...streamData, plataforma: e.target.value })}>
                                                         <option value="Twitch">Twitch (Directo)</option>
                                                         <option value="YouTube">YouTube (Vídeo)</option>
                                                     </select>
                                                 </div>
                                                 <div className="col-md-7">
-                                                    <input type="text" className="form-control form-control-custom" 
-                                                        placeholder="URL del canal o vídeo..." 
-                                                        onChange={e => setStreamData({...streamData, url: e.target.value})} />
+                                                    <input type="text" className="form-control form-control-custom"
+                                                        placeholder="URL del canal o vídeo..."
+                                                        onChange={e => setStreamData({ ...streamData, url: e.target.value })} />
                                                 </div>
                                                 <div className="col-md-2">
                                                     <button className="btn btn-accent w-100" onClick={handleAddStream}>AÑADIR</button>
@@ -661,7 +671,7 @@ const handleAdvanceRound = async () => {
                                                 <div className="position-relative">
                                                     {/* El botón ahora está FUERA del div 'ratio' para que Bootstrap no lo expanda */}
                                                     {isOrganizer && (
-                                                        <button 
+                                                        <button
                                                             className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
                                                             style={{ zIndex: 10, border: '1px solid rgba(255,255,255,0.2)' }}
                                                             onClick={() => handleDeleteStream(i)}
@@ -670,12 +680,12 @@ const handleAdvanceRound = async () => {
                                                             <i className="bi bi-trash"></i>
                                                         </button>
                                                     )}
-                                                    
+
                                                     {/* Solo el iframe debe estar dentro del div 'ratio' */}
                                                     <div className="ratio ratio-16x9 bg-black rounded overflow-hidden shadow">
-                                                        <iframe 
-                                                            src={getEmbedURL(s)} 
-                                                            allowFullScreen 
+                                                        <iframe
+                                                            src={getEmbedURL(s)}
+                                                            allowFullScreen
                                                             title={`Stream ${i}`}
                                                             style={{ border: 'none' }}
                                                         ></iframe>
@@ -685,7 +695,7 @@ const handleAdvanceRound = async () => {
                                                 <div className="mt-2 small text-dim d-flex justify-content-between px-1">
                                                     <span className="fw-bold text-accent">{s.plataforma}</span>
                                                     <a href={s.url} target="_blank" rel="noreferrer" className="text-white-50 text-decoration-none hover-accent">
-                                                        Ver en {s.plataforma} <i className="bi bi-box-arrow-up-right ms-1" style={{fontSize: '0.7rem'}}></i>
+                                                        Ver en {s.plataforma} <i className="bi bi-box-arrow-up-right ms-1" style={{ fontSize: '0.7rem' }}></i>
                                                     </a>
                                                 </div>
                                             </div>
@@ -708,12 +718,12 @@ const handleAdvanceRound = async () => {
                 <div className="custom-modal-overlay">
                     <div className="form-container-custom p-4 shadow-lg modal-content-team">
                         <h3 className="text-accent text-uppercase fw-bold mb-4">Inscripción por Equipos</h3>
-                        
+
                         {/* CREAR EQUIPO */}
                         <div className="mb-4 pb-4 border-bottom border-secondary">
                             <label className="form-label-custom">Crear Nuevo Equipo</label>
                             <div className="d-flex gap-2">
-                                <input type="text" className="form-control form-control-custom" 
+                                <input type="text" className="form-control form-control-custom"
                                     placeholder="Nombre del equipo..." value={newTeamName}
                                     onChange={(e) => setNewTeamName(e.target.value)} />
                                 <button className="btn btn-accent px-4" onClick={handleCreateTeam}>CREAR</button>

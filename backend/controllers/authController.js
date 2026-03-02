@@ -107,7 +107,7 @@ exports.getUserProfile = async (req, res) => {
 
 // Actualizar perfil con comprobación de duplicados
 exports.updateUserProfile = async (req, res) => {
-    const { username, email, pais, fechaNacimiento } = req.body;
+    const { username, email, pais, fechaNacimiento, rol } = req.body;
     try {
         let user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
@@ -122,6 +122,21 @@ exports.updateUserProfile = async (req, res) => {
         if (email && email !== user.email) {
             const existingEmail = await User.findOne({ email, _id: { $ne: req.user.id } });
             if (existingEmail) return res.status(400).json({ msg: 'El correo electrónico ya está en uso.' });
+        }
+
+        // --- GESTIÓN DE ROL Y BORRADO EN CASCADA DE TORNEOS ---
+        // Solo usuarios normales pueden cambiar entre organizador y participante
+        if (user.rol !== 'administrador' && rol && ['participante', 'organizador'].includes(rol) && rol !== user.rol) {
+            // Si baja a participante, borramos sus torneos organizados
+            if (user.rol === 'organizador' && rol === 'participante') {
+                const userTournaments = await Tournament.find({ organizador: user._id });
+                for (const tournament of userTournaments) {
+                    await Match.deleteMany({ torneo: tournament._id });
+                    await Team.deleteMany({ torneo: tournament._id });
+                    await Tournament.findByIdAndDelete(tournament._id);
+                }
+            }
+            user.rol = rol;
         }
 
         user.username = username || user.username;
@@ -246,9 +261,22 @@ exports.updateUserByAdmin = async (req, res) => {
             if (existingEmail) return res.status(400).json({ msg: 'El correo electrónico ya está en uso.' });
         }
 
+        // --- GESTIÓN DE ROL Y BORRADO EN CASCADA DE TORNEOS ---
+        if (rol && ['participante', 'organizador', 'administrador'].includes(rol) && rol !== user.rol) {
+            // Si baja a participante desde organizador o admin, borramos sus torneos organizados
+            if ((user.rol === 'organizador' || user.rol === 'administrador') && rol === 'participante') {
+                const userTournaments = await Tournament.find({ organizador: user._id });
+                for (const tournament of userTournaments) {
+                    await Match.deleteMany({ torneo: tournament._id });
+                    await Team.deleteMany({ torneo: tournament._id });
+                    await Tournament.findByIdAndDelete(tournament._id);
+                }
+            }
+            user.rol = rol;
+        }
+
         user.username = username || user.username;
         user.email = email || user.email;
-        if (rol) user.rol = rol;
 
         await user.save();
         res.json({ _id: user.id, username: user.username, email: user.email, rol: user.rol });

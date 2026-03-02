@@ -101,6 +101,11 @@ exports.generateBrackets = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id).populate('participantes').populate('equipos');
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
+        // PROTECCIÓN CONTRA DOBLE CLIC / MÚLTIPLES LLAMADAS
+        if (tournament.estado === 'En curso' || tournament.estado === 'Finalizado') {
+            return res.status(400).json({ msg: 'El torneo ya ha sido iniciado y los brackets generados.' });
+        }
+
         // Validación mínima común
         let entities = tournament.formato === 'Equipos' ? [...tournament.equipos] : [...tournament.participantes];
         if (entities.length < 2) return res.status(400).json({ msg: 'Mínimo 2 participantes para iniciar' });
@@ -314,8 +319,8 @@ exports.updateTournament = async (req, res) => {
         // PROTECCIÓN: Si el torneo ya no es Borrador, prohibir cambios estructurales
         if (tournament.estado !== 'Borrador') {
             const { juego, formato, limiteParticipantes, tamanoEquipoMax, alMejorDe } = req.body;
-            
-            const isChangingCritical = 
+
+            const isChangingCritical =
                 (juego && juego !== tournament.juego.toString()) ||
                 (formato && formato !== tournament.formato) ||
                 (limiteParticipantes && Number(limiteParticipantes) !== tournament.limiteParticipantes) ||

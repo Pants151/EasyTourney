@@ -52,6 +52,13 @@ const AdminUsers = () => {
             return setEditError('El nombre debe tener al menos 3 caracteres.');
         }
 
+        const originalUser = users.find(u => u._id === id);
+        if (originalUser && (originalUser.rol === 'organizador' || originalUser.rol === 'administrador') && editFormData.rol === 'participante') {
+            if (!window.confirm("ATENCIÓN: Estás a punto de cambiar el rol de este usuario a Participante. Esto BORRARÁ permanentemente TODOS los torneos que haya organizado. ¿Estás absolutamente seguro/a?")) {
+                return; // Cancelar
+            }
+        }
+
         try {
             const updatedUser = await authService.updateUserByAdmin(id, editFormData);
             // Actualizar la lista local
@@ -91,7 +98,7 @@ const AdminUsers = () => {
                             <option value="">Cualquier Rol</option>
                             <option value="participante">Participante</option>
                             <option value="organizador">Organizador</option>
-                            <option value="admin">Administrador</option>
+                            <option value="administrador">Administrador</option>
                         </select>
                     </div>
                 </div>
@@ -137,7 +144,7 @@ const AdminUsers = () => {
                                                                 value={editFormData.rol} onChange={e => setEditFormData({ ...editFormData, rol: e.target.value })}>
                                                                 <option value="participante">Participante</option>
                                                                 <option value="organizador">Organizador</option>
-                                                                <option value="admin">Administrador</option>
+                                                                <option value="administrador">Administrador</option>
                                                             </select>
                                                         </div>
                                                         <div className="col-md-3 text-end d-flex justify-content-end gap-2">
@@ -152,7 +159,7 @@ const AdminUsers = () => {
                                         <tr key={u._id}>
                                             <td>{u.username}</td>
                                             <td>{u.email}</td>
-                                            <td><span className={`badge ${u.rol === 'admin' ? 'bg-danger' : 'bg-primary'}`}>{u.rol.toUpperCase()}</span></td>
+                                            <td><span className={`badge ${u.rol === 'administrador' ? 'bg-danger' : 'bg-primary'}`}>{u.rol.toUpperCase()}</span></td>
                                             <td className="text-end">
                                                 <button className="btn btn-outline-warning btn-sm me-2 fw-bold" onClick={() => handleEditClick(u)}>Editar</button>
                                                 <button className="btn btn-delete-custom btn-sm" onClick={() => handleDelete(u._id, u.username)}>ELIMINAR</button>

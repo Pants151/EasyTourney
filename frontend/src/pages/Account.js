@@ -6,7 +6,7 @@ import PasswordInput from '../components/PasswordInput';
 import './TournamentForm.css';
 
 const Account = () => {
-    const { logout } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext); // Extraemos user del context
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '', email: '', rol: ''
@@ -39,9 +39,18 @@ const Account = () => {
             return;
         }
 
+        // AVISO CONFIRMACIÓN BAJADA DE ROL
+        if (user?.rol === 'organizador' && formData.rol === 'participante') {
+            if (!window.confirm("ATENCIÓN: Estás a punto de cambiar tu rol a Participante. Esto borrará permanentemente TODOS los torneos que has organizado. ¿Estás absolutamente seguro/a?")) {
+                return; // Cancelar guardado
+            }
+        }
+
         try {
             await authService.updateProfile(formData);
             alert('Perfil actualizado con éxito');
+            // Como el rol puede haber cambiado, forzamos recarga para que AuthContext actualice los layouts (navbar, accesos, etc)
+            window.location.reload();
         } catch (err) {
             const errorMsg = err.response?.data?.msg || 'Error al actualizar perfil';
             alert(errorMsg);
@@ -96,7 +105,18 @@ const Account = () => {
                                 </div>
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Rol de Usuario</label>
-                                    <input type="text" className="form-control form-control-custom opacity-50" value={formData.rol} readOnly />
+                                    {user?.rol === 'administrador' ? (
+                                        <input type="text" className="form-control form-control-custom opacity-50" value={formData.rol} readOnly title="Los administradores no pueden cambiar su rol desde aquí" />
+                                    ) : (
+                                        <select
+                                            className="form-select form-select-custom"
+                                            value={formData.rol}
+                                            onChange={e => setFormData({ ...formData, rol: e.target.value })}
+                                        >
+                                            <option value="participante">Participante</option>
+                                            <option value="organizador">Organizador</option>
+                                        </select>
+                                    )}
                                 </div>
                             </div>
                             <div className="mb-4">
