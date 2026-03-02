@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import { AuthContext } from '../context/AuthContext';
+import PasswordInput from '../components/PasswordInput';
 import './TournamentForm.css';
 
 const Account = () => {
@@ -25,7 +26,7 @@ const Account = () => {
 
     const onUpdateProfile = async (e) => {
         e.preventDefault();
-        
+
         // VALIDACIONES LOCALES
         if (formData.username.trim().length < 3) {
             alert('El nombre de usuario debe tener al menos 3 caracteres.');
@@ -41,9 +42,9 @@ const Account = () => {
         try {
             await authService.updateProfile(formData);
             alert('Perfil actualizado con éxito');
-        } catch (err) { 
+        } catch (err) {
             const errorMsg = err.response?.data?.msg || 'Error al actualizar perfil';
-            alert(errorMsg); 
+            alert(errorMsg);
         }
     };
 
@@ -90,8 +91,8 @@ const Account = () => {
                             <div className="row">
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Nombre de Usuario</label>
-                                    <input type="text" className="form-control form-control-custom" value={formData.username} 
-                                        onChange={e => setFormData({...formData, username: e.target.value})} required />
+                                    <input type="text" className="form-control form-control-custom" value={formData.username}
+                                        onChange={e => setFormData({ ...formData, username: e.target.value })} required minLength="3" maxLength="20" />
                                 </div>
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Rol de Usuario</label>
@@ -100,8 +101,8 @@ const Account = () => {
                             </div>
                             <div className="mb-4">
                                 <label className="form-label-custom">Correo Electrónico</label>
-                                <input type="email" className="form-control form-control-custom" value={formData.email} 
-                                    onChange={e => setFormData({...formData, email: e.target.value})} required />
+                                <input type="email" className="form-control form-control-custom" value={formData.email}
+                                    onChange={e => setFormData({ ...formData, email: e.target.value })} required maxLength="50" />
                             </div>
                             <button type="submit" className="btn-accent px-5">GUARDAR DATOS</button>
                         </form>
@@ -112,13 +113,13 @@ const Account = () => {
                             <div className="row">
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Contraseña Actual</label>
-                                    <input type="password" name="passwordActual" className="form-control form-control-custom" 
-                                        value={passwords.passwordActual} onChange={e => setPasswords({...passwords, passwordActual: e.target.value})} required />
+                                    <PasswordInput name="passwordActual" className="form-control form-control-custom"
+                                        value={passwords.passwordActual} onChange={e => setPasswords({ ...passwords, passwordActual: e.target.value })} required minLength="6" maxLength="100" />
                                 </div>
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Nueva Contraseña</label>
-                                    <input type="password" name="passwordNuevo" className="form-control form-control-custom" 
-                                        value={passwords.passwordNuevo} onChange={e => setPasswords({...passwords, passwordNuevo: e.target.value})} required />
+                                    <PasswordInput name="passwordNuevo" className="form-control form-control-custom"
+                                        value={passwords.passwordNuevo} onChange={e => setPasswords({ ...passwords, passwordNuevo: e.target.value })} required minLength="6" maxLength="100" />
                                 </div>
                             </div>
                             <button type="submit" className="btn btn-outline-warning fw-bold px-5">ACTUALIZAR CONTRASEÑA</button>

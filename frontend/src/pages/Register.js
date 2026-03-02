@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+import PasswordInput from '../components/PasswordInput';
 import './TournamentForm.css';
 
 const Register = () => {
@@ -11,7 +12,7 @@ const Register = () => {
 
     const validateForm = () => {
         const { username, email, password } = formData;
-        
+
         // Validación Nombre de Usuario: Mínimo 3 caracteres
         if (username.trim().length < 3) {
             alert('El nombre de usuario debe tener al menos 3 caracteres.');
@@ -36,7 +37,7 @@ const Register = () => {
 
     const onSubmit = async e => {
         e.preventDefault();
-        
+
         // Ejecutar validaciones locales antes de llamar al servidor
         if (!validateForm()) return;
 
@@ -64,32 +65,36 @@ const Register = () => {
                         <form onSubmit={onSubmit}>
                             <div className="mb-3">
                                 <label className="form-label-custom">Nombre de Usuario (Mín. 3 letras)</label>
-                                <input 
-                                    type="text" 
-                                    name="username" 
-                                    className="form-control form-control-custom" 
-                                    onChange={onChange} 
-                                    required 
+                                <input
+                                    type="text"
+                                    name="username"
+                                    className="form-control form-control-custom"
+                                    onChange={onChange}
+                                    required
+                                    minLength="3"
+                                    maxLength="20"
                                 />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label-custom">Correo Electrónico</label>
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    className="form-control form-control-custom" 
-                                    onChange={onChange} 
-                                    required 
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className="form-control form-control-custom"
+                                    onChange={onChange}
+                                    required
+                                    maxLength="50"
                                 />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label-custom">Contraseña (Mín. 6 caracteres)</label>
-                                <input 
-                                    type="password" 
-                                    name="password" 
-                                    className="form-control form-control-custom" 
-                                    onChange={onChange} 
-                                    required 
+                                <PasswordInput
+                                    name="password"
+                                    className="form-control form-control-custom"
+                                    onChange={onChange}
+                                    required
+                                    minLength="6"
+                                    maxLength="100"
                                 />
                             </div>
                             <div className="mb-4">
@@ -99,7 +104,7 @@ const Register = () => {
                                     <option value="organizador">Organizador de Eventos</option>
                                 </select>
                             </div>
-                            
+
                             <button type="submit" className="btn-accent w-100">REGISTRARSE</button>
                         </form>
                     </div>

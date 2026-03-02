@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
+import PasswordInput from '../components/PasswordInput';
 import './TournamentForm.css';
 
 const ResetPassword = () => {
@@ -49,13 +50,13 @@ const ResetPassword = () => {
                         <form onSubmit={onSubmit}>
                             <div className="mb-4">
                                 <label className="form-label-custom">Nueva Contraseña</label>
-                                <input type="password" name="password" className="form-control form-control-custom"
-                                    placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                <PasswordInput name="password" className="form-control form-control-custom"
+                                    placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} required minLength="6" maxLength="100" />
                             </div>
                             <div className="mb-4">
                                 <label className="form-label-custom">Confirmar Contraseña</label>
-                                <input type="password" name="confirmPassword" className="form-control form-control-custom"
-                                    placeholder="********" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                                <PasswordInput name="confirmPassword" className="form-control form-control-custom"
+                                    placeholder="********" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength="6" maxLength="100" />
                             </div>
 
                             <button type="submit" className="btn-accent w-100 mb-4">GUARDAR CONTRASEÑA</button>

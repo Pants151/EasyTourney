@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
+import PasswordInput from '../components/PasswordInput';
 import './TournamentForm.css'; // Reutilizamos los estilos de formulario
 
 const Login = () => {
@@ -38,12 +39,12 @@ const Login = () => {
                             <div className="mb-4">
                                 <label className="form-label-custom">Correo Electrónico</label>
                                 <input type="email" name="email" className="form-control form-control-custom"
-                                    placeholder="tu@email.com" onChange={onChange} required />
+                                    placeholder="tu@email.com" onChange={onChange} required maxLength="50" />
                             </div>
                             <div className="mb-4">
                                 <label className="form-label-custom">Contraseña</label>
-                                <input type="password" name="password" className="form-control form-control-custom"
-                                    placeholder="********" onChange={onChange} required />
+                                <PasswordInput name="password" className="form-control form-control-custom"
+                                    placeholder="********" onChange={onChange} required maxLength="100" />
                             </div>
 
                             <button type="submit" className="btn-accent w-100 mb-4">ENTRAR</button>

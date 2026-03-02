@@ -37,7 +37,7 @@ const ForgotPassword = () => {
                             <div className="mb-4">
                                 <label className="form-label-custom">Correo Electrónico</label>
                                 <input type="email" name="email" className="form-control form-control-custom"
-                                    placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                    placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required maxLength="50" />
                             </div>
 
                             <button type="submit" className="btn-accent w-100 mb-4">ENVIAR ENLACE</button>

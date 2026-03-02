@@ -5,21 +5,27 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        trim: true
+        trim: true,
+        minlength: [3, 'El nombre de usuario debe tener al menos 3 caracteres'],
+        maxlength: [20, 'El nombre de usuario no puede tener más de 20 caracteres']
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        lowercase: true
+        lowercase: true,
+        maxlength: [50, 'El correo electrónico no puede tener más de 50 caracteres']
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
+        maxlength: [100, 'La contraseña no puede tener más de 100 caracteres']
     },
     pais: {
         type: String,
-        default: 'España'
+        default: 'España',
+        maxlength: [50, 'El país no puede tener más de 50 caracteres']
     },
     fechaNacimiento: {
         type: Date
