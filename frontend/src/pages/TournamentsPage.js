@@ -43,15 +43,15 @@ const TournamentsPage = () => {
 
     // Función para manejar la inscripción desde la lista
     const handleQuickJoin = async (e, t) => {
-    e.stopPropagation();
-    if (t.formato === 'Equipos') {
-        // Redirigir a detalles para que elija equipo
-        navigate(`/tournament/${t._id}?join=true`);
-    } else {
-        // Inscripción directa para 1v1 y BR
-        try { await tournamentService.joinTournament(t._id); window.location.reload(); } catch (err) { alert(err.response.data.msg); }
-    }
-};
+        e.stopPropagation();
+        if (t.formato === 'Equipos') {
+            // Redirigir a detalles para que elija equipo
+            navigate(`/tournament/${t._id}?join=true`);
+        } else {
+            // Inscripción directa para 1v1 y BR
+            try { await tournamentService.joinTournament(t._id); window.location.reload(); } catch (err) { alert(err.response.data.msg); }
+        }
+    };
 
     const renderSection = (title, status, limitKey) => {
         const sectionTournaments = filtered.filter(t => t.estado === status);
@@ -82,7 +82,7 @@ const TournamentsPage = () => {
 
                                     {/* BOTÓN DE INSCRIPCIÓN RÁPIDA */}
                                     {user?.rol === 'participante' && t.estado === 'Abierto' && !t.participantes.includes(user.id) && (
-                                        <button 
+                                        <button
                                             className="btn btn-accent btn-sm w-100 mt-3 fw-bold"
                                             onClick={(e) => handleQuickJoin(e, t)}
                                         >
@@ -94,16 +94,24 @@ const TournamentsPage = () => {
                         </div>
                     ))}
                 </div>
-                {sectionTournaments.length > limits[limitKey] && (
-                    <div className="text-center mt-2">
-                        <button 
-                            className="btn btn-view-more" 
-                            onClick={() => setLimits({...limits, [limitKey]: limits[limitKey] + 4})}
+                <div className="text-center mt-2 d-flex justify-content-center gap-3">
+                    {limits[limitKey] > 4 && (
+                        <button
+                            className="btn btn-outline-light"
+                            onClick={() => setLimits({ ...limits, [limitKey]: 4 })}
+                        >
+                            VER MENOS
+                        </button>
+                    )}
+                    {sectionTournaments.length > limits[limitKey] && (
+                        <button
+                            className="btn btn-view-more"
+                            onClick={() => setLimits({ ...limits, [limitKey]: limits[limitKey] + 4 })}
                         >
                             VER MÁS
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         );
     };
@@ -115,18 +123,18 @@ const TournamentsPage = () => {
                 <div className="header-page mb-5">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <h1 className="fw-bolder text-uppercase m-0 text-white">{getPageTitle()}</h1>
-                        
+
                         {/* Validación de Rol para Organizador o Administrador */}
                         {(user?.rol === 'organizador' || user?.rol === 'administrador') && (
                             <div className="d-flex gap-3">
-                                <button 
-                                    className="btn btn-accent" 
+                                <button
+                                    className="btn btn-accent"
                                     onClick={() => navigate('/manage-my-tournaments')}
                                 >
                                     Gestionar mis torneos
                                 </button>
-                                <button 
-                                    className="btn btn-view-all" 
+                                <button
+                                    className="btn btn-view-all"
                                     onClick={() => navigate('/create-tournament')}
                                 >
                                     + Crear Torneo
@@ -136,10 +144,10 @@ const TournamentsPage = () => {
                     </div>
 
                     <div className="search-box-wrapper w-100">
-                        <input 
-                            type="text" 
-                            className="search-input-custom" 
-                            placeholder="Buscar torneo por nombre..." 
+                        <input
+                            type="text"
+                            className="search-input-custom"
+                            placeholder="Buscar torneo por nombre..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />

@@ -6,13 +6,20 @@ import './TournamentForm.css';
 
 const CreateTournament = () => {
     const [games, setGames] = useState([]);
+    // Función para obtener la fecha y hora actual en formato YYYY-MM-DDTHH:mm
+    const getCurrentDateTimeLocal = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().slice(0, 16);
+    };
+
     const [formData, setFormData] = useState({
         nombre: '',
         juego: '',
         formato: '1v1',
         tamanoEquipoMax: 2,
         limiteParticipantes: 16,
-        fechaInicio: '',
+        fechaInicio: getCurrentDateTimeLocal(), // Pre-rellenado con la fecha actual
         reglas: '',
         alMejorDe: 1
     });
@@ -125,6 +132,7 @@ const CreateTournament = () => {
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">Fecha de Inicio</label>
                                     <input type="datetime-local" name="fechaInicio" className={`form-control-custom form-control ${errors.fechaInicio ? 'is-invalid' : ''}`}
+                                        value={formData.fechaInicio}
                                         onChange={e => setFormData({ ...formData, fechaInicio: e.target.value })} required />
                                     {errors.fechaInicio && <span className="error-feedback">{errors.fechaInicio}</span>}
                                 </div>

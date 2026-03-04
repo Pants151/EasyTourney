@@ -24,7 +24,7 @@ const GamesPage = () => {
         fetchGames();
     }, []);
 
-    const filteredGames = games.filter(g => 
+    const filteredGames = games.filter(g =>
         g.nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -39,11 +39,11 @@ const GamesPage = () => {
                 <div className="header-page mb-5">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <h1 className="fw-bolder text-uppercase m-0 text-white">JUEGOS</h1>
-                        
+
                         {/* Botón exclusivo para Administradores */}
                         {user?.rol === 'administrador' && (
-                            <button 
-                                className="btn btn-accent" 
+                            <button
+                                className="btn btn-accent"
                                 onClick={() => navigate('/admin/games')}
                             >
                                 Gestionar Juegos
@@ -52,10 +52,10 @@ const GamesPage = () => {
                     </div>
 
                     <div className="search-box-wrapper w-100">
-                        <input 
-                            type="text" 
-                            className="search-input-custom" 
-                            placeholder="Buscar juego..." 
+                        <input
+                            type="text"
+                            className="search-input-custom"
+                            placeholder="Buscar juego..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -86,13 +86,24 @@ const GamesPage = () => {
                     )}
                 </div>
 
-                {filteredGames.length > limit && (
-                    <div className="text-center mt-4">
+                <div className="text-center mt-4 d-flex justify-content-center gap-3">
+                    {limit > 8 && (
+                        <button
+                            className="btn btn-outline-light"
+                            onClick={() => {
+                                setLimit(8);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                        >
+                            VER MENOS JUEGOS
+                        </button>
+                    )}
+                    {filteredGames.length > limit && (
                         <button className="btn btn-view-more" onClick={() => setLimit(limit + 4)}>
                             VER MÁS JUEGOS
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

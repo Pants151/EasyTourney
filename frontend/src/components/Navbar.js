@@ -6,7 +6,7 @@ import './Navbar.css';
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
-    
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleNavigation = () => {
@@ -31,12 +31,12 @@ const Navbar = () => {
                     <img src="/assets/images/logo-nav.png" alt="EasyTourney" className="nav-logo" />
                 </Link>
 
-                <button 
-                    className={`navbar-toggler custom-toggler ${!isMenuOpen ? 'collapsed' : ''}`} 
-                    type="button" 
-                    onClick={() => setIsMenuOpen(!isMenuOpen)} 
-                    aria-controls="navbarNav" 
-                    aria-expanded={isMenuOpen} 
+                <button
+                    className={`navbar-toggler custom-toggler ${!isMenuOpen ? 'collapsed' : ''}`}
+                    type="button"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-controls="navbarNav"
+                    aria-expanded={isMenuOpen}
                     aria-label="Toggle navigation"
                 >
                     <span className="navbar-toggler-icon"></span>
@@ -65,19 +65,19 @@ const Navbar = () => {
                                 <Link className="nav-link nav-link-custom" to="/account" onClick={handleNavigation}>CUENTA</Link>
                             </li>
                         )}
-                        
+
                         <li className="nav-item ms-lg-3 mt-3 mt-lg-0">
                             {user ? (
-                                <button 
-                                    className="btn btn-outline-light btn-sm w-100 w-lg-auto" 
+                                <button
+                                    className="btn btn-outline-light btn-sm w-100 w-lg-auto"
                                     onClick={handleLogout}
                                 >
                                     CERRAR SESIÓN
                                 </button>
                             ) : (
-                                <Link 
-                                    className="btn btn-accent btn-sm w-100 w-lg-auto" 
-                                    to="/login" 
+                                <Link
+                                    className="btn btn-accent btn-sm w-100 w-lg-auto"
+                                    to="/login"
                                     onClick={handleNavigation}
                                 >
                                     LOGIN / REGISTRO
