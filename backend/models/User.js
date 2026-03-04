@@ -48,6 +48,9 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordExpires: {
         type: Date
+    },
+    sessionToken: {
+        type: String // Para protección de sesiones concurrentes
     }
 });
 

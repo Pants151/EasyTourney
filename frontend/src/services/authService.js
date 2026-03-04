@@ -3,6 +3,21 @@ import config from '../config';
 
 const API_URL = `${config.API_URL}/auth/`;
 
+// --- INTERCEPTOR DE Cierre de Sesión Automático (401) ---
+axios.interceptors.response.use(
+    (response) => response, // Si todo va bien, dejar pasar la respuesta
+    (error) => {
+        // Si el servidor responde con 401 No Autorizado (ej. Sesión expirada por sesión concurrente)
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userData');
+            // Forzamos recarga y redirección agresiva para limpiar la memoria de React y estados
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
 const register = async (userData) => {
     const response = await axios.post(API_URL + 'register', userData);
     return response.data;
@@ -32,5 +47,6 @@ const updateUserByAdmin = async (id, userData) => (await axios.put(`${API_URL}us
 
 const forgotPassword = async (email) => (await axios.post(API_URL + 'forgot-password', { email })).data;
 const resetPassword = async (token, password) => (await axios.post(API_URL + `reset-password/${token}`, { password })).data;
+const logout = async () => (await axios.post(API_URL + 'logout', {}, getAuthHeaders())).data;
 
-export default { register, login, getProfile, updateProfile, deleteAccount, changePassword, getAllUsers, updateUserByAdmin, deleteUserByAdmin, forgotPassword, resetPassword };
+export default { register, login, getProfile, updateProfile, deleteAccount, changePassword, getAllUsers, updateUserByAdmin, deleteUserByAdmin, forgotPassword, resetPassword, logout };

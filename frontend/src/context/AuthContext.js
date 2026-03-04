@@ -1,5 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
+import config from '../config';
+import authService from '../services/authService';
 
 export const AuthContext = createContext();
 
@@ -12,10 +15,31 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('userToken');
         const userData = localStorage.getItem('userData');
         if (token && userData) {
-            setUser({ token, ...JSON.parse(userData) }); 
+            setUser({ token, ...JSON.parse(userData) });
         }
         setLoading(false);
     }, []);
+
+    // Conectar Socket.io globalmente en la app si el usuario hace login o re-carga la app
+    useEffect(() => {
+        let socket = null;
+        if (user && user.id) {
+            socket = io(config.SOCKET_URL);
+
+            // El usuario avisa de que se conecta para establecer una sala 1 a 1 de servidor a usuario
+            socket.emit('joinUserRoom', user.id);
+
+            // Escuchar el evento de expulsión en tiempo real
+            socket.on('force_logout', () => {
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('userData');
+                window.location.href = '/login'; // Inmediatamente recarga a expensas de la vista actual
+            });
+        }
+        return () => {
+            if (socket) socket.disconnect();
+        };
+    }, [user]);
 
     const login = (data) => {
         localStorage.setItem('userToken', data.token);
@@ -24,7 +48,10 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            await authService.logout(); // Limpiar el status fantasma en backend
+        } catch (err) { }
         localStorage.removeItem('userToken');
         localStorage.removeItem('userData');
         setUser(null);

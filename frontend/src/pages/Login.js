@@ -21,7 +21,22 @@ const Login = () => {
             login(res);
             navigate('/');
         } catch (err) {
-            alert('Error al iniciar sesión. Comprueba tus credenciales.');
+            // 3. Si el servidor detecta una sesión y nos devuelve 409
+            if (err.response && err.response.status === 409 && err.response.data.code === 'ACTIVE_SESSION') {
+                const confirmForce = window.confirm("Ya hay una sesión iniciada en otro lugar, para continuar se va a cerrar la sesión anterior. ¿Deseas continuar?");
+                if (confirmForce) {
+                    try {
+                        const resForced = await authService.login({ ...formData, forceLogout: true });
+                        login(resForced);
+                        navigate('/');
+                    } catch (forceErr) {
+                        alert('Error al forzar el inicio de sesión.');
+                    }
+                }
+                // Si pulsa 'cancelar' en el confirm, no hacemos nada y dejamos la vieja intacta.
+            } else {
+                alert('Error al iniciar sesión. Comprueba tus credenciales.');
+            }
         }
     };
 

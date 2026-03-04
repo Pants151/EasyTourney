@@ -29,6 +29,11 @@ io.on('connection', (socket) => {
     socket.on('joinTournament', (tournamentId) => {
         socket.join(tournamentId);
     });
+
+    // --- GESTIÓN DE SALAS DE USUARIO PARA DESCONEXIONES FORZOSAS ---
+    socket.on('joinUserRoom', (userId) => {
+        socket.join('user_' + userId);
+    });
 });
 
 // Hacer io accesible en los controladores

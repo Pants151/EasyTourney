@@ -52,7 +52,7 @@ exports.register = async (req, res) => {
 // Lógica de Login
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, forceLogout } = req.body; // Se añade forceLogout
 
         // 1. Verificar si el usuario existe
         let user = await User.findOne({ email });
@@ -66,11 +66,37 @@ exports.login = async (req, res) => {
             return res.status(400).json({ msg: 'Credenciales inválidas' });
         }
 
-        // 3. Si todo es correcto, crear el JWT
+        // --- PROTECCIÓN INTERACTIVA DE SESIONES CONCURRENTES ---
+        // Si el usuario ya tiene un token de sesión activo y NO ha marcado la casilla mental de forceLogout
+        if (user.sessionToken && !forceLogout) {
+            return res.status(409).json({
+                code: 'ACTIVE_SESSION',
+                msg: 'Ya hay una sesión iniciada en otro lugar. Para continuar se va a cerrar la sesión anterior.'
+            });
+        }
+
+        // Si ha dicho que sí (forceLogout) y había una sesión, disparamos el evento para echarle EN VIVO
+        if (user.sessionToken && forceLogout) {
+            const io = req.app.get('socketio');
+            if (io) {
+                // Emitimos a la sala privada del usuario la orden de desconexión
+                io.to('user_' + user.id).emit('force_logout');
+            }
+        }
+
+        // Generar un token de sesión único cada vez que inicia sesión (Aplastando el anterior si lo hubiera)
+        const sessionToken = crypto.randomBytes(16).toString('hex');
+
+        // Guardarlo en el usuario en base de datos
+        user.sessionToken = sessionToken;
+        await user.save();
+
+        // 3. Si todo es correcto, crear el JWT inyectando el sessionToken
         const payload = {
             user: {
                 id: user.id,
-                rol: user.rol // Importante para EasyTourney para saber si es organizador
+                rol: user.rol, // Importante para EasyTourney para saber si es organizador
+                sessionToken: sessionToken
             }
         };
 
@@ -92,6 +118,24 @@ exports.login = async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
+    }
+};
+
+// Lógica de Logout
+exports.logout = async (req, res) => {
+    try {
+        // Obtenemos el usuario autenticado a través del middleware
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
+        // Limpiamos su token de sesión en la base de datos para que quede "limpio"
+        user.sessionToken = null;
+        await user.save();
+
+        res.json({ msg: 'Sesión cerrada correctamente en el backend' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor al cerrar sesión');
     }
 };
 
