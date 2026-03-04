@@ -1,6 +1,6 @@
 .contact-page-wrapper {
-    background-color: #0b0e11;
-    padding-top: 120px;
+    background-color: #080b12;
+    padding-top: 90px;
     padding-bottom: 80px;
     margin-top: 0 !important;
     min-height: 100vh;
@@ -51,9 +51,11 @@
     .contact-page-wrapper {
         padding-top: 100px;
     }
+
     .contact-email-link {
         font-size: 1.4rem;
     }
+
     .contact-main-logo {
         max-width: 250px;
     }

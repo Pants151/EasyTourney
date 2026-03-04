@@ -47,8 +47,8 @@ function App() {
               <Route path="/edit-tournament/:id" element={<div className="container mt-navbar"><EditTournament /></div>} />
               <Route path="/games" element={<GamesPage />} />
               <Route path="/admin-users" element={<AdminUsers />} />
-              <Route path="/about" element={<div className="mt-navbar"><AboutUs /></div>} />
-              <Route path="/contact" element={<div className="mt-navbar"><ContactUs /></div>} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/contact" element={<ContactUs />} />
             </Routes>
           </main>
           <Footer />

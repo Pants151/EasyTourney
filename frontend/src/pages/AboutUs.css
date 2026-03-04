@@ -1,6 +1,6 @@
 .about-page-wrapper {
-    background-color: #0b0e11;
-    padding-top: 100px;
+    background-color: #080b12;
+    padding-top: 90px;
     margin-top: 0 !important;
     min-height: 100vh;
     color: #ffffff;
@@ -94,9 +94,17 @@
 }
 
 @media (max-width: 991px) {
-    .mb-100 { margin-bottom: 60px; }
-    .text-lg-end { text-align: center !important; }
-    .about-main-logo { max-width: 250px; }
+    .mb-100 {
+        margin-bottom: 60px;
+    }
+
+    .text-lg-end {
+        text-align: center !important;
+    }
+
+    .about-main-logo {
+        max-width: 250px;
+    }
 }
 
 .about-hero {

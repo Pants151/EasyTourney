@@ -2,9 +2,14 @@
 
 /* === HERO SECTION === */
 .hero-section {
-    min-height: 100vh; /* Que ocupe toda la pantalla */
+    min-height: 100vh;
+    /* Que ocupe toda la pantalla */
     position: relative;
-    margin-top: 0; 
+    margin-top: 0;
+    padding-top: 100px;
+    /* Offset para ignorar la barra de navegación en Flexbox */
+    padding-bottom: 50px;
+    /* Margen inferior de seguridad para resoluciones aplastadas */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,20 +17,24 @@
 
 .hero-content {
     /* El contenido del Hero debe estar por debajo del Navbar pero por encima del overlay */
-    z-index: 10; 
+    z-index: 10;
     position: relative;
 }
 
 .hero-bg-overlay {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     /* Gradiente radial para oscurecer los bordes y centrar la atención */
     background: radial-gradient(circle at center, rgba(8, 11, 18, 0.6) 0%, rgba(8, 11, 18, 1) 90%);
 }
 
 /* === HERO SECTION MEJORADA === */
 .hero-logo-container {
-    max-width: 450px; /* Aumentado en escritorio */
+    max-width: 450px;
+    /* Aumentado en escritorio */
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -37,7 +46,8 @@
 }
 
 .hero-title {
-    font-size: clamp(2.5rem, 8vw, 4.5rem); /* Tamaño fluido según pantalla */
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    /* Tamaño fluido según pantalla */
     line-height: 1;
     letter-spacing: 2px;
     color: #ffffff !important;
@@ -81,27 +91,35 @@
 }
 
 .games-scroll-container {
-    display: flex !important; /* Aseguramos que sea flex */
-    flex-wrap: wrap; /* CLAVE: permite que las portadas bajen a la siguiente fila en vez de estrujarse */
+    display: flex !important;
+    /* Aseguramos que sea flex */
+    flex-wrap: wrap;
+    /* CLAVE: permite que las portadas bajen a la siguiente fila en vez de estrujarse */
     justify-content: center;
-    gap: 25px; /* Espacio uniforme entre portadas */
+    gap: 25px;
+    /* Espacio uniforme entre portadas */
     padding: 20px 10px;
-    overflow: visible; /* Quitamos el scroll horizontal para que se agrupen debajo */
+    overflow: visible;
+    /* Quitamos el scroll horizontal para que se agrupen debajo */
 }
 
 .game-cover-item {
-    flex: 0 0 auto; /* CLAVE: impide que el flexbox obligue a la portada a encogerse */
-    width: 200px; /* Tamaño base en escritorio ligeramente mayor */
+    flex: 0 0 auto;
+    /* CLAVE: impide que el flexbox obligue a la portada a encogerse */
+    width: 200px;
+    /* Tamaño base en escritorio ligeramente mayor */
 }
 
 .game-cover-item img {
-    width: 100%; /* Ocupa todo el contenedor del item */
-    height: 280px; /* Altura proporcional */
+    width: 100%;
+    /* Ocupa todo el contenedor del item */
+    height: 280px;
+    /* Altura proporcional */
     object-fit: cover;
     border-radius: 8px;
     border: 2px solid rgba(255, 255, 255, 0.1);
     transition: all 0.4s ease;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .game-cover-item img:hover {
@@ -117,13 +135,15 @@
     border: 1px solid #ffffff !important;
     padding: 10px 30px !important;
     font-weight: 700;
-    transition: all 0.3s ease-in-out !important; /* Animación suave */
+    transition: all 0.3s ease-in-out !important;
+    /* Animación suave */
 }
 
 /* Forzamos el fondo blanco y texto negro en el Home */
 .home-wrapper .btn-view-all:hover {
     background-color: #ffffff !important;
-    background-image: none !important; /* Elimina posibles gradientes de Bootstrap */
+    background-image: none !important;
+    /* Elimina posibles gradientes de Bootstrap */
     color: #000000 !important;
     border-color: #ffffff !important;
     transform: translateY(-3px);
@@ -133,26 +153,35 @@
 
 /* === VIDEO FEATURE SECTION === */
 .video-feature-section {
-    height: 70vh; /* Altura de la sección inferior */
+    height: 70vh;
+    /* Altura de la sección inferior */
     overflow: hidden;
     background-color: #000;
 }
 
 .video-background-container {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .video-bg {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* El video cubre todo el fondo sin deformarse */
-    opacity: 0.6; /* Hacemos el video semi-transparente */
+    object-fit: cover;
+    /* El video cubre todo el fondo sin deformarse */
+    opacity: 0.6;
+    /* Hacemos el video semi-transparente */
 }
 
 .video-overlay-gradient {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     /* Gradiente potente de izquierda a derecha para oscurecer donde va el texto */
     background: linear-gradient(90deg, var(--color-bg-main) 10%, rgba(8, 11, 18, 0.8) 50%, transparent 100%);
 }
@@ -160,7 +189,7 @@
 .feature-title {
     font-size: clamp(1.8rem, 5vw, 3.5rem);
     line-height: 1.1;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .feature-icons img {
@@ -175,9 +204,17 @@
     animation: fadeUp 0.8s ease forwards;
 }
 
-.delay-1 { animation-delay: 0.2s; }
-.delay-2 { animation-delay: 0.4s; }
-.delay-3 { animation-delay: 0.6s; }
+.delay-1 {
+    animation-delay: 0.2s;
+}
+
+.delay-2 {
+    animation-delay: 0.4s;
+}
+
+.delay-3 {
+    animation-delay: 0.6s;
+}
 
 @keyframes fadeUp {
     to {
@@ -188,12 +225,20 @@
 
 /* Ajustes Responsive básicos */
 @media (max-width: 1200px) {
-    .game-cover-item { width: 170px; }
-    .game-cover-item img { height: 240px; }
+    .game-cover-item {
+        width: 170px;
+    }
+
+    .game-cover-item img {
+        height: 240px;
+    }
 }
 
 @media (max-width: 991px) {
-    .hero-logo-container { max-width: 300px; }
+    .hero-logo-container {
+        max-width: 300px;
+    }
+
     .video-overlay-gradient {
         /* Gradiente más oscuro en móviles para leer mejor el texto */
         background: linear-gradient(180deg, rgba(8, 11, 18, 0.9) 0%, rgba(8, 11, 18, 0.7) 100%);
@@ -201,25 +246,42 @@
 }
 
 @media (max-width: 768px) {
-    .popular-games-bar h4 { font-size: 1rem; }
-    .feature-icons { flex-direction: column; align-items: flex-start; }
-    
-    .hero-section { min-height: 80vh; }
-    .hero-logo-container { max-width: 220px; }
-    
+    .popular-games-bar h4 {
+        font-size: 1rem;
+    }
+
+    .feature-icons {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-section {
+        min-height: 80vh;
+    }
+
+    .hero-logo-container {
+        max-width: 220px;
+    }
+
     .games-scroll-container {
-        gap: 15px; /* Menos espacio en móvil */
+        gap: 15px;
+        /* Menos espacio en móvil */
     }
-    .game-cover-item { 
-        width: 140px; /* Tamaño legible en móvil sin deformarse */
+
+    .game-cover-item {
+        width: 140px;
+        /* Tamaño legible en móvil sin deformarse */
     }
-    .game-cover-item img { 
-        height: 200px; 
+
+    .game-cover-item img {
+        height: 200px;
     }
+
     .hero-title {
-        font-size: 2.5rem; /* Aseguramos que el título no rompa el diseño */
+        font-size: 2.5rem;
+        /* Aseguramos que el título no rompa el diseño */
     }
-    
+
     .feature-item {
         background: rgba(255, 255, 255, 0.03);
         padding: 15px;
@@ -231,19 +293,29 @@
 
 /* Corrección para pantallas muy pequeñas */
 @media (max-width: 480px) {
-    .hero-title { font-size: 2.2rem; }
-    .game-cover-item { 
-        width: calc(50% - 20px); /* En móviles muy pequeños, mostrar 2 por fila */
+    .hero-title {
+        font-size: 2.2rem;
     }
-    .game-cover-item img { 
-        height: 210px; 
+
+    .game-cover-item {
+        width: calc(50% - 20px);
+        /* En móviles muy pequeños, mostrar 2 por fila */
     }
-    .btn-accent { width: 100%; padding: 15px; }
+
+    .game-cover-item img {
+        height: 210px;
+    }
+
+    .btn-accent {
+        width: 100%;
+        padding: 15px;
+    }
 }
 
 /* Estilo para el botón de descargar app */
 .hero-buttons .btn-download-app {
-    background-color: #28a745 !important; /* Verde éxito, forzado */
+    background-color: #28a745 !important;
+    /* Verde éxito, forzado */
     color: white;
     border: none;
     font-weight: bold;
@@ -262,15 +334,18 @@
 /* Responsividad: Controlar que los botones se apilen en móviles */
 @media (max-width: 576px) {
     .hero-buttons {
-        flex-direction: column; /* Apilar verticalmente */
+        flex-direction: column;
+        /* Apilar verticalmente */
         align-items: center;
         width: 100%;
         padding: 0 20px;
     }
 
     .hero-buttons .btn {
-        width: 100%; /* Botones de ancho completo en móvil */
-        margin-left: 0 !important; /* Eliminar márgenes laterales */
+        width: 100%;
+        /* Botones de ancho completo en móvil */
+        margin-left: 0 !important;
+        /* Eliminar márgenes laterales */
         margin-bottom: 10px;
     }
 }
