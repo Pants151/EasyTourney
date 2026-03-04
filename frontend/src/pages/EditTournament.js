@@ -14,7 +14,7 @@ const EditTournament = () => {
     const [originalDate, setOriginalDate] = useState(''); // Guardamos la original
     const [formData, setFormData] = useState({
         nombre: '', juego: '', formato: '1v1', limiteParticipantes: 16,
-        tamanoEquipoMax: 1, alMejorDe: 1, ubicacion: 'Online',
+        tamanoEquipoMax: 2, alMejorDe: 1, ubicacion: 'Online',
         fechaInicio: '', reglas: '', plataformas: []
     });
 
@@ -25,15 +25,17 @@ const EditTournament = () => {
                     tournamentService.getTournamentById(id),
                     gameService.getGames()
                 ]);
-                const formattedDate = new Date(tData.fechaInicio).toISOString().slice(0, 16);
-                setOriginalDate(formattedDate); // Guardar fecha inicial
+                const dateObj = new Date(tData.fechaInicio);
+                dateObj.setMinutes(dateObj.getMinutes() - dateObj.getTimezoneOffset());
+                const formattedDate = dateObj.toISOString().slice(0, 16);
+                setOriginalDate(formattedDate); // Guardar fecha inicial local
                 setTournamentStatus(tData.estado);
                 setFormData({
                     nombre: tData.nombre,
                     juego: tData.juego?._id || tData.juego,
                     formato: tData.formato,
                     limiteParticipantes: tData.limiteParticipantes,
-                    tamanoEquipoMax: tData.tamanoEquipoMax || 1,
+                    tamanoEquipoMax: tData.tamanoEquipoMax || 2,
                     alMejorDe: tData.alMejorDe || 1,
                     ubicacion: tData.ubicacion,
                     fechaInicio: formattedDate,
@@ -120,9 +122,9 @@ const EditTournament = () => {
                                 </div>
                                 {formData.formato === 'Equipos' && (
                                     <div className="col-md-6 mb-4">
-                                        <label className="form-label-custom">Jugadores por Equipo</label>
+                                        <label className="form-label-custom">Jugadores por Equipo (2-6)</label>
                                         <input type="number" className="form-control-custom form-control" value={formData.tamanoEquipoMax}
-                                            disabled={isLocked} onChange={e => setFormData({ ...formData, tamanoEquipoMax: e.target.value })} min="2" max="10" />
+                                            disabled={isLocked} onChange={e => setFormData({ ...formData, tamanoEquipoMax: e.target.value })} min="2" max="6" />
                                     </div>
                                 )}
                                 {formData.formato === 'Battle Royale' && (

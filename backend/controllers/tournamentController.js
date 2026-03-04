@@ -22,7 +22,7 @@ exports.createTournament = async (req, res) => {
 
         const newTournament = new Tournament({
             ...req.body,
-            tamanoEquipoMax: formato === 'Equipos' ? tamanoEquipoMax : 1,
+            tamanoEquipoMax: formato === 'Equipos' ? tamanoEquipoMax : 2,
             organizador: req.user.id,
             alMejorDe: formato === 'Battle Royale' ? (alMejorDe || 1) : 1
         });
@@ -92,7 +92,10 @@ exports.getTournamentById = async (req, res) => {
                 populate: { path: 'miembros.usuario', select: 'username' }
             });
         res.json(tournament);
-    } catch (err) { res.status(500).send('Error en servidor'); }
+    } catch (err) {
+        console.error('getTournamentById error:', err);
+        res.status(500).send('Error en servidor');
+    }
 };
 
 // Generar Brackets (Soporta 1v1 y Equipos)
@@ -344,10 +347,13 @@ exports.updateTournament = async (req, res) => {
             }
         }
 
-        // Validar fecha solo si se cambia
-        if (fechaInicio && new Date(fechaInicio).getTime() !== new Date(tournament.fechaInicio).getTime()) {
-            if (new Date(fechaInicio) < new Date()) {
-                return res.status(400).json({ msg: 'La nueva fecha no puede ser anterior a la actual.' });
+        // Validar fecha solo si se cambia notablemente (ignoramos milisegundos y segundos eliminados)
+        if (fechaInicio) {
+            const timeDiff = Math.abs(new Date(fechaInicio).getTime() - new Date(tournament.fechaInicio).getTime());
+            if (timeDiff > 60000) {
+                if (new Date(fechaInicio) < new Date()) {
+                    return res.status(400).json({ msg: 'La nueva fecha no puede ser anterior a la actual.' });
+                }
             }
         }
 

@@ -153,8 +153,9 @@
 
 /* === VIDEO FEATURE SECTION === */
 .video-feature-section {
-    height: 70vh;
-    /* Altura de la sección inferior */
+    min-height: 70vh;
+    padding: 60px 0;
+    /* Altura de la sección inferior flexible */
     overflow: hidden;
     background-color: #000;
 }
@@ -173,7 +174,11 @@
     object-fit: cover;
     /* El video cubre todo el fondo sin deformarse */
     opacity: 0.6;
-    /* Hacemos el video semi-transparente */
+    /* Forzar aceleración por hardware (GPU) para evitar ralentizaciones (Especialmente en Brave/Safari) */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
+    will-change: transform, opacity;
 }
 
 .video-overlay-gradient {

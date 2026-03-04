@@ -95,9 +95,9 @@ const CreateTournament = () => {
 
                                 {formData.formato === 'Equipos' && (
                                     <div className="col-md-6 mb-4">
-                                        <label className="form-label-custom">Integrantes por Equipo (1-6)</label>
+                                        <label className="form-label-custom">Integrantes por Equipo (2-6)</label>
                                         <input type="number" className="form-control form-control-custom"
-                                            min="1" max="6" value={formData.tamanoEquipoMax}
+                                            min="2" max="6" value={formData.tamanoEquipoMax}
                                             onChange={e => setFormData({ ...formData, tamanoEquipoMax: e.target.value })} />
                                     </div>
                                 )}
