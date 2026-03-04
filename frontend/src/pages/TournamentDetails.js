@@ -173,7 +173,7 @@ const TournamentDetails = () => {
             await tournamentService.createTeam(id, { nombre: newTeamName });
             alert("Equipo creado. Eres el capitán.");
             window.location.reload();
-        } catch (err) { alert("Error al crear equipo"); }
+        } catch (err) { alert(err.response?.data?.msg || "Error al crear equipo"); }
     };
 
     const handleJoinTeam = async (teamId) => {
@@ -458,6 +458,14 @@ const TournamentDetails = () => {
                                     {tab.toUpperCase()}
                                 </button>
                             ))}
+                            {user?.rol === 'administrador' && (
+                                <button
+                                    className={`nav-tab-btn ms-auto text-warning fw-bold ${activeTab === 'admin' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('admin')}
+                                >
+                                    ⚙ ADMIN
+                                </button>
+                            )}
                         </div>
 
                         <div className="tab-content-wrapper">
@@ -704,6 +712,101 @@ const TournamentDetails = () => {
                                                 <i className="bi bi-broadcast fs-1 text-dim mb-3"></i>
                                                 <p className="text-dim">No hay contenido multimedia disponible aún.</p>
                                             </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ADMIN TAB */}
+                            {activeTab === 'admin' && user?.rol === 'administrador' && (
+                                <div className="admin-bots-tab text-white">
+                                    <div className="p-4 bg-dark-secondary rounded shadow-sm mb-4">
+                                        <h5 className="text-warning fw-bold text-uppercase mb-3">
+                                            <i className="bi bi-robot me-2"></i>Relleno de Bots para Testing
+                                        </h5>
+
+                                        {tournament.estado !== 'Abierto' ? (
+                                            <div className="alert alert-secondary py-2 small">
+                                                Esta función solo está disponible cuando el torneo está en estado <strong>Abierto</strong>.
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {/* Contador de slots */}
+                                                {tournament.formato === 'Equipos' ? (
+                                                    <p className="text-dim mb-3">
+                                                        Equipos inscritos: <strong className="text-white">{tournament.equipos?.length || 0}</strong> / {tournament.limiteParticipantes}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-dim mb-3">
+                                                        Participantes inscritos: <strong className="text-white">{tournament.participantes?.length || 0}</strong> / {tournament.limiteParticipantes}
+                                                    </p>
+                                                )}
+
+                                                <div className="d-flex gap-2 flex-wrap">
+                                                    <button
+                                                        className="btn btn-warning fw-bold btn-sm"
+                                                        disabled={
+                                                            tournament.formato === 'Equipos'
+                                                                ? (tournament.equipos?.length || 0) >= tournament.limiteParticipantes
+                                                                : (tournament.participantes?.length || 0) >= tournament.limiteParticipantes
+                                                        }
+                                                        onClick={async () => {
+                                                            try {
+                                                                await tournamentService.addBot(id);
+                                                                await fetchAll();
+                                                            } catch (err) {
+                                                                alert(err.response?.data?.msg || 'Error al añadir bot');
+                                                            }
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-plus-circle me-1"></i>
+                                                        {tournament.formato === 'Equipos' ? 'Añadir Equipo Bot' : 'Añadir Bot'}
+                                                    </button>
+
+                                                    <button
+                                                        className="btn btn-outline-danger fw-bold btn-sm"
+                                                        onClick={async () => {
+                                                            if (window.confirm('¿Eliminar todos los bots de este torneo?')) {
+                                                                try {
+                                                                    await tournamentService.clearBots(id);
+                                                                    await fetchAll();
+                                                                } catch (err) {
+                                                                    alert(err.response?.data?.msg || 'Error al limpiar bots');
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-trash me-1"></i>Limpiar Bots
+                                                    </button>
+                                                </div>
+
+                                                {/* Vista previa de participantes/equipos con badge BOT */}
+                                                <div className="mt-4">
+                                                    {tournament.formato === 'Equipos' ? (
+                                                        <>
+                                                            <p className="text-dim small text-uppercase fw-bold mb-2">Equipos registrados:</p>
+                                                            <div className="d-flex flex-wrap gap-2">
+                                                                {tournament.equipos?.map(t => (
+                                                                    <span key={t._id} className={`badge ${t.nombre?.startsWith('BotEquipo') ? 'bg-warning text-dark' : 'bg-secondary'} py-2 px-3`}>
+                                                                        {t.nombre?.startsWith('BotEquipo') && '🤖 '}{t.nombre} ({t.miembros?.length || 0} miembros)
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <p className="text-dim small text-uppercase fw-bold mb-2">Participantes registrados:</p>
+                                                            <div className="d-flex flex-wrap gap-2">
+                                                                {tournament.participantes?.map(p => (
+                                                                    <span key={p._id} className={`badge ${p.isBot ? 'bg-warning text-dark' : 'bg-secondary'} py-2 px-3`}>
+                                                                        {p.isBot && '🤖 '}{p.username}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </>
                                         )}
                                     </div>
                                 </div>

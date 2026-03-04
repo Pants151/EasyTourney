@@ -22,6 +22,10 @@ const tournamentSchema = new mongoose.Schema({
         plataforma: { type: String, enum: ['Twitch', 'YouTube'] },
         url: { type: String, maxlength: [255, 'La URL de stream no puede exceder 255 caracteres'] }
     }],
+    // Snapshots para mantener nombres visuales tras borrar bots al finalizar
+    snapNombresBots: { type: Map, of: String },
+    snapNombresEquipos: { type: Map, of: String },
+    snapEquiposMiembros: { type: Map, of: [String] }
 });
 
 module.exports = mongoose.model('Tournament', tournamentSchema);

@@ -28,5 +28,7 @@ router.put('/team/respond/:teamId', auth, tournamentController.respondToTeamRequ
 router.put('/leave/:id', auth, tournamentController.leaveTournament); // Abandonar torneo
 router.delete('/:tournamentId/expel/:userId', auth, tournamentController.expelParticipant); // Expulsar participante (Organizador)
 router.put('/:id/br-round', auth, tournamentController.reportBRRoundWinner); // Reportar ganador de ronda Battle Royale
+router.post('/:id/add-bot', auth, tournamentController.addBot);               // Admin: añadir bot
+router.delete('/:id/clear-bots', auth, tournamentController.clearBots);        // Admin: limpiar bots
 
 module.exports = router;

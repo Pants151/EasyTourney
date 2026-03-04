@@ -81,16 +81,86 @@ exports.joinTournament = async (req, res) => {
 // Obtener un torneo por ID
 exports.getTournamentById = async (req, res) => {
     try {
-        const tournament = await Tournament.findById(req.params.id)
-            .populate('organizador', 'username')
-            .populate('participantes', 'username')
-            .populate('ganadoresRondaBR', 'username')
-            .populate({ path: 'ganador', options: { strictPopulate: false } })
-            .populate('juego')
-            .populate({
-                path: 'equipos',
-                populate: { path: 'miembros.usuario', select: 'username' }
-            });
+        // 1. Obtención de torneo 'crudo' para mantener IDs originales
+        let tournament = await Tournament.findById(req.params.id).lean();
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        // 2. Guardar IDs crudos para hidratación posterior
+        const rawParticipantes = tournament.participantes ? [...tournament.participantes] : [];
+        const rawEquipos = tournament.equipos ? [...tournament.equipos] : [];
+        const rawGanador = tournament.ganador;
+        const rawGanadoresBR = tournament.ganadoresRondaBR ? [...tournament.ganadoresRondaBR] : [];
+
+        // 3. Poblar datos
+        await Tournament.populate(tournament, [
+            { path: 'organizador', select: 'username' },
+            { path: 'participantes', select: 'username isBot', options: { retainNullValues: true } },
+            { path: 'ganadoresRondaBR', select: 'username', options: { retainNullValues: true } },
+            { path: 'ganador', options: { strictPopulate: false } },
+            { path: 'juego' },
+            { path: 'equipos', populate: { path: 'miembros.usuario', select: 'username isBot' }, options: { retainNullValues: true } }
+        ]);
+
+        // 4. HIDRATACIÓN DE BOTS SI EL TORNEO ESTÁ FINALIZADO
+        if (tournament.estado === 'Finalizado' && (tournament.snapNombresBots || tournament.snapNombresEquipos)) {
+            const snapBots = tournament.snapNombresBots || {};
+            const snapEquips = tournament.snapNombresEquipos || {};
+            const snapMembers = tournament.snapEquiposMiembros || {};
+
+            // Hidratar participantes individuales
+            tournament.participantes = tournament.participantes.map((p, index) => {
+                if (!p || !p.username) {
+                    const id = rawParticipantes[index]?.toString();
+                    if (id && snapBots[id]) return { _id: id, username: snapBots[id], isBot: true };
+                }
+                return p;
+            }).filter(Boolean);
+
+            // Hidratar equipos
+            tournament.equipos = tournament.equipos.map((team, index) => {
+                if (!team || !team.nombre) {
+                    const id = rawEquipos[index]?.toString();
+                    if (id && snapEquips[id]) {
+                        return {
+                            _id: id,
+                            nombre: snapEquips[id],
+                            isBot: true,
+                            miembros: (snapMembers[id] || []).map(mid => ({ usuario: { _id: mid, username: snapBots[mid], isBot: true } }))
+                        };
+                    }
+                }
+                return team;
+            }).filter(Boolean);
+
+            // Hidratar ganador
+            if (!tournament.ganador || (!tournament.ganador.username && !tournament.ganador.nombre)) {
+                const gId = rawGanador?.toString();
+                if (gId) {
+                    if (tournament.ganadorTipo === 'User' && snapBots[gId]) {
+                        tournament.ganador = { _id: gId, username: snapBots[gId], isBot: true };
+                    } else if (tournament.ganadorTipo === 'Team' && snapEquips[gId]) {
+                        tournament.ganador = { _id: gId, nombre: snapEquips[gId], isBot: true };
+                    }
+                }
+            }
+
+            // Hidratar ganadoresRondaBR
+            if (tournament.ganadoresRondaBR) {
+                tournament.ganadoresRondaBR = tournament.ganadoresRondaBR.map((g, index) => {
+                    if (!g || !g.username) {
+                        const id = rawGanadoresBR[index]?.toString();
+                        if (id && snapBots[id]) return { _id: id, username: snapBots[id], isBot: true };
+                    }
+                    return g;
+                }).filter(Boolean);
+            }
+        } else {
+            // Limpieza de nulls residuales por si populate con retainNullValues los dejó
+            if (tournament.participantes) tournament.participantes = tournament.participantes.filter(Boolean);
+            if (tournament.equipos) tournament.equipos = tournament.equipos.filter(Boolean);
+            if (tournament.ganadoresRondaBR) tournament.ganadoresRondaBR = tournament.ganadoresRondaBR.filter(Boolean);
+        }
+
         res.json(tournament);
     } catch (err) {
         console.error('getTournamentById error:', err);
@@ -192,13 +262,70 @@ exports.publishTournament = async (req, res) => {
 // Obtener todas las partidas de un torneo
 exports.getTournamentMatches = async (req, res) => {
     try {
-        const matches = await Match.find({ torneo: req.params.id })
-            .populate('jugador1', 'username')
-            .populate('jugador2', 'username')
-            .populate('equipo1', 'nombre') // Añadimos población de equipos
-            .populate('equipo2', 'nombre')
-            .populate('ganador')
-            .sort({ ronda: 1 }); // Ordenadas por ronda
+        const tournamentId = req.params.id;
+        const tournament = await Tournament.findById(tournamentId).lean();
+
+        let matches = await Match.find({ torneo: tournamentId }).sort({ ronda: 1 }).lean();
+
+        // 1. Guardar IDs crudos
+        const rawMatchData = matches.map(m => ({
+            jugador1: m.jugador1,
+            jugador2: m.jugador2,
+            equipo1: m.equipo1,
+            equipo2: m.equipo2,
+            ganador: m.ganador
+        }));
+
+        // 2. Poblar
+        await Match.populate(matches, [
+            { path: 'jugador1', select: 'username isBot' },
+            { path: 'jugador2', select: 'username isBot' },
+            { path: 'equipo1', select: 'nombre' },
+            { path: 'equipo2', select: 'nombre' },
+            { path: 'ganador' }
+        ]);
+
+        // 3. Hidratación
+        if (tournament && tournament.estado === 'Finalizado' && (tournament.snapNombresBots || tournament.snapNombresEquipos)) {
+            const snapBots = tournament.snapNombresBots || {};
+            const snapEquips = tournament.snapNombresEquipos || {};
+
+            matches = matches.map((m, i) => {
+                const raw = rawMatchData[i];
+                // Jugador 1
+                if (!m.jugador1 || !m.jugador1.username) {
+                    const id = raw.jugador1?.toString();
+                    if (id && snapBots[id]) m.jugador1 = { _id: id, username: snapBots[id], isBot: true };
+                }
+                // Jugador 2
+                if (!m.jugador2 || !m.jugador2.username) {
+                    const id = raw.jugador2?.toString();
+                    if (id && snapBots[id]) m.jugador2 = { _id: id, username: snapBots[id], isBot: true };
+                }
+                // Equipo 1
+                if (!m.equipo1 || !m.equipo1.nombre) {
+                    const id = raw.equipo1?.toString();
+                    if (id && snapEquips[id]) m.equipo1 = { _id: id, nombre: snapEquips[id], isBot: true };
+                }
+                // Equipo 2
+                if (!m.equipo2 || !m.equipo2.nombre) {
+                    const id = raw.equipo2?.toString();
+                    if (id && snapEquips[id]) m.equipo2 = { _id: id, nombre: snapEquips[id], isBot: true };
+                }
+                // Ganador
+                if (!m.ganador || (!m.ganador.username && !m.ganador.nombre)) {
+                    const id = raw.ganador?.toString();
+                    if (id) {
+                        if (m.ganadorTipo === 'User' && snapBots[id]) {
+                            m.ganador = { _id: id, username: snapBots[id], isBot: true };
+                        } else if (m.ganadorTipo === 'Team' && snapEquips[id]) {
+                            m.ganador = { _id: id, nombre: snapEquips[id], isBot: true };
+                        }
+                    }
+                }
+                return m;
+            });
+        }
 
         res.json(matches);
     } catch (err) {
@@ -259,6 +386,10 @@ exports.advanceTournament = async (req, res) => {
             tournament.estado = 'Finalizado';
             tournament.ganador = winners[0];
             tournament.ganadorTipo = tournament.formato === 'Equipos' ? 'Team' : 'User';
+
+            // --- SNAPSHOT Y LIMPIEZA DE BOTS AL FINALIZAR ---
+            await performBotSnapshotAndCleanup(tournament);
+
             await tournament.save();
 
             const io = req.app.get('socketio');
@@ -368,7 +499,7 @@ exports.updateTournament = async (req, res) => {
 // Eliminar un torneo
 exports.deleteTournament = async (req, res) => {
     try {
-        const tournament = await Tournament.findById(req.params.id);
+        const tournament = await Tournament.findById(req.params.id).populate('participantes');
 
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
@@ -377,8 +508,22 @@ exports.deleteTournament = async (req, res) => {
             return res.status(401).json({ msg: 'No autorizado' });
         }
 
-        // También deberíamos borrar las partidas asociadas si existen
+        // 1. Identificar y borrar usuarios bots participantes
+        const botIds = tournament.participantes
+            .filter(p => p.isBot === true)
+            .map(p => p._id);
+
+        if (botIds.length > 0) {
+            await User.deleteMany({ _id: { $in: botIds } });
+        }
+
+        // 2. Borrar equipos asociados (sean bots o no, al borrar el torneo los equipos dejan de tener sentido)
+        await Team.deleteMany({ torneo: req.params.id });
+
+        // 3. Borrar las partidas asociadas
         await Match.deleteMany({ torneo: req.params.id });
+
+        // 4. Borrar el torneo
         await Tournament.findByIdAndDelete(req.params.id);
 
         res.json({ msg: 'Torneo eliminado correctamente' });
@@ -388,11 +533,23 @@ exports.deleteTournament = async (req, res) => {
     }
 };
 
+
 // Crear un equipo
 exports.createTeam = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id);
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        // Verificar que no se ha alcanzado el límite de equipos
+        if (tournament.equipos.length >= tournament.limiteParticipantes) {
+            return res.status(400).json({ msg: `El torneo ya ha alcanzado el límite de ${tournament.limiteParticipantes} equipos.` });
+        }
+
+        // Verificar que el usuario no sea ya capitán de otro equipo en este torneo
+        const existingTeam = await Team.findOne({ torneo: tournament._id, capitan: req.user.id });
+        if (existingTeam) {
+            return res.status(400).json({ msg: 'Ya eres capitán de un equipo en este torneo.' });
+        }
 
         const newTeam = new Team({
             nombre: req.body.nombre,
@@ -485,31 +642,57 @@ exports.handleExitTournament = async (req, res) => {
 exports.expelParticipant = async (req, res) => {
     try {
         const { tournamentId, userId } = req.params;
-        const tournament = await Tournament.findById(tournamentId);
+        const tournament = await Tournament.findById(tournamentId).populate('participantes');
 
-        if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+        if (tournament.organizador.toString() !== req.user.id && req.user.rol !== 'administrador') {
+            return res.status(401).json({ msg: 'No autorizado' });
+        }
+
         if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador')
             return res.status(400).json({ msg: 'No se puede expulsar con el torneo empezado' });
 
+        const userToExpel = await User.findById(userId);
+        if (!userToExpel) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
         // Lógica idéntica a abandonar (si es capitán se borra equipo, si no, solo el miembro)
         const team = await Team.findOne({ torneo: tournamentId, capitan: userId });
+
+        let usersToDelete = [];
+        if (userToExpel.isBot) usersToDelete.push(userId);
+
         if (team) {
             const memberIds = team.miembros.map(m => m.usuario.toString());
-            tournament.participantes = tournament.participantes.filter(p => !memberIds.includes(p.toString()));
+
+            // Si el equipo es de bots, recolectar todos sus miembros para borrar
+            const teamMembers = await User.find({ _id: { $in: memberIds }, isBot: true });
+            teamMembers.forEach(m => {
+                if (!usersToDelete.includes(m._id.toString())) usersToDelete.push(m._id.toString());
+            });
+
+            tournament.participantes = tournament.participantes.filter(p => !memberIds.includes(p._id.toString()));
             tournament.equipos = tournament.equipos.filter(e => e.toString() !== team._id.toString());
             await Team.findByIdAndDelete(team._id);
         } else {
-            tournament.participantes = tournament.participantes.filter(p => p.toString() !== userId);
+            tournament.participantes = tournament.participantes.filter(p => p._id.toString() !== userId);
             await Team.updateMany({ torneo: tournamentId }, { $pull: { miembros: { usuario: userId } } });
         }
 
         await tournament.save();
 
+        // Borrado definitivo de los bots de la BD
+        if (usersToDelete.length > 0) {
+            await User.deleteMany({ _id: { $in: usersToDelete } });
+        }
+
         const io = req.app.get('socketio');
         io.to(tournamentId).emit('participantUpdated');
 
-        res.json({ msg: 'Participante expulsado' });
-    } catch (err) { res.status(500).send('Error al expulsar'); }
+        res.json({ msg: 'Participante expulsado y datos de bot limpiados' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al expulsar');
+    }
 };
 
 // Unirse a un equipo (Solicitud pendiente)
@@ -594,6 +777,9 @@ exports.reportBRRoundWinner = async (req, res) => {
             tournament.ganador = winnerId;
             tournament.ganadorTipo = 'User';
 
+            // --- SNAPSHOT Y LIMPIEZA DE BOTS AL FINALIZAR ---
+            await performBotSnapshotAndCleanup(tournament);
+
             const io = req.app.get('socketio');
             const user = await User.findById(winnerId);
             io.to(req.params.id).emit('tournamentFinished', { winnerName: user ? user.username : 'Ganador' });
@@ -606,4 +792,192 @@ exports.reportBRRoundWinner = async (req, res) => {
 
         res.json(tournament);
     } catch (err) { res.status(500).send('Error al reportar ronda'); }
+};
+
+// --- FUNCIONES DE ADMINISTRADOR: RELLENO CON BOTS ---
+
+// Anade UN participante/equipo bot al torneo (solo admin, solo estado Abierto)
+exports.addBot = async (req, res) => {
+    try {
+        if (req.user.rol !== 'administrador') return res.status(403).json({ msg: 'Solo administradores' });
+
+        const tournament = await Tournament.findById(req.params.id);
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+        if (tournament.estado !== 'Abierto') return res.status(400).json({ msg: 'El torneo debe estar Abierto para anadir bots' });
+
+        const io = req.app.get('socketio');
+
+        // Función auxiliar para generar un nombre de bot único
+        const generateUniqueBotName = async (baseName) => {
+            let name = baseName;
+            let counter = 1;
+            while (await User.findOne({ username: name })) {
+                name = baseName + '_' + Math.floor(Math.random() * 10000);
+                counter++;
+                if (counter > 10) break; // Seguridad
+            }
+            return name;
+        };
+
+        if (tournament.formato === 'Equipos') {
+            if (tournament.equipos.length >= tournament.limiteParticipantes) {
+                return res.status(400).json({ msg: 'El torneo ya esta lleno de equipos' });
+            }
+
+            const teamIndex = tournament.equipos.length + 1;
+            const memberUsers = [];
+            for (let i = 1; i <= tournament.tamanoEquipoMax; i++) {
+                const baseBotName = 'BotTeam' + teamIndex + '_J' + i;
+                const botName = await generateUniqueBotName(baseBotName);
+                const botUser = new User({
+                    username: botName,
+                    email: botName.toLowerCase() + '@bot.easytourney',
+                    password: 'bot_no_login',
+                    rol: 'participante',
+                    isBot: true
+                });
+                await botUser.save();
+                memberUsers.push(botUser);
+            }
+            const botTeam = new Team({
+                nombre: 'BotEquipo_' + teamIndex + '_' + Math.floor(Math.random() * 1000),
+                capitan: memberUsers[0]._id,
+                torneo: tournament._id,
+                miembros: memberUsers.map(u => ({ usuario: u._id, estado: 'Aceptado' }))
+            });
+            await botTeam.save();
+            tournament.equipos.push(botTeam._id);
+            memberUsers.forEach(u => {
+                if (!tournament.participantes.includes(u._id)) tournament.participantes.push(u._id);
+            });
+            await tournament.save();
+        } else {
+            if (tournament.participantes.length >= tournament.limiteParticipantes) {
+                return res.status(400).json({ msg: 'El torneo ya esta lleno de participantes' });
+            }
+            const botIndex = tournament.participantes.length + 1;
+            const baseBotName = 'Bot_' + botIndex;
+            const botName = await generateUniqueBotName(baseBotName);
+            const botUser = new User({
+                username: botName,
+                email: botName.toLowerCase() + '@bot.easytourney',
+                password: 'bot_no_login',
+                rol: 'participante',
+                isBot: true
+            });
+            await botUser.save();
+            tournament.participantes.push(botUser._id);
+            await tournament.save();
+        }
+
+        io.to(req.params.id).emit('participantUpdated');
+        res.json({ msg: 'Bot anadido correctamente' });
+    } catch (err) {
+        console.error('addBot error:', err);
+        res.status(500).send('Error al anadir bot');
+    }
+};
+
+// Elimina todos los bots de un torneo (solo admin)
+exports.clearBots = async (req, res) => {
+    try {
+        if (req.user.rol !== 'administrador') return res.status(403).json({ msg: 'Solo administradores' });
+
+        const tournament = await Tournament.findById(req.params.id)
+            .populate('participantes')
+            .populate('equipos');
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        const botParticipants = tournament.participantes.filter(p => p.isBot);
+        const botIds = botParticipants.map(p => p._id);
+
+        const botTeams = tournament.equipos.filter(t => botIds.some(id => id.equals(t.capitan)));
+        const botTeamIds = botTeams.map(t => t._id);
+        await Team.deleteMany({ _id: { $in: botTeamIds } });
+
+        await User.deleteMany({ _id: { $in: botIds } });
+
+        tournament.participantes = tournament.participantes.filter(p => !p.isBot);
+        tournament.equipos = tournament.equipos.filter(t => !botTeamIds.some(id => id.equals(t._id)));
+        await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(req.params.id).emit('participantUpdated');
+        res.json({ msg: 'Bots eliminados correctamente' });
+    } catch (err) {
+        console.error('clearBots error:', err);
+        res.status(500).send('Error al limpiar bots');
+    }
+};
+
+// --- FUNCIÓN AUXILIAR PARA SNAPSHOT Y LIMPIEZA AL FINALIZAR ---
+const performBotSnapshotAndCleanup = async (tournament) => {
+    try {
+        const fullTournament = await Tournament.findById(tournament._id)
+            .populate('participantes')
+            .populate('ganadoresRondaBR')
+            .populate({
+                path: 'equipos',
+                populate: { path: 'miembros.usuario' }
+            });
+
+        if (!fullTournament) return;
+
+        const snapBots = {};
+        const snapEquips = {};
+        const snapMembers = {};
+        const botIds = [];
+        const botTeamIds = [];
+
+        // 1. Recolectar bots individuales
+        fullTournament.participantes.forEach(p => {
+            if (p && p.isBot) {
+                snapBots[p._id.toString()] = p.username;
+                if (!botIds.some(id => id.equals(p._id))) botIds.push(p._id);
+            }
+        });
+
+        // 2. Ganadores de ronda BR
+        fullTournament.ganadoresRondaBR.forEach(g => {
+            if (g && g.isBot) {
+                snapBots[g._id.toString()] = g.username;
+                if (!botIds.some(id => id.equals(g._id))) botIds.push(g._id);
+            }
+        });
+
+        // 3. Equipos de bots
+        fullTournament.equipos.forEach(t => {
+            if (!t) return;
+            const isBotTeam = (t.capitan && botIds.some(bid => bid.equals(t.capitan))) || t.nombre?.startsWith('BotEquipo');
+
+            if (isBotTeam) {
+                snapEquips[t._id.toString()] = t.nombre;
+                snapMembers[t._id.toString()] = [];
+                botTeamIds.push(t._id);
+
+                t.miembros.forEach(m => {
+                    if (m.usuario && m.usuario.isBot) {
+                        snapBots[m.usuario._id.toString()] = m.usuario.username;
+                        snapMembers[t._id.toString()].push(m.usuario._id.toString());
+                        if (!botIds.some(id => id.equals(m.usuario._id))) botIds.push(m.usuario._id);
+                    }
+                });
+            }
+        });
+
+        // MongoDB Map puede comportarse de forma extraña si no se asigna correctamente
+        // Usaremos un objeto normal, pero Mongoose lo convertirá si el modelo es Map. 
+        // O mejor, lo asignamos directamente al documento tournament que vino del controller
+        tournament.snapNombresBots = snapBots;
+        tournament.snapNombresEquipos = snapEquips;
+        tournament.snapEquiposMiembros = snapMembers;
+
+        // 4. Borrado físico
+        if (botTeamIds.length > 0) await Team.deleteMany({ _id: { $in: botTeamIds } });
+        if (botIds.length > 0) await User.deleteMany({ _id: { $in: botIds } });
+
+        console.log(`Snapshot finalizado para ${tournament._id}`);
+    } catch (err) {
+        console.error('Error en performBotSnapshotAndCleanup:', err);
+    }
 };

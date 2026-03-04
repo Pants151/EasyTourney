@@ -15,7 +15,10 @@
 
 .hero-overlay-details {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: linear-gradient(0deg, #080b12 0%, rgba(8, 11, 18, 0.4) 100%);
 }
 
@@ -28,7 +31,7 @@
 .game-logo-details {
     height: 100px;
     width: auto;
-    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
 /* INFO CARDS */
@@ -39,7 +42,9 @@
     padding: 20px;
 }
 
-.text-accent { color: #FF7300 !important; }
+.text-accent {
+    color: #FF7300 !important;
+}
 
 /* ENFRENTAMIENTOS */
 .match-card-custom {
@@ -94,7 +99,9 @@
     border: 1px solid #FF7300;
 }
 
-.text-dim { color: #aab0c4; }
+.text-dim {
+    color: #aab0c4;
+}
 
 /* TournamentDetails.css actualizado */
 
@@ -202,7 +209,8 @@
 .matches-list {
     display: flex;
     flex-direction: column;
-    justify-content: space-around; /* Clave para el efecto árbol */
+    justify-content: space-around;
+    /* Clave para el efecto árbol */
     flex-grow: 1;
 }
 
@@ -295,14 +303,26 @@
     color: #fff;
 }
 
-.no-interaction { cursor: default; }
-.cursor-pointer { cursor: pointer; transition: background 0.2s; }
-.cursor-pointer:hover { background: rgba(255, 255, 255, 0.05) !important; }
+.no-interaction {
+    cursor: default;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cursor-pointer:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
 
 /* Modal de Equipos */
 .custom-modal-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.85);
     display: flex;
     align-items: center;
@@ -313,10 +333,12 @@
 .modal-content-team {
     width: 90%;
     max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .teams-list-scroll {
-    max-height: 250px;
+    max-height: 280px;
     overflow-y: auto;
 }
 
@@ -351,8 +373,15 @@
 }
 
 @keyframes zoomIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .hero-info-content .btn-outline-light {
