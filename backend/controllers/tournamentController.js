@@ -312,7 +312,11 @@ exports.updateTournament = async (req, res) => {
     try {
         let tournament = await Tournament.findById(req.params.id);
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
-        if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
+
+        // Administrador puede editar cualquier torneo. El organizador solo sus torneos.
+        if (tournament.organizador.toString() !== req.user.id && req.user.rol !== 'administrador') {
+            return res.status(401).json({ msg: 'No autorizado' });
+        }
 
         const { nombre, fechaInicio } = req.body;
 
@@ -362,8 +366,8 @@ exports.deleteTournament = async (req, res) => {
 
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        // Verificar que sea el organizador
-        if (tournament.organizador.toString() !== req.user.id) {
+        // Verificar que sea el organizador o un administrador
+        if (tournament.organizador.toString() !== req.user.id && req.user.rol !== 'administrador') {
             return res.status(401).json({ msg: 'No autorizado' });
         }
 

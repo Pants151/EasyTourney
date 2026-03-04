@@ -38,7 +38,10 @@ const GamesPage = () => {
             <div className="container py-5">
                 <div className="header-page mb-5">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h1 className="fw-bolder text-uppercase m-0 text-white">JUEGOS</h1>
+                        <div className="d-flex align-items-center gap-3">
+                            <img src="/assets/images/icon-controller.png" alt="Controller Icon" style={{ maxHeight: '40px' }} />
+                            <h1 className="fw-bolder text-uppercase m-0 text-white">JUEGOS</h1>
+                        </div>
 
                         {/* Botón exclusivo para Administradores */}
                         {user?.rol === 'administrador' && (

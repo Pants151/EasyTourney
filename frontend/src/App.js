@@ -15,6 +15,7 @@ import AdminGames from './pages/AdminGames';
 import TournamentsPage from './pages/TournamentsPage';
 import ManageMyTournaments from './pages/ManageMyTournaments';
 import EditTournament from './pages/EditTournament';
+import AdminTournaments from './pages/AdminTournaments';
 import GamesPage from './pages/GamesPage';
 import AdminUsers from './pages/AdminUsers';
 import AboutUs from './pages/AboutUs';
@@ -49,6 +50,7 @@ function App() {
               <Route path="/admin-users" element={<AdminUsers />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />
+              <Route path="/admin/tournaments" element={<AdminTournaments />} />
             </Routes>
           </main>
           <Footer />

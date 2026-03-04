@@ -122,11 +122,22 @@ const TournamentsPage = () => {
                 {/* Cabecera actualizada con botones condicionales */}
                 <div className="header-page mb-5">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h1 className="fw-bolder text-uppercase m-0 text-white">{getPageTitle()}</h1>
+                        <div className="d-flex align-items-center gap-3">
+                            <img src="/assets/images/icon-trophy.png" alt="Trophy Icon" style={{ maxHeight: '40px' }} />
+                            <h1 className="fw-bolder text-uppercase m-0 text-white">{getPageTitle()}</h1>
+                        </div>
 
                         {/* Validación de Rol para Organizador o Administrador */}
                         {(user?.rol === 'organizador' || user?.rol === 'administrador') && (
-                            <div className="d-flex gap-3">
+                            <div className="d-flex gap-3 flex-wrap justify-content-end">
+                                {user?.rol === 'administrador' && (
+                                    <button
+                                        className="btn btn-warning fw-bold text-dark"
+                                        onClick={() => navigate('/admin/tournaments')}
+                                    >
+                                        GESTIONAR TODOS LOS TORNEOS
+                                    </button>
+                                )}
                                 <button
                                     className="btn btn-accent"
                                     onClick={() => navigate('/manage-my-tournaments')}
