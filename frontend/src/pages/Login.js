@@ -7,8 +7,14 @@ import './TournamentForm.css'; // Reutilizamos los estilos de formulario
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
-    const { login } = useContext(AuthContext);
+    const { user, login } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    // Redirigir si ya está logueado para no sobrescribir la sesión actual accidentalmente
+    if (user) {
+        navigate('/');
+        return null;
+    }
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 

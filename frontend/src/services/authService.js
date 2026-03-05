@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config';
+import { getStoredItem, setStoredItem, removeStoredItem } from '../utils/storage';
 
 const API_URL = `${config.API_URL}/auth/`;
 
@@ -9,8 +10,8 @@ axios.interceptors.response.use(
     (error) => {
         // Si el servidor responde con 401 No Autorizado (ej. Sesión expirada por sesión concurrente)
         if (error.response && error.response.status === 401) {
-            localStorage.removeItem('userToken');
-            localStorage.removeItem('userData');
+            removeStoredItem('userToken');
+            removeStoredItem('userData');
             // Forzamos recarga y redirección agresiva para limpiar la memoria de React y estados
             window.location.href = '/login';
         }
@@ -26,13 +27,13 @@ const register = async (userData) => {
 const login = async (userData) => {
     const response = await axios.post(API_URL + 'login', userData);
     if (response.data.token) {
-        localStorage.setItem('userToken', response.data.token);
+        setStoredItem('userToken', response.data.token);
     }
     return response.data;
 };
 
 const getAuthHeaders = () => ({
-    headers: { 'x-auth-token': localStorage.getItem('userToken') }
+    headers: { 'x-auth-token': getStoredItem('userToken') }
 });
 
 const getProfile = async () => (await axios.get(API_URL + 'profile', getAuthHeaders())).data;

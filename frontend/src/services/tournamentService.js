@@ -1,10 +1,11 @@
 import axios from 'axios';
 import config from '../config';
+import { getStoredItem } from '../utils/storage';
 
 const API_URL = `${config.API_URL}/tournaments/`;
 
 const getAuthHeaders = () => {
-    const token = localStorage.getItem('userToken');
+    const token = getStoredItem('userToken');
     return { headers: { 'x-auth-token': token } };
 };
 

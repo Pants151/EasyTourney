@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import config from '../config';
 import authService from '../services/authService';
+import { getStoredItem, setStoredItem, removeStoredItem } from '../utils/storage';
 
 export const AuthContext = createContext();
 
@@ -12,8 +13,8 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('userToken');
-        const userData = localStorage.getItem('userData');
+        const token = getStoredItem('userToken');
+        const userData = getStoredItem('userData');
         if (token && userData) {
             setUser({ token, ...JSON.parse(userData) });
         }
@@ -31,8 +32,8 @@ export const AuthProvider = ({ children }) => {
 
             // Escuchar el evento de expulsión en tiempo real
             socket.on('force_logout', () => {
-                localStorage.removeItem('userToken');
-                localStorage.removeItem('userData');
+                removeStoredItem('userToken');
+                removeStoredItem('userData');
                 window.location.href = '/login'; // Inmediatamente recarga a expensas de la vista actual
             });
         }
@@ -42,8 +43,8 @@ export const AuthProvider = ({ children }) => {
     }, [user]);
 
     const login = (data) => {
-        localStorage.setItem('userToken', data.token);
-        localStorage.setItem('userData', JSON.stringify(data.user));
+        setStoredItem('userToken', data.token);
+        setStoredItem('userData', JSON.stringify(data.user));
         setUser({ token: data.token, ...data.user });
         navigate('/');
     };
@@ -52,8 +53,8 @@ export const AuthProvider = ({ children }) => {
         try {
             await authService.logout(); // Limpiar el status fantasma en backend
         } catch (err) { }
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('userData');
+        removeStoredItem('userToken');
+        removeStoredItem('userData');
         setUser(null);
         navigate('/login');
     };
