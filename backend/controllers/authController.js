@@ -214,6 +214,12 @@ const performCascadeDelete = async (userId) => {
         { $pull: { miembros: { usuario: userId } } }
     );
 
+    // Sacarlo también de la lista de participantes de cualquier torneo
+    await Tournament.updateMany(
+        { participantes: userId },
+        { $pull: { participantes: userId } }
+    );
+
     // 3. Finalmente, borrar el usuario
     await User.findByIdAndDelete(userId);
 };

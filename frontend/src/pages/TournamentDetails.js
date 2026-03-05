@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import tournamentService from '../services/tournamentService';
 import { AuthContext } from '../context/AuthContext';
 import './TournamentDetails.css';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import io from 'socket.io-client';
 import config from '../config';
@@ -332,7 +332,8 @@ const TournamentDetails = () => {
             });
         }
 
-        doc.save(`Reporte_${tournament.nombre}.pdf`);
+        const safeName = tournament.nombre.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        doc.save(`Reporte_${safeName}.pdf`);
     };
 
     // Lógica para verificar si el usuario ya está inscrito
@@ -682,9 +683,12 @@ const TournamentDetails = () => {
                                                                     </h6>
                                                                     {team.capitan === m.usuario._id && <div className="text-warning small"><i className="bi bi-star-fill me-1"></i>Capitán</div>}
                                                                     {isOrganizer && tournament.estado === 'Abierto' && (
-                                                                        <button className="btn btn-link text-danger btn-sm p-0 mt-2"
-                                                                            onClick={(e) => { e.stopPropagation(); handleExpulsar(m.usuario._id); }}>
-                                                                            EXPULSAR
+                                                                        <button
+                                                                            className="btn btn-danger btn-sm fw-bold mt-1"
+                                                                            style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(m.usuario._id); }}
+                                                                        >
+                                                                            ✕ EXPULSAR
                                                                         </button>
                                                                     )}
                                                                 </div>
@@ -710,8 +714,13 @@ const TournamentDetails = () => {
                                                         )}
                                                     </h6>
                                                     {isOrganizer && tournament.estado === 'Abierto' && (
-                                                        <button className="btn btn-link text-danger btn-sm p-0 mt-2"
-                                                            onClick={(e) => { e.stopPropagation(); handleExpulsar(p._id); }}>EXPULSAR</button>
+                                                        <button
+                                                            className="btn btn-danger btn-sm fw-bold mt-1"
+                                                            style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(p._id); }}
+                                                        >
+                                                            ✕ EXPULSAR
+                                                        </button>
                                                     )}
                                                 </div>
                                             </div>

@@ -513,7 +513,7 @@ exports.deleteTournament = async (req, res) => {
 
         // 1. Identificar y borrar usuarios bots participantes
         const botIds = tournament.participantes
-            .filter(p => p.isBot === true)
+            .filter(p => p && p.isBot === true)
             .map(p => p._id);
 
         if (botIds.length > 0) {
@@ -891,7 +891,7 @@ exports.clearBots = async (req, res) => {
             .populate('equipos');
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        const botParticipants = tournament.participantes.filter(p => p.isBot);
+        const botParticipants = tournament.participantes.filter(p => p && p.isBot);
         const botIds = botParticipants.map(p => p._id);
 
         const botTeams = tournament.equipos.filter(t => botIds.some(id => id.equals(t.capitan)));
