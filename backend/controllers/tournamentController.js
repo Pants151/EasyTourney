@@ -94,11 +94,11 @@ exports.getTournamentById = async (req, res) => {
         // 3. Poblar datos
         await Tournament.populate(tournament, [
             { path: 'organizador', select: 'username' },
-            { path: 'participantes', select: 'username isBot', options: { retainNullValues: true } },
+            { path: 'participantes', select: 'username isBot pais idioma fechaNacimiento', options: { retainNullValues: true } },
             { path: 'ganadoresRondaBR', select: 'username', options: { retainNullValues: true } },
             { path: 'ganador', options: { strictPopulate: false } },
             { path: 'juego' },
-            { path: 'equipos', populate: { path: 'miembros.usuario', select: 'username isBot' }, options: { retainNullValues: true } }
+            { path: 'equipos', populate: { path: 'miembros.usuario', select: 'username isBot pais idioma fechaNacimiento' }, options: { retainNullValues: true } }
         ]);
 
         // 4. HIDRATACIÓN DE BOTS SI EL TORNEO ESTÁ FINALIZADO
@@ -125,7 +125,10 @@ exports.getTournamentById = async (req, res) => {
                             _id: id,
                             nombre: snapEquips[id],
                             isBot: true,
-                            miembros: (snapMembers[id] || []).map(mid => ({ usuario: { _id: mid, username: snapBots[mid], isBot: true } }))
+                            miembros: (snapMembers[id] || []).map(mid => ({
+                                usuario: { _id: mid, username: snapBots[mid], isBot: true },
+                                estado: 'Aceptado' // <--- Añadido para que el frontend los muestre
+                            }))
                         };
                     }
                 }
@@ -979,5 +982,56 @@ const performBotSnapshotAndCleanup = async (tournament) => {
         console.log(`Snapshot finalizado para ${tournament._id}`);
     } catch (err) {
         console.error('Error en performBotSnapshotAndCleanup:', err);
+    }
+};
+
+// Admin: Renombrar Bot o Equipo
+exports.renameBot = async (req, res) => {
+    try {
+        const { id, entityId } = req.params;
+        const { newName, type } = req.body;
+
+        const tournament = await Tournament.findById(id);
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        if (tournament.estado !== 'Abierto') {
+            return res.status(400).json({ msg: 'Solo puedes renombrar bots cuando el torneo está abierto.' });
+        }
+
+        if (type === 'user') {
+            // Verificar si el nuevo nombre ya existe
+            const nameTaken = await User.findOne({ username: newName });
+            if (nameTaken) return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' });
+
+            const bot = await User.findById(entityId);
+            if (!bot) return res.status(404).json({ msg: 'Participante no encontrado' });
+            if (!bot.isBot) return res.status(400).json({ msg: 'Solo puedes renombrar cuentas creadas como bot de prueba.' });
+
+            bot.username = newName;
+            await bot.save();
+
+        } else if (type === 'team') {
+            // Verificar si el equipo ya existe en este mismo torneo
+            const teamTaken = await Team.findOne({ torneo: id, nombre: newName });
+            if (teamTaken) return res.status(400).json({ msg: 'Ya existe un equipo con ese nombre en este torneo.' });
+
+            const team = await Team.findById(entityId);
+            if (!team) return res.status(404).json({ msg: 'Equipo no encontrado' });
+
+            // Validamos que sea un equipo de bots (o que se permita a los admins renombrar este equipo en concreto)
+            // Para asegurar, validamos que su capitán sea null o empiece con "Bot" o lo consideremos bot
+            team.nombre = newName;
+            await team.save();
+        } else {
+            return res.status(400).json({ msg: 'Tipo de entidad no válido (user/team)' });
+        }
+
+        const io = req.app.get('socketio');
+        io.to(id).emit('participantUpdated');
+
+        res.json({ msg: 'Renombrado correctamente' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al renombrar bot/equipo');
     }
 };

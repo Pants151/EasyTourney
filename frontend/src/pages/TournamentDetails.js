@@ -24,6 +24,7 @@ const TournamentDetails = () => {
     const [newTeamName, setNewTeamName] = useState("");
     const [streamData, setStreamData] = useState({ plataforma: 'Twitch', url: '' });
     const [isGenerating, setIsGenerating] = useState(false); // Estado para evitar doble clic
+    const [selectedParticipant, setSelectedParticipant] = useState(null); // Para el modal de detalles
 
     // Fix scroll al montar el componente
     useEffect(() => {
@@ -252,6 +253,18 @@ const TournamentDetails = () => {
         }
     };
 
+    const handleRenameBot = async (entityId, type, currentName) => {
+        const newName = window.prompt(`Nuevo nombre para ${type === 'team' ? 'el equipo' : 'el bot'}:`, currentName);
+        if (!newName || newName.trim() === '' || newName === currentName) return;
+
+        try {
+            await tournamentService.renameBot(id, entityId, { newName: newName.trim(), type });
+            await fetchAll();
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al renombrar');
+        }
+    };
+
     const exportToPDF = () => {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -260,17 +273,32 @@ const TournamentDetails = () => {
         doc.setTextColor(255, 115, 0);
         doc.text(tournament.nombre.toUpperCase(), pageWidth / 2, 20, { align: 'center' });
 
+        const characteristicsBody = [
+            ['Organizador', tournament.organizador?.username || 'Desconocido'],
+            ['Juego', tournament.juego?.nombre],
+            ['Formato', tournament.formato],
+            ['Participantes', tournament.participantes?.length],
+            ['Estado', tournament.estado.toUpperCase()],
+            ['CAMPEÓN', tournament.formato === 'Equipos' ? tournament.ganador?.nombre : tournament.ganador?.username]
+        ];
+
+        if (tournament.formato === 'Equipos' && tournament.estado === 'Finalizado' && tournament.ganador) {
+            const winningTeamId = tournament.ganador._id || tournament.ganador;
+            const team = tournament.equipos?.find(t => (t._id === winningTeamId || t === winningTeamId));
+            if (team) {
+                const membersStr = team.miembros
+                    .filter(m => m.estado === 'Aceptado')
+                    .map(m => m.usuario?.username || 'Desconocido')
+                    .join(', ');
+                characteristicsBody.push(['Plantilla Campeona', membersStr]);
+            }
+        }
+
         // Tabla de Características
         autoTable(doc, {
             startY: 40,
             head: [['Característica', 'Detalle']],
-            body: [
-                ['Juego', tournament.juego?.nombre],
-                ['Formato', tournament.formato],
-                ['Participantes', tournament.participantes?.length],
-                ['Estado', tournament.estado.toUpperCase()],
-                ['CAMPEÓN', tournament.formato === 'Equipos' ? tournament.ganador?.nombre : tournament.ganador?.username]
-            ],
+            body: characteristicsBody,
             theme: 'striped',
             headStyles: { fillColor: [255, 115, 0] }
         });
@@ -394,6 +422,7 @@ const TournamentDetails = () => {
                         <div className="info-card-custom mb-4 shadow-sm">
                             <h5 className="text-accent fw-bold text-uppercase mb-3">Resumen</h5>
                             <ul className="list-unstyled text-white small">
+                                <li className="mb-2"><i className="bi bi-person-badge text-accent me-2"></i> Organizador: {tournament.organizador?.username || 'Desconocido'}</li>
                                 <li className="mb-2"><i className="bi bi-controller text-accent me-2"></i> {tournament.juego?.nombre}</li>
                                 <li className="mb-2"><i className="bi bi-calendar-event text-accent me-2"></i> {new Date(tournament.fechaInicio).toLocaleDateString()}</li>
                                 <li className="mb-2">
@@ -595,52 +624,99 @@ const TournamentDetails = () => {
                             {/* VISTA PARTICIPANTES (Tarjetas) */}
                             {activeTab === 'participantes' && (
                                 <div className="row">
-                                    {tournament.formato === 'Equipos' && tournament.equipos?.map(team => {
-                                        // Si el usuario actual es el capitán de este equipo
-                                        if (user && team.capitan === user.id) {
+                                    {tournament.formato === 'Equipos' ? (
+                                        tournament.equipos?.map(team => {
                                             const pendientes = team.miembros.filter(m => m.estado === 'Pendiente');
-                                            if (pendientes.length === 0) return null;
+                                            const isMyTeam = user && team.capitan === user.id;
 
                                             return (
-                                                <div key={team._id} className="col-12 mb-4">
-                                                    <div className="alert alert-warning border-warning bg-dark-secondary">
-                                                        <h6 className="fw-bold text-warning text-uppercase small">
-                                                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                                                            Solicitudes pendientes para tu equipo: {team.nombre}
-                                                        </h6>
-                                                        <hr />
-                                                        {pendientes.map(m => (
-                                                            <div key={m.usuario._id} className="d-flex justify-content-between align-items-center mb-2">
-                                                                <span className="text-white">{m.usuario.username}</span>
-                                                                <div className="d-flex gap-2">
-                                                                    <button className="btn btn-success btn-sm" onClick={() => handleRespondMember(team._id, m.usuario._id, 'accept')}>ACEPTAR</button>
-                                                                    <button className="btn btn-danger btn-sm" onClick={() => handleRespondMember(team._id, m.usuario._id, 'reject')}>RECHAZAR</button>
+                                                <div key={team._id} className="col-12 mb-5">
+                                                    {/* Alertas de pendientes si es mi equipo */}
+                                                    {isMyTeam && pendientes.length > 0 && (
+                                                        <div className="alert alert-warning border-warning bg-dark-secondary mb-3">
+                                                            <h6 className="fw-bold text-warning text-uppercase small">
+                                                                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                                                Solicitudes pendientes: {team.nombre}
+                                                            </h6>
+                                                            <hr />
+                                                            {pendientes.map(m => (
+                                                                <div key={m.usuario._id} className="d-flex justify-content-between align-items-center mb-2">
+                                                                    <span className="text-white">{m.usuario.username}</span>
+                                                                    <div className="d-flex gap-2">
+                                                                        <button className="btn btn-success btn-sm" onClick={() => handleRespondMember(team._id, m.usuario._id, 'accept')}>ACEPTAR</button>
+                                                                        <button className="btn btn-danger btn-sm" onClick={() => handleRespondMember(team._id, m.usuario._id, 'reject')}>RECHAZAR</button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Cabecera del Equipo */}
+                                                    <div className="team-header-divider d-flex align-items-center mb-3">
+                                                        <h5 className="text-accent fw-bold text-uppercase m-0 me-3">
+                                                            {team.nombre}
+                                                            {user?.rol === 'administrador' && tournament.estado === 'Abierto' && (team.nombre.startsWith('BotEquipo') || team.miembros.some(m => m.usuario?.isBot)) && (
+                                                                <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(team._id, 'team', team.nombre); }} title="Renombrar Equipo">
+                                                                    <i className="bi bi-pencil-square"></i>
+                                                                </button>
+                                                            )}
+                                                        </h5>
+                                                        <div className="flex-grow-1 border-bottom border-secondary"></div>
+                                                    </div>
+
+                                                    {/* Miembros del equipo */}
+                                                    <div className="row">
+                                                        {team.miembros.filter(m => m.estado === 'Aceptado').map(m => (
+                                                            <div key={m.usuario._id} className="col-md-4 mb-3">
+                                                                <div
+                                                                    className="participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border"
+                                                                    onClick={() => setSelectedParticipant(m.usuario)}
+                                                                >
+                                                                    <h6 className="text-white fw-bold mb-1">
+                                                                        {m.usuario.username}
+                                                                        {user?.rol === 'administrador' && tournament.estado === 'Abierto' && m.usuario.isBot && (
+                                                                            <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(m.usuario._id, 'user', m.usuario.username); }} title="Renombrar Bot">
+                                                                                <i className="bi bi-pencil-square"></i>
+                                                                            </button>
+                                                                        )}
+                                                                    </h6>
+                                                                    {team.capitan === m.usuario._id && <div className="text-warning small"><i className="bi bi-star-fill me-1"></i>Capitán</div>}
+                                                                    {isOrganizer && tournament.estado === 'Abierto' && (
+                                                                        <button className="btn btn-link text-danger btn-sm p-0 mt-2"
+                                                                            onClick={(e) => { e.stopPropagation(); handleExpulsar(m.usuario._id); }}>
+                                                                            EXPULSAR
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         ))}
                                                     </div>
                                                 </div>
                                             );
-                                        }
-                                        return null;
-                                    })}
-                                    {tournament.participantes.map(p => (
-                                        <div key={p._id} className="col-md-4 mb-3">
-                                            <div className="participant-card p-3 bg-dark-secondary rounded text-center">
-                                                <h6 className="text-white fw-bold mb-1">{p.username}</h6>
-                                                {tournament.formato === 'Equipos' && (
-                                                    <div className="text-accent small text-uppercase">
-                                                        Equipo: {p.equipoNombre || 'Sin equipo'}
-                                                    </div>
-                                                )}
-                                                {/* Botón de expulsar para el organizador si el torneo no ha empezado */}
-                                                {isOrganizer && tournament.estado === 'Abierto' && (
-                                                    <button className="btn btn-link text-danger btn-sm p-0 mt-2"
-                                                        onClick={() => handleExpulsar(p._id)}>EXPULSAR</button>
-                                                )}
+                                        })
+                                    ) : (
+                                        tournament.participantes.map(p => (
+                                            <div key={p._id} className="col-md-4 mb-3">
+                                                <div
+                                                    className="participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border"
+                                                    onClick={() => setSelectedParticipant(p)}
+                                                >
+                                                    <h6 className="text-white fw-bold mb-1">
+                                                        {p.username}
+                                                        {user?.rol === 'administrador' && tournament.estado === 'Abierto' && p.isBot && (
+                                                            <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }} title="Renombrar Bot">
+                                                                <i className="bi bi-pencil-square"></i>
+                                                            </button>
+                                                        )}
+                                                    </h6>
+                                                    {isOrganizer && tournament.estado === 'Abierto' && (
+                                                        <button className="btn btn-link text-danger btn-sm p-0 mt-2"
+                                                            onClick={(e) => { e.stopPropagation(); handleExpulsar(p._id); }}>EXPULSAR</button>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))
+                                    )}
                                 </div>
                             )}
 
@@ -701,7 +777,14 @@ const TournamentDetails = () => {
                                                 </div>
 
                                                 <div className="mt-2 small text-dim d-flex justify-content-between px-1">
-                                                    <span className="fw-bold text-accent">{s.plataforma}</span>
+                                                    <span className="fw-bold text-white d-flex align-items-center">
+                                                        {s.plataforma === 'Twitch' ? (
+                                                            <i className="bi bi-twitch me-2" style={{ color: '#9146FF', fontSize: '1.2rem' }}></i>
+                                                        ) : (
+                                                            <i className="bi bi-youtube me-2 text-danger" style={{ fontSize: '1.2rem' }}></i>
+                                                        )}
+                                                        {s.plataforma}
+                                                    </span>
                                                     <a href={s.url} target="_blank" rel="noreferrer" className="text-white-50 text-decoration-none hover-accent">
                                                         Ver en {s.plataforma} <i className="bi bi-box-arrow-up-right ms-1" style={{ fontSize: '0.7rem' }}></i>
                                                     </a>
@@ -815,6 +898,54 @@ const TournamentDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* MODAL DETALLES DEL PARTICIPANTE */}
+            {selectedParticipant && (
+                <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1050 }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content bg-dark-secondary border border-accent shadow-lg">
+                            <div className="modal-header border-bottom border-secondary">
+                                <h5 className="modal-title text-accent fw-bold text-uppercase">
+                                    <i className="bi bi-person-lines-fill me-2"></i>Detalles de Participante
+                                </h5>
+                                <button type="button" className="btn-close btn-close-white" onClick={() => setSelectedParticipant(null)}></button>
+                            </div>
+                            <div className="modal-body text-white">
+                                <div className="text-center mb-4 mt-2">
+                                    <div className="display-1 text-accent mb-2"><i className="bi bi-person-circle"></i></div>
+                                    <h3 className="fw-bold m-0 text-uppercase">{selectedParticipant.username}</h3>
+                                    {selectedParticipant.isBot && <span className="badge bg-warning text-dark mt-2">🤖 BOT DE PRUEBA</span>}
+                                </div>
+                                <ul className="list-group list-group-flush bg-transparent">
+                                    <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
+                                        <span className="text-dim"><i className="bi bi-geo-alt me-2 text-accent"></i>País:</span>
+                                        <span className="fw-bold">{selectedParticipant.pais || 'Desconocido'}</span>
+                                    </li>
+                                    <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
+                                        <span className="text-dim"><i className="bi bi-translate me-2 text-accent"></i>Idiomas:</span>
+                                        <span className="fw-bold text-end">
+                                            {selectedParticipant.idioma && selectedParticipant.idioma.length > 0
+                                                ? selectedParticipant.idioma.map(lang => lang.toUpperCase()).join(', ')
+                                                : 'No especificado'}
+                                        </span>
+                                    </li>
+                                    <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
+                                        <span className="text-dim"><i className="bi bi-calendar-check me-2 text-accent"></i>Edad:</span>
+                                        <span className="fw-bold">
+                                            {selectedParticipant.fechaNacimiento
+                                                ? `${new Date().getFullYear() - new Date(selectedParticipant.fechaNacimiento).getFullYear()} años`
+                                                : 'Ns / Nc'}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="modal-footer border-top border-secondary">
+                                <button type="button" className="btn btn-outline-light w-100 fw-bold" onClick={() => setSelectedParticipant(null)}>CERRAR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* MODAL DE EQUIPOS */}
             {showTeamModal && (

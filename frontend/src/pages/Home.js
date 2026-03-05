@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import gameService from '../services/gameService';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import './Home.css';
 
 const Home = () => {
+    const { user } = useContext(AuthContext);
     const [topGames, setTopGames] = useState([]);
     const navigate = useNavigate();
     const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -30,7 +32,7 @@ const Home = () => {
 
     const handleInstallClick = async () => {
         if (!deferredPrompt) {
-            alert("Para instalar en iOS: Pulsa 'Compartir' y 'Añadir a pantalla de inicio'. En PC, busca el icono en la barra de direcciones.");
+            alert("Si el instalador no se abre automáticamente puede deberse a dos motivos:\n\n1. Ya tienes la App instalada en tu dispositivo.\n2. Tu navegador (Brave, Safari, Firefox...) requiere instalación manual. Busca el icono de descarga en la barra de direcciones, o pulsa 'Añadir a la pantalla de inicio' en el menú de opciones.");
             return;
         }
         deferredPrompt.prompt();
@@ -93,14 +95,16 @@ const Home = () => {
                     </p>
 
                     <div className="hero-buttons d-flex justify-content-center flex-wrap gap-3">
-                        {/* BOTÓN 1: Empieza tu legado con scroll suave */}
-                        <Link
-                            to="/register"
-                            className="btn btn-accent btn-lg animate-fade-up delay-3 text-white"
-                            onClick={handleScrollToTop}
-                        >
-                            EMPIEZA TU LEGADO
-                        </Link>
+                        {/* BOTÓN 1: Empieza tu legado con scroll suave (Solo si NO está logueado) */}
+                        {!user && (
+                            <Link
+                                to="/register"
+                                className="btn btn-accent btn-lg animate-fade-up delay-3 text-white"
+                                onClick={handleScrollToTop}
+                            >
+                                EMPIEZA TU LEGADO
+                            </Link>
+                        )}
 
                         {/* BOTÓN NUEVO: Solo aparece si NO está instalada */}
                         {!isInstalled && (
