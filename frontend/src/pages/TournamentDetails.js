@@ -578,20 +578,22 @@ const TournamentDetails = () => {
                                                                     <div key={m._id} className="match-wrapper">
                                                                         <div className="match-item shadow-sm">
                                                                             <div
-                                                                                className={`player-slot rounded-top ${m.ganador?._id === p1?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p1 ? 'cursor-pointer' : 'no-interaction'}`}
-                                                                                onClick={() => canSetWinner && p1 && handleSetWinner(m._id, p1._id)}
+                                                                                className={`player-slot rounded-top ${m.ganador?._id === p1?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p1 && !p1.isDeleted ? 'cursor-pointer' : 'no-interaction'} ${p1?.isDeleted ? 'opacity-50 fst-italic' : ''}`}
+                                                                                onClick={() => canSetWinner && p1 && !p1.isDeleted && handleSetWinner(m._id, p1._id)}
                                                                             >
-                                                                                <span className="player-name-text">{p1Name || 'TBD'}</span>
+                                                                                <span className={`player-name-text ${p1?.isDeleted ? 'text-danger' : ''}`}>
+                                                                                    {p1Name || 'TBD'}
+                                                                                </span>
                                                                             </div>
 
                                                                             {/* DIV DEL VS ENTRE LOS DOS NOMBRES */}
                                                                             <div className="bracket-vs">VS</div>
 
                                                                             <div
-                                                                                className={`player-slot rounded-bottom ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p2 ? 'cursor-pointer' : 'no-interaction'}`}
-                                                                                onClick={() => canSetWinner && p2 && handleSetWinner(m._id, p2._id)}
+                                                                                className={`player-slot rounded-bottom ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p2 && !p2.isDeleted ? 'cursor-pointer' : 'no-interaction'} ${p2?.isDeleted ? 'opacity-50 fst-italic' : ''}`}
+                                                                                onClick={() => canSetWinner && p2 && !p2.isDeleted && handleSetWinner(m._id, p2._id)}
                                                                             >
-                                                                                <span className="player-name-text">
+                                                                                <span className={`player-name-text ${p2?.isDeleted ? 'text-danger' : ''}`}>
                                                                                     {p2Name || (m.resultado === "BYE" ? "---" : (isTeams ? 'TBD' : 'BYE'))}
                                                                                 </span>
                                                                             </div>
@@ -656,7 +658,7 @@ const TournamentDetails = () => {
                                                     <div className="team-header-divider d-flex align-items-center mb-3">
                                                         <h5 className="text-accent fw-bold text-uppercase m-0 me-3">
                                                             {team.nombre}
-                                                            {user?.rol === 'administrador' && tournament.estado === 'Abierto' && (team.nombre.startsWith('BotEquipo') || team.miembros.some(m => m.usuario?.isBot)) && (
+                                                            {isOrganizer && tournament.estado === 'Abierto' && (team.nombre.startsWith('BotEquipo') || team.miembros.some(m => m.usuario?.isBot)) && (
                                                                 <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(team._id, 'team', team.nombre); }} title="Renombrar Equipo">
                                                                     <i className="bi bi-pencil-square"></i>
                                                                 </button>
@@ -670,19 +672,19 @@ const TournamentDetails = () => {
                                                         {team.miembros.filter(m => m.estado === 'Aceptado').map(m => (
                                                             <div key={m.usuario._id} className="col-md-4 mb-3">
                                                                 <div
-                                                                    className="participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border"
+                                                                    className={`participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border ${m.usuario.isDeleted ? 'opacity-50 border-danger' : ''}`}
                                                                     onClick={() => setSelectedParticipant(m.usuario)}
                                                                 >
-                                                                    <h6 className="text-white fw-bold mb-1">
+                                                                    <h6 className={`fw-bold mb-1 ${m.usuario.isDeleted ? 'text-danger fst-italic' : 'text-white'}`}>
                                                                         {m.usuario.username}
-                                                                        {user?.rol === 'administrador' && tournament.estado === 'Abierto' && m.usuario.isBot && (
+                                                                        {isOrganizer && tournament.estado === 'Abierto' && m.usuario.isBot && !m.usuario.isDeleted && (
                                                                             <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(m.usuario._id, 'user', m.usuario.username); }} title="Renombrar Bot">
                                                                                 <i className="bi bi-pencil-square"></i>
                                                                             </button>
                                                                         )}
                                                                     </h6>
                                                                     {team.capitan === m.usuario._id && <div className="text-warning small"><i className="bi bi-star-fill me-1"></i>Capitán</div>}
-                                                                    {isOrganizer && tournament.estado === 'Abierto' && (
+                                                                    {isOrganizer && tournament.estado === 'Abierto' && !m.usuario.isDeleted && (
                                                                         <button
                                                                             className="btn btn-danger btn-sm fw-bold mt-1"
                                                                             style={{ fontSize: '0.7rem', padding: '2px 8px' }}
@@ -691,6 +693,7 @@ const TournamentDetails = () => {
                                                                             ✕ EXPULSAR
                                                                         </button>
                                                                     )}
+                                                                    {m.usuario.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO</div>}
                                                                 </div>
                                                             </div>
                                                         ))}
@@ -702,18 +705,18 @@ const TournamentDetails = () => {
                                         tournament.participantes.map(p => (
                                             <div key={p._id} className="col-md-4 mb-3">
                                                 <div
-                                                    className="participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border"
+                                                    className={`participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border ${p.isDeleted ? 'opacity-50 border-danger' : ''}`}
                                                     onClick={() => setSelectedParticipant(p)}
                                                 >
-                                                    <h6 className="text-white fw-bold mb-1">
+                                                    <h6 className={`fw-bold mb-1 ${p.isDeleted ? 'text-danger fst-italic' : 'text-white'}`}>
                                                         {p.username}
-                                                        {user?.rol === 'administrador' && tournament.estado === 'Abierto' && p.isBot && (
+                                                        {isOrganizer && tournament.estado === 'Abierto' && p.isBot && !p.isDeleted && (
                                                             <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }} title="Renombrar Bot">
                                                                 <i className="bi bi-pencil-square"></i>
                                                             </button>
                                                         )}
                                                     </h6>
-                                                    {isOrganizer && tournament.estado === 'Abierto' && (
+                                                    {isOrganizer && tournament.estado === 'Abierto' && !p.isDeleted && (
                                                         <button
                                                             className="btn btn-danger btn-sm fw-bold mt-1"
                                                             style={{ fontSize: '0.7rem', padding: '2px 8px' }}
@@ -722,6 +725,7 @@ const TournamentDetails = () => {
                                                             ✕ EXPULSAR
                                                         </button>
                                                     )}
+                                                    {p.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO</div>}
                                                 </div>
                                             </div>
                                         ))

@@ -198,7 +198,9 @@ exports.updateUserProfile = async (req, res) => {
 };
 
 // Función auxiliar para realizar el borrado en cascada
-const performCascadeDelete = async (userId) => {
+const performCascadeDelete = async (user) => {
+    const userId = user._id;
+
     // 1. Si es organizador: Borrar sus torneos y todo lo que contienen
     const userTournaments = await Tournament.find({ organizador: userId });
     for (const tournament of userTournaments) {
@@ -207,18 +209,69 @@ const performCascadeDelete = async (userId) => {
         await Tournament.findByIdAndDelete(tournament._id);
     }
 
-    // 2. Si es participante: Eliminarlo de todos los equipos
-    // Buscamos equipos donde el usuario sea miembro y lo sacamos del array
-    await Team.updateMany(
-        { "miembros.usuario": userId },
-        { $pull: { miembros: { usuario: userId } } }
-    );
+    // 2. Si es participante: 
+    // Sacarlo de los torneos en "Borrador" y sus equipos en "Borrador"
+    const draftTournaments = await Tournament.find({ estado: 'Borrador', participantes: userId });
+    for (const draft of draftTournaments) {
+        await Team.updateMany({ torneo: draft._id, "miembros.usuario": userId }, { $pull: { miembros: { usuario: userId } } });
+        await Tournament.findByIdAndUpdate(draft._id, { $pull: { participantes: userId } });
+    }
 
-    // Sacarlo también de la lista de participantes de cualquier torneo
-    await Tournament.updateMany(
-        { participantes: userId },
-        { $pull: { participantes: userId } }
-    );
+    // Para torneos en "Abierto", "En curso" o "Finalizado", SE CONSERVA su ID para mostrarlo
+    // Guardamos el nombre del usuario real en snapNombresBots para no perder su nombre de pila
+    // al ser borrado, asignándole el sufijo '(Descalificado)'.
+    const userNameDescalificado = `${user.username} (Descalificado)`;
+    const activeTournaments = await Tournament.find({ estado: { $in: ['Abierto', 'En curso', 'Finalizado'] }, participantes: userId });
+
+    for (const tourney of activeTournaments) {
+        // Guardar el snapshot usando Mongoose $set para asegurar la grabación del Map
+        const snapUpdate = {};
+        snapUpdate[`snapNombresBots.${userId.toString()}`] = userNameDescalificado;
+        await Tournament.findByIdAndUpdate(tourney._id, { $set: snapUpdate });
+
+        if (tourney.estado !== 'Finalizado') {
+            if (tourney.formato === 'Equipos') {
+                const team = await Team.findOne({ torneo: tourney._id, "miembros.usuario": userId });
+                if (team) {
+                    // Buscamos partidos pendientes del equipo
+                    const pendingMatches = await Match.find({
+                        torneo: tourney._id,
+                        ganador: { $exists: false },
+                        $or: [{ equipo1: team._id }, { equipo2: team._id }]
+                    });
+
+                    for (const m of pendingMatches) {
+                        m.ganador = m.equipo1.toString() === team._id.toString() ? m.equipo2 : m.equipo1;
+                        m.resultado = "W.O. (Descalificación)";
+                        await m.save();
+                    }
+                }
+            } else {
+                const pendingMatches = await Match.find({
+                    torneo: tourney._id,
+                    ganador: { $exists: false },
+                    $or: [{ jugador1: userId }, { jugador2: userId }]
+                });
+
+                for (const m of pendingMatches) {
+                    m.ganador = m.jugador1?.toString() === userId.toString() ? m.jugador2 : m.jugador1;
+                    m.resultado = "W.O. (Descalificación)";
+                    await m.save();
+                }
+            }
+        } else {
+            const pendingMatches = await Match.find({
+                torneo: tourney._id,
+                ganador: { $exists: false },
+                $or: [{ jugador1: userId }, { jugador2: userId }]
+            });
+            for (const m of pendingMatches) {
+                m.ganador = m.jugador1?.toString() === userId.toString() ? m.jugador2 : m.jugador1;
+                m.resultado = "W.O. (Descalificación)";
+                await m.save();
+            }
+        }
+    }
 
     // 3. Finalmente, borrar el usuario
     await User.findByIdAndDelete(userId);
@@ -227,7 +280,9 @@ const performCascadeDelete = async (userId) => {
 // Eliminar cuenta propia (Usuario normal)
 exports.deleteUser = async (req, res) => {
     try {
-        await performCascadeDelete(req.user.id);
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).send('Usuario no encontrado');
+        await performCascadeDelete(user);
         res.json({ msg: 'Tu cuenta y todos tus datos han sido eliminados' });
     } catch (err) {
         res.status(500).send('Error al eliminar la cuenta');
@@ -287,9 +342,16 @@ exports.deleteUserByAdmin = async (req, res) => {
             return res.status(400).json({ msg: 'No puedes borrar tu propia cuenta de administrador desde este panel' });
         }
 
-        await performCascadeDelete(req.params.id);
+        // --- Expulsar al usuario si está conectado en tiempo real ---
+        const io = req.app.get('socketio');
+        if (io) {
+            io.to('user_' + userToDelete._id.toString()).emit('force_logout');
+        }
+
+        await performCascadeDelete(userToDelete);
         res.json({ msg: `El usuario ${userToDelete.username} y sus datos han sido eliminados` });
     } catch (err) {
+        console.error(err.message);
         res.status(500).send('Error al eliminar el usuario');
     }
 };

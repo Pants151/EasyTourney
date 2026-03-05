@@ -101,67 +101,114 @@ exports.getTournamentById = async (req, res) => {
             { path: 'equipos', populate: { path: 'miembros.usuario', select: 'username isBot pais idioma fechaNacimiento' }, options: { retainNullValues: true } }
         ]);
 
-        // 4. HIDRATACIÓN DE BOTS SI EL TORNEO ESTÁ FINALIZADO
-        if (tournament.estado === 'Finalizado' && (tournament.snapNombresBots || tournament.snapNombresEquipos)) {
-            const snapBots = tournament.snapNombresBots || {};
-            const snapEquips = tournament.snapNombresEquipos || {};
-            const snapMembers = tournament.snapEquiposMiembros || {};
+        // 4. HIDRATACIÓN DE BOTS Y USUARIOS ELIMINADOS
+        const snapBots = tournament.snapNombresBots || new Map();
+        const snapEquips = tournament.snapNombresEquipos || new Map();
+        const snapMembers = tournament.snapEquiposMiembros || new Map();
 
-            // Hidratar participantes individuales
-            tournament.participantes = tournament.participantes.map((p, index) => {
-                if (!p || !p.username) {
-                    const id = rawParticipantes[index]?.toString();
-                    if (id && snapBots[id]) return { _id: id, username: snapBots[id], isBot: true };
+        const getSnap = (snapMap, id) => {
+            if (!snapMap) return undefined;
+            if (typeof snapMap.get === 'function') return snapMap.get(id);
+            return snapMap[id];
+        };
+
+        // Hidratar participantes (Bots en finalizados O usuarios eliminados "DESCALIFICADO")
+        tournament.participantes = tournament.participantes.map((p, index) => {
+            if (!p || !p.username) {
+                const id = rawParticipantes[index]?.toString();
+                if (id) {
+                    const snapName = getSnap(snapBots, id);
+                    if (snapName) {
+                        const isDeletedRealUser = snapName.includes('(Descalificado)');
+                        return { _id: id, username: snapName, isBot: !isDeletedRealUser, isDeleted: isDeletedRealUser };
+                    }
+                    return { _id: id, username: "DESCALIFICADO", isBot: false, isDeleted: true };
                 }
-                return p;
-            }).filter(Boolean);
+            }
+            return p;
+        }).filter(Boolean);
 
-            // Hidratar equipos
-            tournament.equipos = tournament.equipos.map((team, index) => {
-                if (!team || !team.nombre) {
-                    const id = rawEquipos[index]?.toString();
-                    if (id && snapEquips[id]) {
+        // Hidratar equipos
+        tournament.equipos = tournament.equipos.map((team, index) => {
+            if (!team || !team.nombre) {
+                const id = rawEquipos[index]?.toString();
+                if (id) {
+                    const snapEquipName = getSnap(snapEquips, id);
+                    if (snapEquipName) {
                         return {
                             _id: id,
-                            nombre: snapEquips[id],
+                            nombre: snapEquipName,
                             isBot: true,
-                            miembros: (snapMembers[id] || []).map(mid => ({
-                                usuario: { _id: mid, username: snapBots[mid], isBot: true },
-                                estado: 'Aceptado' // <--- Añadido para que el frontend los muestre
-                            }))
+                            miembros: (getSnap(snapMembers, id) || []).map(mid => {
+                                const mbrSnapName = getSnap(snapBots, mid);
+                                return {
+                                    usuario: { _id: mid, username: mbrSnapName || "DESCALIFICADO", isBot: !!mbrSnapName, isDeleted: !mbrSnapName },
+                                    estado: 'Aceptado'
+                                };
+                            })
                         };
                     }
+                    return { _id: id, nombre: "EQUIPO DESCALIFICADO", isBot: false, isDeleted: true, miembros: [] };
                 }
-                return team;
+            } else if (team && team.miembros) {
+                // Hidratar miembros eliminados dentro de un equipo válido
+                team.miembros = team.miembros.map(m => {
+                    if (!m.usuario || !m.usuario.username) {
+                        const mid = m.usuario?._id?.toString() || m.usuario?.toString();
+                        if (mid) {
+                            const mbrSnapName = getSnap(snapBots, mid);
+                            if (mbrSnapName) {
+                                const isDeletedRealUser = mbrSnapName.includes('(Descalificado)');
+                                return { ...m, usuario: { _id: mid, username: mbrSnapName, isBot: !isDeletedRealUser, isDeleted: isDeletedRealUser } };
+                            }
+                        }
+                        return { ...m, usuario: { _id: mid, username: "DESCALIFICADO", isBot: false, isDeleted: true } };
+                    }
+                    return m;
+                });
+            }
+            return team;
+        }).filter(Boolean);
+
+        // Hidratar ganador
+        if (!tournament.ganador || (!tournament.ganador.username && !tournament.ganador.nombre)) {
+            const gId = rawGanador?.toString();
+            if (gId) {
+                if (tournament.ganadorTipo === 'User') {
+                    const snapName = getSnap(snapBots, gId);
+                    if (snapName) {
+                        const isDeletedRealUser = snapName.includes('(Descalificado)');
+                        tournament.ganador = { _id: gId, username: snapName, isBot: !isDeletedRealUser, isDeleted: isDeletedRealUser };
+                    } else {
+                        tournament.ganador = { _id: gId, username: "DESCALIFICADO", isBot: false, isDeleted: true };
+                    }
+                } else if (tournament.ganadorTipo === 'Team') {
+                    const snapEquipName = getSnap(snapEquips, gId);
+                    if (snapEquipName) {
+                        tournament.ganador = { _id: gId, nombre: snapEquipName, isBot: true };
+                    } else {
+                        tournament.ganador = { _id: gId, nombre: "EQUIPO DESCALIFICADO", isBot: false, isDeleted: true };
+                    }
+                }
+            }
+        }
+
+        // Hidratar ganadoresRondaBR
+        if (tournament.ganadoresRondaBR) {
+            tournament.ganadoresRondaBR = tournament.ganadoresRondaBR.map((g, index) => {
+                if (!g || !g.username) {
+                    const id = rawGanadoresBR[index]?.toString();
+                    if (id) {
+                        const snapName = getSnap(snapBots, id);
+                        if (snapName) {
+                            const isDeletedRealUser = snapName.includes('(Descalificado)');
+                            return { _id: id, username: snapName, isBot: !isDeletedRealUser, isDeleted: isDeletedRealUser };
+                        }
+                        return { _id: id, username: "DESCALIFICADO", isBot: false, isDeleted: true };
+                    }
+                }
+                return g;
             }).filter(Boolean);
-
-            // Hidratar ganador
-            if (!tournament.ganador || (!tournament.ganador.username && !tournament.ganador.nombre)) {
-                const gId = rawGanador?.toString();
-                if (gId) {
-                    if (tournament.ganadorTipo === 'User' && snapBots[gId]) {
-                        tournament.ganador = { _id: gId, username: snapBots[gId], isBot: true };
-                    } else if (tournament.ganadorTipo === 'Team' && snapEquips[gId]) {
-                        tournament.ganador = { _id: gId, nombre: snapEquips[gId], isBot: true };
-                    }
-                }
-            }
-
-            // Hidratar ganadoresRondaBR
-            if (tournament.ganadoresRondaBR) {
-                tournament.ganadoresRondaBR = tournament.ganadoresRondaBR.map((g, index) => {
-                    if (!g || !g.username) {
-                        const id = rawGanadoresBR[index]?.toString();
-                        if (id && snapBots[id]) return { _id: id, username: snapBots[id], isBot: true };
-                    }
-                    return g;
-                }).filter(Boolean);
-            }
-        } else {
-            // Limpieza de nulls residuales por si populate con retainNullValues los dejó
-            if (tournament.participantes) tournament.participantes = tournament.participantes.filter(Boolean);
-            if (tournament.equipos) tournament.equipos = tournament.equipos.filter(Boolean);
-            if (tournament.ganadoresRondaBR) tournament.ganadoresRondaBR = tournament.ganadoresRondaBR.filter(Boolean);
         }
 
         res.json(tournament);
@@ -289,40 +336,71 @@ exports.getTournamentMatches = async (req, res) => {
         ]);
 
         // 3. Hidratación
-        if (tournament && tournament.estado === 'Finalizado' && (tournament.snapNombresBots || tournament.snapNombresEquipos)) {
+        if (tournament && (tournament.snapNombresBots || tournament.snapNombresEquipos)) {
             const snapBots = tournament.snapNombresBots || {};
             const snapEquips = tournament.snapNombresEquipos || {};
+
+            const getSnap = (snapMap, id) => {
+                if (!snapMap) return undefined;
+                if (typeof snapMap.get === 'function') return snapMap.get(id);
+                return snapMap[id];
+            };
 
             matches = matches.map((m, i) => {
                 const raw = rawMatchData[i];
                 // Jugador 1
                 if (!m.jugador1 || !m.jugador1.username) {
                     const id = raw.jugador1?.toString();
-                    if (id && snapBots[id]) m.jugador1 = { _id: id, username: snapBots[id], isBot: true };
+                    if (id) {
+                        const snapName = getSnap(snapBots, id);
+                        if (snapName) {
+                            const isDeleted = snapName.includes('(Descalificado)');
+                            m.jugador1 = { _id: id, username: snapName, isBot: !isDeleted, isDeleted };
+                        }
+                    }
                 }
                 // Jugador 2
                 if (!m.jugador2 || !m.jugador2.username) {
                     const id = raw.jugador2?.toString();
-                    if (id && snapBots[id]) m.jugador2 = { _id: id, username: snapBots[id], isBot: true };
+                    if (id) {
+                        const snapName = getSnap(snapBots, id);
+                        if (snapName) {
+                            const isDeleted = snapName.includes('(Descalificado)');
+                            m.jugador2 = { _id: id, username: snapName, isBot: !isDeleted, isDeleted };
+                        }
+                    }
                 }
                 // Equipo 1
                 if (!m.equipo1 || !m.equipo1.nombre) {
                     const id = raw.equipo1?.toString();
-                    if (id && snapEquips[id]) m.equipo1 = { _id: id, nombre: snapEquips[id], isBot: true };
+                    if (id) {
+                        const snapEquipName = getSnap(snapEquips, id);
+                        if (snapEquipName) m.equipo1 = { _id: id, nombre: snapEquipName, isBot: true };
+                    }
                 }
                 // Equipo 2
                 if (!m.equipo2 || !m.equipo2.nombre) {
                     const id = raw.equipo2?.toString();
-                    if (id && snapEquips[id]) m.equipo2 = { _id: id, nombre: snapEquips[id], isBot: true };
+                    if (id) {
+                        const snapEquipName = getSnap(snapEquips, id);
+                        if (snapEquipName) m.equipo2 = { _id: id, nombre: snapEquipName, isBot: true };
+                    }
                 }
                 // Ganador
                 if (!m.ganador || (!m.ganador.username && !m.ganador.nombre)) {
                     const id = raw.ganador?.toString();
                     if (id) {
-                        if (m.ganadorTipo === 'User' && snapBots[id]) {
-                            m.ganador = { _id: id, username: snapBots[id], isBot: true };
-                        } else if (m.ganadorTipo === 'Team' && snapEquips[id]) {
-                            m.ganador = { _id: id, nombre: snapEquips[id], isBot: true };
+                        if (m.ganadorTipo === 'User') {
+                            const snapName = getSnap(snapBots, id);
+                            if (snapName) {
+                                const isDeleted = snapName.includes('(Descalificado)');
+                                m.ganador = { _id: id, username: snapName, isBot: !isDeleted, isDeleted };
+                            }
+                        } else if (m.ganadorTipo === 'Team') {
+                            const snapEquipName = getSnap(snapEquips, id);
+                            if (snapEquipName) {
+                                m.ganador = { _id: id, nombre: snapEquipName, isBot: true };
+                            }
                         }
                     }
                 }
@@ -985,7 +1063,7 @@ const performBotSnapshotAndCleanup = async (tournament) => {
     }
 };
 
-// Admin: Renombrar Bot o Equipo
+// Admin/Organizer: Renombrar Bot o Equipo
 exports.renameBot = async (req, res) => {
     try {
         const { id, entityId } = req.params;
@@ -996,6 +1074,11 @@ exports.renameBot = async (req, res) => {
 
         if (tournament.estado !== 'Abierto') {
             return res.status(400).json({ msg: 'Solo puedes renombrar bots cuando el torneo está abierto.' });
+        }
+
+        const isAuthLevelAppropiate = req.user.rol === 'administrador' || tournament.organizador.toString() === req.user.id;
+        if (!isAuthLevelAppropiate) {
+            return res.status(403).json({ msg: 'No tienes permiso para renombrar bots en este torneo.' });
         }
 
         if (type === 'user') {
