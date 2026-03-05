@@ -10,7 +10,7 @@ const sendEmail = require('../utils/sendEmail');
 // Lógica de Registro
 exports.register = async (req, res) => {
     try {
-        const { username, email, password, pais, fechaNacimiento, rol } = req.body;
+        const { username, email, password, pais, fechaNacimiento, idioma, rol } = req.body;
 
         // 1. Verificar si el correo ya existe
         let userEmail = await User.findOne({ email });
@@ -31,6 +31,7 @@ exports.register = async (req, res) => {
             password,
             pais,
             fechaNacimiento,
+            idioma,
             rol
         });
 
@@ -187,6 +188,7 @@ exports.updateUserProfile = async (req, res) => {
         user.email = email || user.email;
         user.pais = pais || user.pais;
         user.fechaNacimiento = fechaNacimiento || user.fechaNacimiento;
+        if (req.body.idioma) user.idioma = req.body.idioma;
 
         await user.save();
         res.json({ id: user.id, username: user.username, rol: user.rol, email: user.email });
@@ -256,8 +258,8 @@ exports.changePassword = async (req, res) => {
 // Obtener todos los usuarios (Solo para Administradores)
 exports.getAllUsers = async (req, res) => {
     try {
-        // Buscamos todos los usuarios EXCEPTO el que hace la petición ($ne: req.user.id)
-        const users = await User.find({ _id: { $ne: req.user.id } })
+        // Buscamos todos los usuarios EXCEPTO el que hace la petición ($ne: req.user.id) y descartamos los bots
+        const users = await User.find({ _id: { $ne: req.user.id }, isBot: { $ne: true } })
             .select('-password')
             .sort({ username: 1 });
 

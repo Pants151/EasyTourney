@@ -31,8 +31,8 @@ const userSchema = new mongoose.Schema({
         type: Date
     },
     idioma: {
-        type: String,
-        default: 'es'
+        type: [String],
+        default: ['es']
     },
     rol: {
         type: String,
