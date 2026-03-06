@@ -1121,3 +1121,115 @@ exports.renameBot = async (req, res) => {
         res.status(500).send('Error al renombrar bot/equipo');
     }
 };
+
+// Descalificar Participante o Equipo (Organizador/Admin)
+exports.disqualifyParticipant = async (req, res) => {
+    try {
+        const { id, type, targetId } = req.params;
+        const tournament = await Tournament.findById(id);
+
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        // Verificación de permisos
+        const isAuth = req.user.rol === 'administrador' || tournament.organizador.toString() === req.user.id;
+        if (!isAuth) return res.status(403).json({ msg: 'No autorizado' });
+
+        if (tournament.estado !== 'En curso') {
+            return res.status(400).json({ msg: 'Solo se puede descalificar cuando el torneo está en curso.' });
+        }
+
+        const io = req.app.get('socketio');
+
+        if (type === 'user') {
+            // 1. Obtener nombre para el snapshot
+            const user = await User.findById(targetId);
+            if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
+            // 2. Guardar en snapshot
+            const snapBots = tournament.snapNombresBots || new Map();
+            snapBots.set(targetId, `${user.username} (Descalificado)`);
+            tournament.snapNombresBots = snapBots;
+
+            // 3. Quitar de participantes activos
+            tournament.participantes = tournament.participantes.filter(p => p.toString() !== targetId);
+
+            // 4. Resolver enfrentamientos pendientes en Brackets
+            const pendingMatches = await Match.find({
+                torneo: id,
+                ganador: { $exists: false },
+                $or: [{ jugador1: targetId }, { jugador2: targetId }]
+            });
+
+            for (let m of pendingMatches) {
+                m.ganador = m.jugador1.toString() === targetId ? m.jugador2 : m.jugador1;
+                m.resultado = "DSQ";
+                await m.save();
+            }
+
+            // 5. Borrar de equipos si existiera
+            await Team.updateMany({ torneo: id }, { $pull: { miembros: { usuario: targetId } } });
+
+        } else if (type === 'team') {
+            const team = await Team.findById(targetId);
+            if (!team) return res.status(404).json({ msg: 'Equipo no encontrado' });
+
+            // 2. Guardar en snapshot
+            const snapEquips = tournament.snapNombresEquipos || new Map();
+            snapEquips.set(targetId, `${team.nombre} (Descalificado)`);
+            tournament.snapNombresEquipos = snapEquips;
+
+            // 3. Quitar de la lista de equipos del torneo
+            tournament.equipos = tournament.equipos.filter(e => e.toString() !== targetId);
+
+            // 4. Resolver enfrentamientos
+            const pendingMatches = await Match.find({
+                torneo: id,
+                ganador: { $exists: false },
+                $or: [{ equipo1: targetId }, { equipo2: targetId }]
+            });
+
+            for (let m of pendingMatches) {
+                m.ganador = m.equipo1.toString() === targetId ? m.equipo2 : m.equipo1;
+                m.resultado = "DSQ";
+                await m.save();
+            }
+        }
+
+        await tournament.save();
+        io.to(id).emit('bracketUpdated');
+        io.to(id).emit('participantUpdated');
+
+        res.json({ msg: 'Descalificación procesada correctamente' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al descalificar');
+    }
+};
+
+// Cancelar Torneo (Organizador/Admin)
+exports.cancelTournament = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const tournament = await Tournament.findById(id);
+
+        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
+
+        const isAuth = req.user.rol === 'administrador' || tournament.organizador.toString() === req.user.id;
+        if (!isAuth) return res.status(403).json({ msg: 'No autorizado' });
+
+        if (tournament.estado !== 'En curso') {
+            return res.status(400).json({ msg: 'Solo se puede cancelar un torneo que esté en curso.' });
+        }
+
+        tournament.estado = 'Cancelado';
+        await tournament.save();
+
+        const io = req.app.get('socketio');
+        io.to(id).emit('tournamentCancelled'); // Avisar a los clientes
+
+        res.json({ msg: 'Torneo cancelado correctamente' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al cancelar torneo');
+    }
+};

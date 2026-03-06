@@ -239,6 +239,30 @@ const TournamentDetails = () => {
         }
     };
 
+    const handleDisqualify = async (targetId, type, name) => {
+        if (!isOrganizer) return;
+        if (!window.confirm(`¿Estás seguro de que deseas descalificar a "${name}"? Esta acción es irreversible y perderá sus encuentros pendientes.`)) return;
+
+        try {
+            await tournamentService.disqualifyParticipant(id, type, targetId);
+            await fetchAll();
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al descalificar');
+        }
+    };
+
+    const handleCancelTournament = async () => {
+        if (!isOrganizer) return;
+        if (!window.confirm('¿Estás seguro de que deseas CANCELAR el torneo? Esta acción notificará a todos los participantes y detendrá el evento definitivamente.')) return;
+
+        try {
+            await tournamentService.cancelTournament(id);
+            await fetchAll();
+        } catch (err) {
+            alert(err.response?.data?.msg || 'Error al cancelar el torneo');
+        }
+    };
+
     const handleInscribirse = () => {
         if (tournament.formato === 'Equipos') {
             setShowTeamModal(true); // Abrir ventana de equipos
@@ -479,7 +503,7 @@ const TournamentDetails = () => {
                     <div className="d-flex align-items-center mb-3">
                         <img src={tournament.juego?.logo} alt="Logo" className="game-logo-details me-4" />
                         <div>
-                            <span className={`badge mb-2 ${tournament.estado === 'Finalizado' ? 'bg-success' : 'bg-accent'}`}>
+                            <span className={`badge mb-2 ${tournament.estado === 'Finalizado' ? 'bg-success' : tournament.estado === 'Cancelado' ? 'bg-danger' : 'bg-accent'}`}>
                                 {tournament.estado.toUpperCase()}
                             </span>
                             <h1 className="display-4 fw-bolder text-white text-uppercase">{tournament.nombre}</h1>
@@ -554,6 +578,20 @@ const TournamentDetails = () => {
                                 </li>
                                 <li className="mb-2"><i className="bi bi-shield-check text-accent me-2"></i> {tournament.formato || tournament.modalidad}</li>
                             </ul>
+
+                            {/* BOTÓN DE CANCELACIÓN (Solo Organizador) */}
+                            {isOrganizer && tournament.estado === 'En curso' && (
+                                <button className="btn btn-outline-danger w-100 mt-3 fw-bold btn-sm" onClick={handleCancelTournament}>
+                                    <i className="bi bi-x-circle me-2"></i>CANCELAR TORNEO
+                                </button>
+                            )}
+
+                            {/* AVISO DE TORNEO CANCELADO */}
+                            {tournament.estado === 'Cancelado' && (
+                                <div className="alert alert-danger mt-3 py-2 text-center small fw-bold">
+                                    <i className="bi bi-exclamation-octagon me-2"></i>TORNEO CANCELADO
+                                </div>
+                            )}
 
                             {/* AVISO DEL GANADOR */}
                             {tournament.estado === 'Finalizado' && tournament.ganador && (
@@ -800,6 +838,11 @@ const TournamentDetails = () => {
                                                                 ✎ RENOMBRAR EQUIPO
                                                             </button>
                                                         )}
+                                                        {isOrganizer && tournament.estado === 'En curso' && (
+                                                            <button className="btn btn-sm btn-outline-danger ms-2 fw-bold" onClick={(e) => { e.stopPropagation(); handleDisqualify(team._id, 'team', team.nombre); }}>
+                                                                <i className="bi bi-person-x me-1"></i>DESCALIFICAR EQUIPO
+                                                            </button>
+                                                        )}
                                                         <div className="flex-grow-1 border-bottom border-secondary"></div>
                                                     </div>
 
@@ -836,7 +879,7 @@ const TournamentDetails = () => {
                                                                             </button>
                                                                         )}
                                                                     </div>
-                                                                    {m.usuario.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO</div>}
+                                                                    {m.usuario.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO / DSQ</div>}
                                                                 </div>
                                                             </div>
                                                         ))}
@@ -846,36 +889,33 @@ const TournamentDetails = () => {
                                         })
                                     ) : (
                                         tournament.participantes.map(p => (
-                                            <div key={p._id} className="col-md-4 mb-3">
+                                            <div key={p._id} className="col-md-3 mb-4">
                                                 <div
-                                                    className={`participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border ${p.isDeleted ? 'opacity-50 border-danger' : ''}`}
+                                                    className={`participant-card p-4 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border h-100 ${p.isDeleted ? 'opacity-50 border-danger' : ''}`}
                                                     onClick={() => setSelectedParticipant(p)}
                                                 >
-                                                    <h6 className={`fw-bold mb-1 ${p.isDeleted ? 'text-danger fst-italic' : 'text-white'}`}>
-                                                        {p.username}
-                                                    </h6>
+                                                    <div className="display-4 text-accent mb-2"><i className="bi bi-person-circle"></i></div>
+                                                    <h5 className={`fw-bold mb-1 ${p.isDeleted ? 'text-danger' : 'text-white'}`}>{p.username}</h5>
+                                                    {p.isBot && <div className="text-warning small mb-2"><i className="bi bi-robot me-1"></i>Bot de Prueba</div>}
+                                                    {p.isDeleted && <div className="badge bg-danger mb-2">ELIMINADO / DSQ</div>}
 
-                                                    <div className="d-flex justify-content-center gap-2 mt-2">
+                                                    <div className="d-flex flex-column gap-2 mt-auto">
                                                         {canRenameBots && (p.isBot || p.username?.includes('Bot')) && !p.isDeleted && (
-                                                            <button
-                                                                className="btn btn-warning btn-sm fw-bold"
-                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
-                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }}
-                                                            >
-                                                                ✎ RENOMBRAR
+                                                            <button className="btn btn-warning btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }}>
+                                                                ✎ RENOMBRAR BOT
                                                             </button>
                                                         )}
                                                         {isOrganizer && tournament.estado === 'Abierto' && !p.isDeleted && (
-                                                            <button
-                                                                className="btn btn-danger btn-sm fw-bold"
-                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
-                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(p._id); }}
-                                                            >
+                                                            <button className="btn btn-danger btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleExpulsar(p._id); }}>
                                                                 ✕ EXPULSAR
                                                             </button>
                                                         )}
+                                                        {isOrganizer && tournament.estado === 'En curso' && !p.isDeleted && (
+                                                            <button className="btn btn-danger btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleDisqualify(p._id, 'user', p.username); }}>
+                                                                <i className="bi bi-person-x me-1"></i>DESCALIFICAR
+                                                            </button>
+                                                        )}
                                                     </div>
-                                                    {p.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO</div>}
                                                 </div>
                                             </div>
                                         ))
@@ -1063,132 +1103,138 @@ const TournamentDetails = () => {
             </div>
 
             {/* MODAL DETALLES DEL PARTICIPANTE */}
-            {selectedParticipant && (
-                <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1050 }}>
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content bg-dark-secondary border border-accent shadow-lg">
-                            <div className="modal-header border-bottom border-secondary">
-                                <h5 className="modal-title text-accent fw-bold text-uppercase">
-                                    <i className="bi bi-person-lines-fill me-2"></i>Detalles de Participante
-                                </h5>
-                                <button type="button" className="btn-close btn-close-white" onClick={() => setSelectedParticipant(null)}></button>
-                            </div>
-                            <div className="modal-body text-white">
-                                <div className="text-center mb-4 mt-2">
-                                    <div className="display-1 text-accent mb-2"><i className="bi bi-person-circle"></i></div>
-                                    <h3 className="fw-bold m-0 text-uppercase">{selectedParticipant.username}</h3>
-                                    {selectedParticipant.isBot && <span className="badge bg-warning text-dark mt-2">🤖 BOT DE PRUEBA</span>}
-                                    {selectedParticipant.isDeleted && <span className="badge bg-danger mt-2">Usuario Eliminado</span>}
+            {
+                selectedParticipant && (
+                    <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1050 }}>
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content bg-dark-secondary border border-accent shadow-lg">
+                                <div className="modal-header border-bottom border-secondary">
+                                    <h5 className="modal-title text-accent fw-bold text-uppercase">
+                                        <i className="bi bi-person-lines-fill me-2"></i>Detalles de Participante
+                                    </h5>
+                                    <button type="button" className="btn-close btn-close-white" onClick={() => setSelectedParticipant(null)}></button>
                                 </div>
-                                <ul className="list-group list-group-flush bg-transparent">
-                                    <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
-                                        <span className="text-dim"><i className="bi bi-geo-alt me-2 text-accent"></i>País:</span>
-                                        <span className="fw-bold">{selectedParticipant.pais || 'Desconocido'}</span>
-                                    </li>
-                                    <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
-                                        <span className="text-dim"><i className="bi bi-translate me-2 text-accent"></i>Idiomas:</span>
-                                        <span className="fw-bold text-end">
-                                            {selectedParticipant.idioma && selectedParticipant.idioma.length > 0
-                                                ? selectedParticipant.idioma.map(lang => lang.toUpperCase()).join(', ')
-                                                : 'No especificado'}
-                                        </span>
-                                    </li>
-                                    <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
-                                        <span className="text-dim"><i className="bi bi-calendar-check me-2 text-accent"></i>Edad:</span>
-                                        <span className="fw-bold">
-                                            {selectedParticipant.fechaNacimiento
-                                                ? `${new Date().getFullYear() - new Date(selectedParticipant.fechaNacimiento).getFullYear()} años`
-                                                : 'Ns / Nc'}
-                                        </span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className="modal-footer border-top border-secondary">
-                                <button type="button" className="btn btn-outline-light w-100 fw-bold" onClick={() => setSelectedParticipant(null)}>CERRAR</button>
+                                <div className="modal-body text-white">
+                                    <div className="text-center mb-4 mt-2">
+                                        <div className="display-1 text-accent mb-2"><i className="bi bi-person-circle"></i></div>
+                                        <h3 className="fw-bold m-0 text-uppercase">{selectedParticipant.username}</h3>
+                                        {selectedParticipant.isBot && <span className="badge bg-warning text-dark mt-2">🤖 BOT DE PRUEBA</span>}
+                                        {selectedParticipant.isDeleted && <span className="badge bg-danger mt-2">Usuario Eliminado</span>}
+                                    </div>
+                                    <ul className="list-group list-group-flush bg-transparent">
+                                        <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
+                                            <span className="text-dim"><i className="bi bi-geo-alt me-2 text-accent"></i>País:</span>
+                                            <span className="fw-bold">{selectedParticipant.pais || 'Desconocido'}</span>
+                                        </li>
+                                        <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
+                                            <span className="text-dim"><i className="bi bi-translate me-2 text-accent"></i>Idiomas:</span>
+                                            <span className="fw-bold text-end">
+                                                {selectedParticipant.idioma && selectedParticipant.idioma.length > 0
+                                                    ? selectedParticipant.idioma.map(lang => lang.toUpperCase()).join(', ')
+                                                    : 'No especificado'}
+                                            </span>
+                                        </li>
+                                        <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
+                                            <span className="text-dim"><i className="bi bi-calendar-check me-2 text-accent"></i>Edad:</span>
+                                            <span className="fw-bold">
+                                                {selectedParticipant.fechaNacimiento
+                                                    ? `${new Date().getFullYear() - new Date(selectedParticipant.fechaNacimiento).getFullYear()} años`
+                                                    : 'Ns / Nc'}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div className="modal-footer border-top border-secondary">
+                                    <button type="button" className="btn btn-outline-light w-100 fw-bold" onClick={() => setSelectedParticipant(null)}>CERRAR</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* MODAL DE EQUIPOS */}
-            {showTeamModal && (
-                <div className="custom-modal-overlay">
-                    <div className="form-container-custom p-4 shadow-lg modal-content-team">
-                        <h3 className="text-accent text-uppercase fw-bold mb-4">Inscripción por Equipos</h3>
+            {
+                showTeamModal && (
+                    <div className="custom-modal-overlay">
+                        <div className="form-container-custom p-4 shadow-lg modal-content-team">
+                            <h3 className="text-accent text-uppercase fw-bold mb-4">Inscripción por Equipos</h3>
 
-                        {/* CREAR EQUIPO */}
-                        <div className="mb-4 pb-4 border-bottom border-secondary">
-                            <label className="form-label-custom">Crear Nuevo Equipo</label>
-                            <div className="d-flex gap-2">
-                                <input type="text" className="form-control form-control-custom"
-                                    placeholder="Nombre del equipo..." value={newTeamName}
-                                    onChange={(e) => setNewTeamName(e.target.value)} />
-                                <button className="btn btn-accent px-4" onClick={handleCreateTeam}>CREAR</button>
-                            </div>
-                        </div>
-
-                        {/* UNIRSE A EQUIPO EXISTENTE */}
-                        <label className="form-label-custom">Equipos Disponibles ({tournament.tamanoEquipoMax} máx)</label>
-                        <div className="teams-list-scroll mb-4">
-                            {tournament.equipos?.map(team => (
-                                <div key={team._id} className="bg-dark p-3 mb-3 rounded border border-secondary shadow-sm">
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <h6 className="text-white fw-bold m-0">{team.nombre}</h6>
-                                        <button className="btn btn-accent btn-sm" onClick={() => handleJoinTeam(team._id)}>UNIRSE</button>
-                                    </div>
-                                    {/* Lista de miembros actuales */}
-                                    <div className="d-flex flex-wrap gap-2">
-                                        {team.miembros.map(m => (
-                                            <span key={m.usuario._id} className={`badge ${m.estado === 'Aceptado' ? 'bg-secondary' : 'bg-dark border border-warning text-warning'}`}>
-                                                {m.usuario.username} {m.estado === 'Pendiente' && '(?)'}
-                                            </span>
-                                        ))}
-                                    </div>
+                            {/* CREAR EQUIPO */}
+                            <div className="mb-4 pb-4 border-bottom border-secondary">
+                                <label className="form-label-custom">Crear Nuevo Equipo</label>
+                                <div className="d-flex gap-2">
+                                    <input type="text" className="form-control form-control-custom"
+                                        placeholder="Nombre del equipo..." value={newTeamName}
+                                        onChange={(e) => setNewTeamName(e.target.value)} />
+                                    <button className="btn btn-accent px-4" onClick={handleCreateTeam}>CREAR</button>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
 
-                        <button className="btn btn-view-all w-100" onClick={() => setShowTeamModal(false)}>CERRAR</button>
+                            {/* UNIRSE A EQUIPO EXISTENTE */}
+                            <label className="form-label-custom">Equipos Disponibles ({tournament.tamanoEquipoMax} máx)</label>
+                            <div className="teams-list-scroll mb-4">
+                                {tournament.equipos?.map(team => (
+                                    <div key={team._id} className="bg-dark p-3 mb-3 rounded border border-secondary shadow-sm">
+                                        <div className="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 className="text-white fw-bold m-0">{team.nombre}</h6>
+                                            <button className="btn btn-accent btn-sm" onClick={() => handleJoinTeam(team._id)}>UNIRSE</button>
+                                        </div>
+                                        {/* Lista de miembros actuales */}
+                                        <div className="d-flex flex-wrap gap-2">
+                                            {team.miembros.map(m => (
+                                                <span key={m.usuario._id} className={`badge ${m.estado === 'Aceptado' ? 'bg-secondary' : 'bg-dark border border-warning text-warning'}`}>
+                                                    {m.usuario.username} {m.estado === 'Pendiente' && '(?)'}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button className="btn btn-view-all w-100" onClick={() => setShowTeamModal(false)}>CERRAR</button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
 
 
             {/* MODAL PUNTUACION */}
-            {scoreModal.isOpen && (
-                <div className="custom-modal-overlay" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>
-                    <div className="modal-content-team bg-dark-secondary rounded p-4 border border-accent" onClick={(e) => e.stopPropagation()}>
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h4 className="text-white text-uppercase fw-bold m-0">Puntuación del Enfrentamiento</h4>
-                            <button className="btn btn-outline-light btn-sm" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>X</button>
-                        </div>
-                        <div className="text-white mb-4">
-                            <div className="row g-3">
-                                <div className="col-5">
-                                    <label className="form-label text-accent fw-bold small text-uppercase">{scoreModal.player1Name}</label>
-                                    <input type="number" className="form-control form-control-custom text-center" placeholder="0" value={scoreModal.score1} onChange={e => setScoreModal({ ...scoreModal, score1: e.target.value })} />
-                                </div>
-                                <div className="col-2 d-flex align-items-center justify-content-center">
-                                    <span className="fw-bold fs-5">-</span>
-                                </div>
-                                <div className="col-5">
-                                    <label className="form-label text-accent fw-bold small text-uppercase">{scoreModal.player2Name}</label>
-                                    <input type="number" className="form-control form-control-custom text-center" placeholder="0" value={scoreModal.score2} onChange={e => setScoreModal({ ...scoreModal, score2: e.target.value })} />
-                                </div>
+            {
+                scoreModal.isOpen && (
+                    <div className="custom-modal-overlay" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>
+                        <div className="modal-content-team bg-dark-secondary rounded p-4 border border-accent" onClick={(e) => e.stopPropagation()}>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h4 className="text-white text-uppercase fw-bold m-0">Puntuación del Enfrentamiento</h4>
+                                <button className="btn btn-outline-light btn-sm" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>X</button>
                             </div>
-                            <small className="text-dim d-block mt-3">* El ganador seleccionado debe tener una puntuación mayor.</small>
-                        </div>
-                        <div className="d-flex flex-column gap-2 mt-4">
-                            <button className="btn btn-accent fw-bold" onClick={() => handleScoreSubmit(true)}>Aceptar Puntuación</button>
-                            <button className="btn btn-outline-warning fw-bold" onClick={() => handleScoreSubmit(false)}>Continuar sin puntuar</button>
-                            <button className="btn btn-outline-light fw-bold" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>Cancelar</button>
+                            <div className="text-white mb-4">
+                                <div className="row g-3">
+                                    <div className="col-5">
+                                        <label className="form-label text-accent fw-bold small text-uppercase">{scoreModal.player1Name}</label>
+                                        <input type="number" className="form-control form-control-custom text-center" placeholder="0" value={scoreModal.score1} onChange={e => setScoreModal({ ...scoreModal, score1: e.target.value })} />
+                                    </div>
+                                    <div className="col-2 d-flex align-items-center justify-content-center">
+                                        <span className="fw-bold fs-5">-</span>
+                                    </div>
+                                    <div className="col-5">
+                                        <label className="form-label text-accent fw-bold small text-uppercase">{scoreModal.player2Name}</label>
+                                        <input type="number" className="form-control form-control-custom text-center" placeholder="0" value={scoreModal.score2} onChange={e => setScoreModal({ ...scoreModal, score2: e.target.value })} />
+                                    </div>
+                                </div>
+                                <small className="text-dim d-block mt-3">* El ganador seleccionado debe tener una puntuación mayor.</small>
+                            </div>
+                            <div className="d-flex flex-column gap-2 mt-4">
+                                <button className="btn btn-accent fw-bold" onClick={() => handleScoreSubmit(true)}>Aceptar Puntuación</button>
+                                <button className="btn btn-outline-warning fw-bold" onClick={() => handleScoreSubmit(false)}>Continuar sin puntuar</button>
+                                <button className="btn btn-outline-light fw-bold" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>Cancelar</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

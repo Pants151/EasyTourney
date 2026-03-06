@@ -10,7 +10,7 @@ const tournamentSchema = new mongoose.Schema({
     equipos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }],
     ubicacion: { type: String, default: 'Online', maxlength: [100, 'La ubicación no puede exceder los 100 caracteres'] },
     fechaInicio: { type: Date, required: true },
-    estado: { type: String, enum: ['Borrador', 'Abierto', 'En curso', 'Finalizado'], default: 'Borrador' },
+    estado: { type: String, enum: ['Borrador', 'Abierto', 'En curso', 'Finalizado', 'Cancelado'], default: 'Borrador' },
     reglas: { type: String, maxlength: [1000, 'Las reglas no pueden exceder los 1000 caracteres'] },
     organizador: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     ganador: { type: mongoose.Schema.Types.ObjectId, refPath: 'ganadorTipo' },

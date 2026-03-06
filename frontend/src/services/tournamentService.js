@@ -38,6 +38,8 @@ const reportBRRoundWinner = async (id, data) => axios.put(`${API_URL}/${id}/br-r
 const addBot = async (id) => axios.post(`${API_URL}/${id}/add-bot`, {}, getAuthHeaders());
 const clearBots = async (id) => axios.delete(`${API_URL}/${id}/clear-bots`, getAuthHeaders());
 const renameBot = async (id, entityId, data) => axios.put(`${API_URL}/${id}/rename-bot/${entityId}`, data, getAuthHeaders());
+const disqualifyParticipant = async (id, type, targetId) => axios.put(`${API_URL}/${id}/disqualify/${type}/${targetId}`, {}, getAuthHeaders());
+const cancelTournament = async (id) => axios.put(`${API_URL}/${id}/cancel`, {}, getAuthHeaders());
 
 export default {
     createTournament,
@@ -60,5 +62,7 @@ export default {
     reportBRRoundWinner,
     addBot,
     clearBots,
-    renameBot
+    renameBot,
+    disqualifyParticipant,
+    cancelTournament
 };

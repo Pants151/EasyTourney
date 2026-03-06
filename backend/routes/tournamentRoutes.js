@@ -31,5 +31,7 @@ router.put('/:id/br-round', auth, tournamentController.reportBRRoundWinner); // 
 router.post('/:id/add-bot', auth, tournamentController.addBot);               // Admin: añadir bot
 router.put('/:id/rename-bot/:entityId', auth, tournamentController.renameBot); // Admin: renombrar bot
 router.delete('/:id/clear-bots', auth, tournamentController.clearBots);        // Admin: limpiar bots
+router.put('/:id/disqualify/:type/:targetId', auth, tournamentController.disqualifyParticipant); // Descalificar (Organizador)
+router.put('/:id/cancel', auth, tournamentController.cancelTournament); // Cancelar torneo (Organizador)
 
 module.exports = router;
