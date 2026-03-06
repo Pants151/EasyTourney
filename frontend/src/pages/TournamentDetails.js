@@ -1072,6 +1072,7 @@ const TournamentDetails = () => {
                                     <div className="display-1 text-accent mb-2"><i className="bi bi-person-circle"></i></div>
                                     <h3 className="fw-bold m-0 text-uppercase">{selectedParticipant.username}</h3>
                                     {selectedParticipant.isBot && <span className="badge bg-warning text-dark mt-2">🤖 BOT DE PRUEBA</span>}
+                                    {selectedParticipant.isDeleted && <span className="badge bg-danger mt-2">Usuario Eliminado</span>}
                                 </div>
                                 <ul className="list-group list-group-flush bg-transparent">
                                     <li className="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center py-3">
@@ -1147,31 +1148,7 @@ const TournamentDetails = () => {
                 </div>
             )}
 
-            {/* MODAL DETALLES DE USUARIO */}
-            {selectedParticipant && (
-                <div className="custom-modal-overlay" onClick={() => setSelectedParticipant(null)}>
-                    <div className="modal-content-team bg-dark-secondary rounded p-4 border border-accent" onClick={(e) => e.stopPropagation()}>
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h4 className="text-white text-uppercase fw-bold m-0">Detalles del Participante</h4>
-                            <button className="btn btn-outline-light btn-sm" onClick={() => setSelectedParticipant(null)}>X</button>
-                        </div>
-                        <div className="text-white">
-                            <p><strong>Usuario:</strong> {selectedParticipant.username}</p>
-                            <p><strong>País:</strong> {selectedParticipant.pais || 'No especificado'}</p>
-                            <p><strong>Idioma:</strong> {selectedParticipant.idioma || 'No especificado'}</p>
-                            {selectedParticipant.fechaNacimiento && (
-                                <p><strong>Fecha de Nacimiento:</strong> {new Date(selectedParticipant.fechaNacimiento).toLocaleDateString()}</p>
-                            )}
-                            {selectedParticipant.isBot && (
-                                <span className="badge bg-warning text-dark mt-2">Usuario BOT</span>
-                            )}
-                            {selectedParticipant.isDeleted && (
-                                <span className="badge bg-danger mt-2">Usuario Eliminado</span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
+
 
             {/* MODAL PUNTUACION */}
             {scoreModal.isOpen && (
