@@ -87,6 +87,18 @@ const TournamentDetails = () => {
 
     const isOrganizer = user && tournament.organizador && (user.id === tournament.organizador._id || user.id === tournament.organizador);
 
+    // Check all possible admin configurations including typos
+    const isAdmin = user && (
+        user.rol === 'administrador' ||
+        user.rol === 'admin' ||
+        user.role === 'admin' ||
+        user.role === 'administrador' ||
+        user.rol?.toLowerCase() === 'administrador' ||
+        user.rol?.toLowerCase() === 'admin'
+    );
+
+    const canRenameBots = (isOrganizer || isAdmin) && tournament.estado === 'Abierto';
+
     // Determinamos el conteo según el formato
     const currentCount = tournament.formato === 'Equipos'
         ? tournament.equipos?.length || 0
@@ -658,12 +670,12 @@ const TournamentDetails = () => {
                                                     <div className="team-header-divider d-flex align-items-center mb-3">
                                                         <h5 className="text-accent fw-bold text-uppercase m-0 me-3">
                                                             {team.nombre}
-                                                            {(isOrganizer || user?.rol?.toLowerCase() === 'administrador') && tournament.estado === 'Abierto' && (team.nombre.startsWith('BotEquipo') || team.miembros.some(m => m.usuario?.isBot)) && (
-                                                                <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(team._id, 'team', team.nombre); }} title="Renombrar Equipo">
-                                                                    <i className="bi bi-pencil-square"></i>
-                                                                </button>
-                                                            )}
                                                         </h5>
+                                                        {canRenameBots && (team.nombre.startsWith('BotEquipo') || team.miembros.some(m => m.usuario?.isBot)) && (
+                                                            <button className="btn btn-sm btn-outline-warning ms-2 fw-bold" onClick={(e) => { e.stopPropagation(); handleRenameBot(team._id, 'team', team.nombre); }} title="Renombrar Equipo">
+                                                                ✎ RENOMBRAR EQUIPO
+                                                            </button>
+                                                        )}
                                                         <div className="flex-grow-1 border-bottom border-secondary"></div>
                                                     </div>
 
@@ -677,22 +689,29 @@ const TournamentDetails = () => {
                                                                 >
                                                                     <h6 className={`fw-bold mb-1 ${m.usuario.isDeleted ? 'text-danger fst-italic' : 'text-white'}`}>
                                                                         {m.usuario.username}
-                                                                        {(isOrganizer || user?.rol?.toLowerCase() === 'administrador') && tournament.estado === 'Abierto' && m.usuario.isBot && !m.usuario.isDeleted && (
-                                                                            <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(m.usuario._id, 'user', m.usuario.username); }} title="Renombrar Bot">
-                                                                                <i className="bi bi-pencil-square"></i>
-                                                                            </button>
-                                                                        )}
                                                                     </h6>
                                                                     {team.capitan === m.usuario._id && <div className="text-warning small"><i className="bi bi-star-fill me-1"></i>Capitán</div>}
-                                                                    {isOrganizer && tournament.estado === 'Abierto' && !m.usuario.isDeleted && (
-                                                                        <button
-                                                                            className="btn btn-danger btn-sm fw-bold mt-1"
-                                                                            style={{ fontSize: '0.7rem', padding: '2px 8px' }}
-                                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(m.usuario._id); }}
-                                                                        >
-                                                                            ✕ EXPULSAR
-                                                                        </button>
-                                                                    )}
+
+                                                                    <div className="d-flex justify-content-center gap-2 mt-2">
+                                                                        {canRenameBots && (m.usuario.isBot || m.usuario.username?.includes('Bot')) && !m.usuario.isDeleted && (
+                                                                            <button
+                                                                                className="btn btn-warning btn-sm fw-bold"
+                                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRenameBot(m.usuario._id, 'user', m.usuario.username); }}
+                                                                            >
+                                                                                ✎ RENOMBRAR
+                                                                            </button>
+                                                                        )}
+                                                                        {isOrganizer && tournament.estado === 'Abierto' && !m.usuario.isDeleted && (
+                                                                            <button
+                                                                                className="btn btn-danger btn-sm fw-bold"
+                                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(m.usuario._id); }}
+                                                                            >
+                                                                                ✕ EXPULSAR
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                     {m.usuario.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO</div>}
                                                                 </div>
                                                             </div>
@@ -710,21 +729,28 @@ const TournamentDetails = () => {
                                                 >
                                                     <h6 className={`fw-bold mb-1 ${p.isDeleted ? 'text-danger fst-italic' : 'text-white'}`}>
                                                         {p.username}
-                                                        {(isOrganizer || user?.rol?.toLowerCase() === 'administrador') && tournament.estado === 'Abierto' && p.isBot && !p.isDeleted && (
-                                                            <button className="btn btn-sm btn-link text-warning p-0 ms-2" onClick={(e) => { e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }} title="Renombrar Bot">
-                                                                <i className="bi bi-pencil-square"></i>
+                                                    </h6>
+
+                                                    <div className="d-flex justify-content-center gap-2 mt-2">
+                                                        {canRenameBots && (p.isBot || p.username?.includes('Bot')) && !p.isDeleted && (
+                                                            <button
+                                                                className="btn btn-warning btn-sm fw-bold"
+                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }}
+                                                            >
+                                                                ✎ RENOMBRAR
                                                             </button>
                                                         )}
-                                                    </h6>
-                                                    {isOrganizer && tournament.estado === 'Abierto' && !p.isDeleted && (
-                                                        <button
-                                                            className="btn btn-danger btn-sm fw-bold mt-1"
-                                                            style={{ fontSize: '0.7rem', padding: '2px 8px' }}
-                                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(p._id); }}
-                                                        >
-                                                            ✕ EXPULSAR
-                                                        </button>
-                                                    )}
+                                                        {isOrganizer && tournament.estado === 'Abierto' && !p.isDeleted && (
+                                                            <button
+                                                                className="btn btn-danger btn-sm fw-bold"
+                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(p._id); }}
+                                                            >
+                                                                ✕ EXPULSAR
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                     {p.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO</div>}
                                                 </div>
                                             </div>
