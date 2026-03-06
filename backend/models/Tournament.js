@@ -25,7 +25,8 @@ const tournamentSchema = new mongoose.Schema({
     // Snapshots para mantener nombres visuales tras borrar bots al finalizar
     snapNombresBots: { type: Map, of: String },
     snapNombresEquipos: { type: Map, of: String },
-    snapEquiposMiembros: { type: Map, of: [String] }
+    snapEquiposMiembros: { type: Map, of: [String] },
+    descalificados: [{ type: mongoose.Schema.Types.ObjectId }]
 });
 
 module.exports = mongoose.model('Tournament', tournamentSchema);

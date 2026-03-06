@@ -845,7 +845,9 @@ exports.reportBRRoundWinner = async (req, res) => {
         const { winnerId } = req.body;
         const tournament = await Tournament.findById(req.params.id);
 
-        if (tournament.organizador.toString() !== req.user.id) return res.status(401).json({ msg: 'No autorizado' });
+        if (tournament.descalificados.includes(winnerId)) {
+            return res.status(400).json({ msg: 'Un participante descalificado no puede ganar rondas.' });
+        }
 
         tournament.ganadoresRondaBR.push(winnerId);
 
@@ -1150,8 +1152,11 @@ exports.disqualifyParticipant = async (req, res) => {
             snapBots.set(targetId, `${user.username} (Descalificado)`);
             tournament.snapNombresBots = snapBots;
 
-            // 3. Quitar de participantes activos
-            tournament.participantes = tournament.participantes.filter(p => p.toString() !== targetId);
+            // 3. Marcar como descalificado (sin quitarlo de la lista principal)
+            if (!tournament.descalificados) tournament.descalificados = [];
+            if (!tournament.descalificados.includes(targetId)) {
+                tournament.descalificados.push(targetId);
+            }
 
             // 4. Resolver enfrentamientos pendientes en Brackets
             const pendingMatches = await Match.find({
@@ -1178,8 +1183,11 @@ exports.disqualifyParticipant = async (req, res) => {
             snapEquips.set(targetId, `${team.nombre} (Descalificado)`);
             tournament.snapNombresEquipos = snapEquips;
 
-            // 3. Quitar de la lista de equipos del torneo
-            tournament.equipos = tournament.equipos.filter(e => e.toString() !== targetId);
+            // 3. Marcar como descalificado
+            if (!tournament.descalificados) tournament.descalificados = [];
+            if (!tournament.descalificados.includes(targetId)) {
+                tournament.descalificados.push(targetId);
+            }
 
             // 4. Resolver enfrentamientos
             const pendingMatches = await Match.find({

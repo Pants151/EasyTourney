@@ -190,6 +190,12 @@ const TournamentDetails = () => {
     const handleSetWinnerBR = async (winnerId) => {
         if (!isOrganizer) return;
 
+        const isDisqualified = tournament.descalificados?.includes(winnerId);
+        if (isDisqualified) {
+            alert("No se puede seleccionar a un participante descalificado como ganador.");
+            return;
+        }
+
         const participant = tournament.participantes.find(p => (p._id || p) === winnerId);
         const confirmMsg = `¿Confirmar a "${participant?.username || 'este jugador'}" como ganador de la ronda?`;
 
@@ -436,6 +442,22 @@ const TournamentDetails = () => {
             doc.text("Resumen de Enfrentamientos", 14, doc.lastAutoTable.finalY + 15);
             autoTable(doc, {
                 startY: doc.lastAutoTable.finalY + 20, head: [['Ronda', 'Duelo', 'Resultado']], body: matchesBody
+            });
+        }
+
+        // Listado de Participantes con estado
+        const participantsBody = tournament.formato === 'Equipos'
+            ? tournament.equipos?.map(t => [t.nombre, tournament.descalificados?.includes(t._id) ? 'DESCALIFICADO' : 'ACTIVO'])
+            : tournament.participantes?.map(p => [p.username, tournament.descalificados?.includes(p._id) ? 'DESCALIFICADO' : 'ACTIVO']);
+
+        if (participantsBody && participantsBody.length > 0) {
+            doc.text("Estado de Participantes", 14, doc.lastAutoTable.finalY + 15);
+            autoTable(doc, {
+                startY: doc.lastAutoTable.finalY + 20,
+                head: [['Nombre', 'Estado']],
+                body: participantsBody,
+                theme: 'grid',
+                headStyles: { fillColor: [100, 100, 100] }
             });
         }
 
@@ -696,13 +718,17 @@ const TournamentDetails = () => {
                                                     <div className="d-flex flex-wrap gap-2">
                                                         {tournament.participantes.map(p => {
                                                             const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
+                                                            const isDisqualified = tournament.descalificados?.includes(p._id);
+                                                            const isDisabled = p.isDeleted || isDisqualified;
                                                             return (
                                                                 <button key={p._id}
-                                                                    className={`btn btn-outline-light d-flex flex-column align-items-center p-3 ${p.isDeleted ? 'opacity-50' : ''}`}
+                                                                    className={`btn btn-outline-light d-flex flex-column align-items-center p-3 ${isDisabled ? 'opacity-50' : ''}`}
                                                                     onClick={() => handleSetWinnerBR(p._id)}
                                                                     style={{ minWidth: '120px' }}
-                                                                    disabled={p.isDeleted}>
-                                                                    <span className={`fw-bold ${p.isDeleted ? 'text-decoration-line-through text-danger' : ''}`}>{p.username}</span>
+                                                                    disabled={isDisabled}>
+                                                                    <span className={`fw-bold ${isDisabled ? 'text-decoration-line-through text-danger' : ''}`}>
+                                                                        {p.username} {isDisqualified ? '(DSQ)' : ''}
+                                                                    </span>
                                                                     <span className="badge bg-accent mt-2">{wins} / {tournament.alMejorDe}</span>
                                                                 </button>
                                                             );
@@ -718,10 +744,14 @@ const TournamentDetails = () => {
                                                     <div className="row">
                                                         {tournament.participantes.map(p => {
                                                             const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
+                                                            const isDisqualified = tournament.descalificados?.includes(p._id);
+                                                            const isDisabled = p.isDeleted || isDisqualified;
                                                             return (
                                                                 <div key={p._id} className="col-md-4 mb-2">
-                                                                    <div className="p-2 border border-secondary rounded text-center">
-                                                                        <div className="fw-bold">{p.username}</div>
+                                                                    <div className={`p-2 border border-secondary rounded text-center ${isDisabled ? 'opacity-50 border-danger' : ''}`}>
+                                                                        <div className={`fw-bold ${isDisabled ? 'text-danger' : ''}`}>
+                                                                            {p.username} {isDisqualified ? '(DSQ)' : ''}
+                                                                        </div>
                                                                         <div className="text-accent">{wins} victorias</div>
                                                                     </div>
                                                                 </div>
@@ -831,94 +861,107 @@ const TournamentDetails = () => {
                                                     {/* Cabecera del Equipo */}
                                                     <div className="team-header-divider d-flex align-items-center mb-3">
                                                         <h5 className="text-accent fw-bold text-uppercase m-0 me-3">
-                                                            {team.nombre}
+                                                            {team.nombre} {tournament.descalificados?.includes(team._id) ? '(DESCALIFICADO)' : ''}
                                                         </h5>
                                                         {canRenameBots && (team.nombre.startsWith('BotEquipo') || team.miembros.some(m => m.usuario?.isBot)) && (
                                                             <button className="btn btn-sm btn-outline-warning ms-2 fw-bold" onClick={(e) => { e.stopPropagation(); handleRenameBot(team._id, 'team', team.nombre); }} title="Renombrar Equipo">
                                                                 ✎ RENOMBRAR EQUIPO
                                                             </button>
                                                         )}
-                                                        {isOrganizer && tournament.estado === 'En curso' && (
+                                                        {isOrganizer && tournament.estado === 'En curso' && !tournament.descalificados?.includes(team._id) && (
                                                             <button className="btn btn-sm btn-outline-danger ms-2 fw-bold" onClick={(e) => { e.stopPropagation(); handleDisqualify(team._id, 'team', team.nombre); }}>
                                                                 <i className="bi bi-person-x me-1"></i>DESCALIFICAR EQUIPO
                                                             </button>
+                                                        )}
+                                                        {tournament.descalificados?.includes(team._id) && (
+                                                            <span className="badge bg-danger ms-2 fw-bold">EQUIPO DESCALIFICADO</span>
                                                         )}
                                                         <div className="flex-grow-1 border-bottom border-secondary"></div>
                                                     </div>
 
                                                     {/* Miembros del equipo */}
                                                     <div className="row">
-                                                        {team.miembros.filter(m => m.estado === 'Aceptado').map(m => (
-                                                            <div key={m.usuario._id} className="col-md-4 mb-3">
-                                                                <div
-                                                                    className={`participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border ${m.usuario.isDeleted ? 'opacity-50 border-danger' : ''}`}
-                                                                    onClick={() => setSelectedParticipant(m.usuario)}
-                                                                >
-                                                                    <h6 className={`fw-bold mb-1 ${m.usuario.isDeleted ? 'text-danger fst-italic' : 'text-white'}`}>
-                                                                        {m.usuario.username}
-                                                                    </h6>
-                                                                    {team.capitan === m.usuario._id && <div className="text-warning small"><i className="bi bi-star-fill me-1"></i>Capitán</div>}
+                                                        {team.miembros.filter(m => m.estado === 'Aceptado').map(m => {
+                                                            const isUserDisqualified = tournament.descalificados?.includes(m.usuario._id);
+                                                            const isDisabled = m.usuario.isDeleted || isUserDisqualified;
+                                                            return (
+                                                                <div key={m.usuario._id} className="col-md-4 mb-3">
+                                                                    <div
+                                                                        className={`participant-card p-3 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border ${isDisabled ? 'opacity-50 border-danger' : ''}`}
+                                                                        onClick={() => setSelectedParticipant(m.usuario)}
+                                                                    >
+                                                                        <h6 className={`fw-bold mb-1 ${isDisabled ? 'text-danger fst-italic' : 'text-white'}`}>
+                                                                            {m.usuario.username} {isUserDisqualified ? '(DSQ)' : ''}
+                                                                        </h6>
+                                                                        {team.capitan === m.usuario._id && <div className="text-warning small"><i className="bi bi-star-fill me-1"></i>Capitán</div>}
 
-                                                                    <div className="d-flex justify-content-center gap-2 mt-2">
-                                                                        {canRenameBots && (m.usuario.isBot || m.usuario.username?.includes('Bot')) && !m.usuario.isDeleted && (
-                                                                            <button
-                                                                                className="btn btn-warning btn-sm fw-bold"
-                                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
-                                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRenameBot(m.usuario._id, 'user', m.usuario.username); }}
-                                                                            >
-                                                                                ✎ RENOMBRAR
-                                                                            </button>
-                                                                        )}
-                                                                        {isOrganizer && tournament.estado === 'Abierto' && !m.usuario.isDeleted && (
-                                                                            <button
-                                                                                className="btn btn-danger btn-sm fw-bold"
-                                                                                style={{ fontSize: '0.7rem', padding: '2px 8px' }}
-                                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(m.usuario._id); }}
-                                                                            >
-                                                                                ✕ EXPULSAR
-                                                                            </button>
-                                                                        )}
+                                                                        <div className="d-flex justify-content-center gap-2 mt-2">
+                                                                            {canRenameBots && (m.usuario.isBot || m.usuario.username?.includes('Bot')) && !m.usuario.isDeleted && (
+                                                                                <button
+                                                                                    className="btn btn-warning btn-sm fw-bold"
+                                                                                    style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRenameBot(m.usuario._id, 'user', m.usuario.username); }}
+                                                                                >
+                                                                                    ✎ RENOMBRAR
+                                                                                </button>
+                                                                            )}
+                                                                            {isOrganizer && tournament.estado === 'Abierto' && !m.usuario.isDeleted && (
+                                                                                <button
+                                                                                    className="btn btn-danger btn-sm fw-bold"
+                                                                                    style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                                                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleExpulsar(m.usuario._id); }}
+                                                                                >
+                                                                                    ✕ EXPULSAR
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                        {(m.usuario.isDeleted || isUserDisqualified) && <div className="badge bg-danger mt-2">ELIMINADO / DSQ</div>}
                                                                     </div>
-                                                                    {m.usuario.isDeleted && <div className="badge bg-danger mt-2">ELIMINADO / DSQ</div>}
                                                                 </div>
-                                                            </div>
-                                                        ))}
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
                                             );
                                         })
                                     ) : (
-                                        tournament.participantes.map(p => (
-                                            <div key={p._id} className="col-md-3 mb-4">
-                                                <div
-                                                    className={`participant-card p-4 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border h-100 ${p.isDeleted ? 'opacity-50 border-danger' : ''}`}
-                                                    onClick={() => setSelectedParticipant(p)}
-                                                >
-                                                    <div className="display-4 text-accent mb-2"><i className="bi bi-person-circle"></i></div>
-                                                    <h5 className={`fw-bold mb-1 ${p.isDeleted ? 'text-danger' : 'text-white'}`}>{p.username}</h5>
-                                                    {p.isBot && <div className="text-warning small mb-2"><i className="bi bi-robot me-1"></i>Bot de Prueba</div>}
-                                                    {p.isDeleted && <div className="badge bg-danger mb-2">ELIMINADO / DSQ</div>}
+                                        tournament.participantes.map(p => {
+                                            const isUserDisqualified = tournament.descalificados?.includes(p._id);
+                                            const isDisabled = p.isDeleted || isUserDisqualified;
+                                            return (
+                                                <div key={p._id} className="col-md-3 mb-4">
+                                                    <div
+                                                        className={`participant-card p-4 bg-dark-secondary rounded text-center cursor-pointer hover-accent-border h-100 ${isDisabled ? 'opacity-50 border-danger' : ''}`}
+                                                        onClick={() => setSelectedParticipant(p)}
+                                                    >
+                                                        <div className="display-4 text-accent mb-2"><i className="bi bi-person-circle"></i></div>
+                                                        <h5 className={`fw-bold mb-1 ${isDisabled ? 'text-danger' : 'text-white'}`}>
+                                                            {p.username} {isUserDisqualified ? '(DSQ)' : ''}
+                                                        </h5>
+                                                        {p.isBot && <div className="text-warning small mb-2"><i className="bi bi-robot me-1"></i>Bot de Prueba</div>}
+                                                        {isDisabled && <div className="badge bg-danger mb-2">ELIMINADO / DSQ</div>}
 
-                                                    <div className="d-flex flex-column gap-2 mt-auto">
-                                                        {canRenameBots && (p.isBot || p.username?.includes('Bot')) && !p.isDeleted && (
-                                                            <button className="btn btn-warning btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }}>
-                                                                ✎ RENOMBRAR BOT
-                                                            </button>
-                                                        )}
-                                                        {isOrganizer && tournament.estado === 'Abierto' && !p.isDeleted && (
-                                                            <button className="btn btn-danger btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleExpulsar(p._id); }}>
-                                                                ✕ EXPULSAR
-                                                            </button>
-                                                        )}
-                                                        {isOrganizer && tournament.estado === 'En curso' && !p.isDeleted && (
-                                                            <button className="btn btn-danger btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleDisqualify(p._id, 'user', p.username); }}>
-                                                                <i className="bi bi-person-x me-1"></i>DESCALIFICAR
-                                                            </button>
-                                                        )}
+                                                        <div className="d-flex flex-column gap-2 mt-auto">
+                                                            {canRenameBots && (p.isBot || p.username?.includes('Bot')) && !isDisabled && (
+                                                                <button className="btn btn-warning btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleRenameBot(p._id, 'user', p.username); }}>
+                                                                    ✎ RENOMBRAR BOT
+                                                                </button>
+                                                            )}
+                                                            {isOrganizer && tournament.estado === 'Abierto' && !isDisabled && (
+                                                                <button className="btn btn-danger btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleExpulsar(p._id); }}>
+                                                                    ✕ EXPULSAR
+                                                                </button>
+                                                            )}
+                                                            {isOrganizer && tournament.estado === 'En curso' && !isDisabled && (
+                                                                <button className="btn btn-danger btn-sm fw-bold" onClick={(e) => { e.stopPropagation(); handleDisqualify(p._id, 'user', p.username); }}>
+                                                                    <i className="bi bi-person-x me-1"></i>DESCALIFICAR
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))
+                                            );
+                                        })
                                     )}
                                 </div>
                             )}
