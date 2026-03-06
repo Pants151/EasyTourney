@@ -26,6 +26,17 @@ const TournamentDetails = () => {
     const [isGenerating, setIsGenerating] = useState(false); // Estado para evitar doble clic
     const [selectedParticipant, setSelectedParticipant] = useState(null); // Para el modal de detalles
 
+    // Nuevo estado para el modal de puntuación
+    const [scoreModal, setScoreModal] = useState({
+        isOpen: false,
+        matchId: null,
+        winnerId: null,
+        player1Name: '',
+        player2Name: '',
+        score1: '',
+        score2: ''
+    });
+
     // Fix scroll al montar el componente
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -113,12 +124,62 @@ const TournamentDetails = () => {
     const canStartTournament = isBR ? currentCount >= 2 : hasValidPowerOfTwo;
 
     // Ejemplo de reporte visual de ganador
-    const handleSetWinner = async (matchId, winnerId) => {
+    const handleSetWinnerClick = (match, p1, p2, winnerId) => {
         if (!isOrganizer) return;
+        const p1Name = tournament.formato === 'Equipos' ? p1?.nombre : p1?.username;
+        const p2Name = tournament.formato === 'Equipos' ? p2?.nombre : p2?.username;
+
+        setScoreModal({
+            isOpen: true,
+            matchId: match._id,
+            winnerId: winnerId,
+            player1Name: p1Name || 'Jugador 1',
+            player2Name: p2Name || 'Jugador 2',
+            score1: '',
+            score2: ''
+        });
+    };
+
+    const handleScoreSubmit = async (withScore) => {
+        if (!isOrganizer) return;
+
+        let resultadoString = "Pendiente";
+
+        if (withScore) {
+            const s1 = parseInt(scoreModal.score1 !== '' ? scoreModal.score1 : '0', 10);
+            const s2 = parseInt(scoreModal.score2 !== '' ? scoreModal.score2 : '0', 10);
+
+            if (isNaN(s1) || isNaN(s2)) {
+                alert("Por favor, introduce puntuaciones válidas.");
+                return;
+            }
+
+            // Validar que el ganador tenga más puntos
+            // scoreModal.winnerId corresponde a p1 o p2?
+            // Necesitamos saber si el ganador es el player 1 o el player 2 en el modal
+            // Para simplificar, buscamos el match original
+            const match = matches.find(m => m._id === scoreModal.matchId);
+            const isWinnerP1 = tournament.formato === 'Equipos'
+                ? match.equipo1?._id === scoreModal.winnerId || match.equipo1 === scoreModal.winnerId
+                : match.jugador1?._id === scoreModal.winnerId || match.jugador1 === scoreModal.winnerId;
+
+            if (isWinnerP1 && s1 <= s2) {
+                alert(`La puntuación de ${scoreModal.player1Name} debe ser mayor que la de ${scoreModal.player2Name} porque es el ganador.`);
+                return;
+            } else if (!isWinnerP1 && s2 <= s1) {
+                alert(`La puntuación de ${scoreModal.player2Name} debe ser mayor que la de ${scoreModal.player1Name} porque es el ganador.`);
+                return;
+            }
+
+            resultadoString = `${s1} - ${s2}`;
+        }
+
         try {
-            // Cambiamos 'reportWinner' por 'updateMatchResult'
-            // Cambiamos el campo 'ganador' por 'ganadorId'
-            await tournamentService.updateMatchResult(matchId, { ganadorId: winnerId });
+            await tournamentService.updateMatchResult(scoreModal.matchId, {
+                ganadorId: scoreModal.winnerId,
+                resultado: resultadoString !== "Pendiente" ? resultadoString : undefined
+            });
+            setScoreModal({ ...scoreModal, isOpen: false });
             await fetchAll();
         } catch (err) {
             console.error(err);
@@ -335,13 +396,50 @@ const TournamentDetails = () => {
                 const p1 = tournament.formato === 'Equipos' ? m.equipo1?.nombre : m.jugador1?.username;
                 const p2 = tournament.formato === 'Equipos' ? m.equipo2?.nombre : m.jugador2?.username;
                 const win = tournament.formato === 'Equipos' ? m.ganador?.nombre : m.ganador?.username;
-                return [`Ronda ${m.ronda}`, `${p1 || 'TBD'} vs ${p2 || 'BYE'}`, win || 'Pendiente'];
+                let resultadoStr = win || 'Pendiente';
+                if (m.resultado && m.resultado !== 'Pendiente' && m.resultado !== 'BYE') {
+                    resultadoStr += ` (${m.resultado})`;
+                }
+                return [`Ronda ${m.ronda}`, `${p1 || 'TBD'} vs ${p2 || 'BYE'}`, resultadoStr];
             });
 
             doc.text("Resumen de Enfrentamientos", 14, doc.lastAutoTable.finalY + 15);
             autoTable(doc, {
                 startY: doc.lastAutoTable.finalY + 20, head: [['Ronda', 'Duelo', 'Resultado']], body: matchesBody
             });
+        }
+
+        // Agregar sección de Reglamento al final si existe
+        if (tournament.reglas && tournament.reglas.trim() !== '') {
+            let startY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : 50;
+
+            // Verificar si hay espacio suficiente en la página, en caso contrario añadir nueva
+            if (startY > doc.internal.pageSize.getHeight() - 40) {
+                doc.addPage();
+                startY = 20;
+            }
+
+            doc.setFontSize(14);
+            doc.setTextColor(255, 115, 0);
+            doc.text("Reglamento y Detalles", 14, startY);
+
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+
+            // Dividir el texto largo en múltiples líneas para que no se corte
+            const rulesText = String(tournament.reglas);
+            const splitReglas = doc.splitTextToSize(rulesText, pageWidth - 28);
+
+            // Comprobar desbordamiento de texto en Y
+            let textY = startY + 8;
+            for (let i = 0; i < splitReglas.length; i++) {
+                if (textY > doc.internal.pageSize.getHeight() - 15) {
+                    doc.addPage();
+                    textY = 20;
+                }
+                doc.text(splitReglas[i], 14, textY);
+                textY += 5; // Aumentar línea
+            }
         }
 
         const safeName = tournament.nombre.replace(/[^a-z0-9]/gi, '_').toLowerCase();
@@ -461,6 +559,21 @@ const TournamentDetails = () => {
                                             ? (tournament.ganador.nombre || "Equipo Desconocido")
                                             : (tournament.ganador.username || "Usuario Desconocido")}
                                     </h5>
+                                    {tournament.formato === 'Equipos' && tournament.equipos && (
+                                        <div className="mt-2" style={{ fontSize: '0.8rem', color: '#aab0c4' }}>
+                                            {(() => {
+                                                const winningTeamId = tournament.ganador._id || tournament.ganador;
+                                                const team = tournament.equipos.find(t => (t._id === winningTeamId || t === winningTeamId));
+                                                if (team && team.miembros) {
+                                                    return team.miembros
+                                                        .filter(m => m.estado === 'Aceptado')
+                                                        .map(m => m.usuario?.username || 'Desconocido')
+                                                        .join(', ');
+                                                }
+                                                return null;
+                                            })()}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -540,9 +653,12 @@ const TournamentDetails = () => {
                                                         {tournament.participantes.map(p => {
                                                             const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
                                                             return (
-                                                                <button key={p._id} className="btn btn-outline-light d-flex flex-column align-items-center p-3"
-                                                                    onClick={() => handleSetWinnerBR(p._id)} style={{ minWidth: '120px' }}>
-                                                                    <span className="fw-bold">{p.username}</span>
+                                                                <button key={p._id}
+                                                                    className={`btn btn-outline-light d-flex flex-column align-items-center p-3 ${p.isDeleted ? 'opacity-50' : ''}`}
+                                                                    onClick={() => handleSetWinnerBR(p._id)}
+                                                                    style={{ minWidth: '120px' }}
+                                                                    disabled={p.isDeleted}>
+                                                                    <span className={`fw-bold ${p.isDeleted ? 'text-decoration-line-through text-danger' : ''}`}>{p.username}</span>
                                                                     <span className="badge bg-accent mt-2">{wins} / {tournament.alMejorDe}</span>
                                                                 </button>
                                                             );
@@ -591,7 +707,7 @@ const TournamentDetails = () => {
                                                                         <div className="match-item shadow-sm">
                                                                             <div
                                                                                 className={`player-slot rounded-top ${m.ganador?._id === p1?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p1 && !p1.isDeleted ? 'cursor-pointer' : 'no-interaction'} ${p1?.isDeleted ? 'opacity-50 fst-italic' : ''}`}
-                                                                                onClick={() => canSetWinner && p1 && !p1.isDeleted && handleSetWinner(m._id, p1._id)}
+                                                                                onClick={() => canSetWinner && p1 && !p1.isDeleted && handleSetWinnerClick(m, p1, p2, p1._id)}
                                                                             >
                                                                                 <span className={`player-name-text ${p1?.isDeleted ? 'text-danger' : ''}`}>
                                                                                     {p1Name || 'TBD'}
@@ -599,11 +715,13 @@ const TournamentDetails = () => {
                                                                             </div>
 
                                                                             {/* DIV DEL VS ENTRE LOS DOS NOMBRES */}
-                                                                            <div className="bracket-vs">VS</div>
+                                                                            <div className="bracket-vs">
+                                                                                {m.resultado && m.resultado !== 'Pendiente' && m.resultado !== 'BYE' ? m.resultado : 'VS'}
+                                                                            </div>
 
                                                                             <div
                                                                                 className={`player-slot rounded-bottom ${m.ganador?._id === p2?._id ? 'is-winner' : 'bg-dark'} ${canSetWinner && p2 && !p2.isDeleted ? 'cursor-pointer' : 'no-interaction'} ${p2?.isDeleted ? 'opacity-50 fst-italic' : ''}`}
-                                                                                onClick={() => canSetWinner && p2 && !p2.isDeleted && handleSetWinner(m._id, p2._id)}
+                                                                                onClick={() => canSetWinner && p2 && !p2.isDeleted && handleSetWinnerClick(m, p1, p2, p2._id)}
                                                                             >
                                                                                 <span className={`player-name-text ${p2?.isDeleted ? 'text-danger' : ''}`}>
                                                                                     {p2Name || (m.resultado === "BYE" ? "---" : (isTeams ? 'TBD' : 'BYE'))}
@@ -1025,6 +1143,65 @@ const TournamentDetails = () => {
                         </div>
 
                         <button className="btn btn-view-all w-100" onClick={() => setShowTeamModal(false)}>CERRAR</button>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL DETALLES DE USUARIO */}
+            {selectedParticipant && (
+                <div className="custom-modal-overlay" onClick={() => setSelectedParticipant(null)}>
+                    <div className="modal-content-team bg-dark-secondary rounded p-4 border border-accent" onClick={(e) => e.stopPropagation()}>
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h4 className="text-white text-uppercase fw-bold m-0">Detalles del Participante</h4>
+                            <button className="btn btn-outline-light btn-sm" onClick={() => setSelectedParticipant(null)}>X</button>
+                        </div>
+                        <div className="text-white">
+                            <p><strong>Usuario:</strong> {selectedParticipant.username}</p>
+                            <p><strong>País:</strong> {selectedParticipant.pais || 'No especificado'}</p>
+                            <p><strong>Idioma:</strong> {selectedParticipant.idioma || 'No especificado'}</p>
+                            {selectedParticipant.fechaNacimiento && (
+                                <p><strong>Fecha de Nacimiento:</strong> {new Date(selectedParticipant.fechaNacimiento).toLocaleDateString()}</p>
+                            )}
+                            {selectedParticipant.isBot && (
+                                <span className="badge bg-warning text-dark mt-2">Usuario BOT</span>
+                            )}
+                            {selectedParticipant.isDeleted && (
+                                <span className="badge bg-danger mt-2">Usuario Eliminado</span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL PUNTUACION */}
+            {scoreModal.isOpen && (
+                <div className="custom-modal-overlay" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>
+                    <div className="modal-content-team bg-dark-secondary rounded p-4 border border-accent" onClick={(e) => e.stopPropagation()}>
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h4 className="text-white text-uppercase fw-bold m-0">Puntuación del Enfrentamiento</h4>
+                            <button className="btn btn-outline-light btn-sm" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>X</button>
+                        </div>
+                        <div className="text-white mb-4">
+                            <div className="row g-3">
+                                <div className="col-5">
+                                    <label className="form-label text-accent fw-bold small text-uppercase">{scoreModal.player1Name}</label>
+                                    <input type="number" className="form-control form-control-custom text-center" placeholder="0" value={scoreModal.score1} onChange={e => setScoreModal({ ...scoreModal, score1: e.target.value })} />
+                                </div>
+                                <div className="col-2 d-flex align-items-center justify-content-center">
+                                    <span className="fw-bold fs-5">-</span>
+                                </div>
+                                <div className="col-5">
+                                    <label className="form-label text-accent fw-bold small text-uppercase">{scoreModal.player2Name}</label>
+                                    <input type="number" className="form-control form-control-custom text-center" placeholder="0" value={scoreModal.score2} onChange={e => setScoreModal({ ...scoreModal, score2: e.target.value })} />
+                                </div>
+                            </div>
+                            <small className="text-dim d-block mt-3">* El ganador seleccionado debe tener una puntuación mayor.</small>
+                        </div>
+                        <div className="d-flex flex-column gap-2 mt-4">
+                            <button className="btn btn-accent fw-bold" onClick={() => handleScoreSubmit(true)}>Aceptar Puntuación</button>
+                            <button className="btn btn-outline-warning fw-bold" onClick={() => handleScoreSubmit(false)}>Continuar sin puntuar</button>
+                            <button className="btn btn-outline-light fw-bold" onClick={() => setScoreModal({ ...scoreModal, isOpen: false })}>Cancelar</button>
+                        </div>
                     </div>
                 </div>
             )}
