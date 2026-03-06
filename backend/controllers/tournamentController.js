@@ -1004,9 +1004,12 @@ const performBotSnapshotAndCleanup = async (tournament) => {
 
         if (!fullTournament) return;
 
-        const snapBots = {};
-        const snapEquips = {};
-        const snapMembers = {};
+        // Preservar la info previa de los usuarios desconectados que ya están en el Map
+        const getMapAsObj = (m) => m ? (typeof m.entries === 'function' ? Object.fromEntries(m) : { ...m }) : {};
+        const snapBots = getMapAsObj(fullTournament.snapNombresBots);
+        const snapEquips = getMapAsObj(fullTournament.snapNombresEquipos);
+        const snapMembers = getMapAsObj(fullTournament.snapEquiposMiembros);
+
         const botIds = [];
         const botTeamIds = [];
 

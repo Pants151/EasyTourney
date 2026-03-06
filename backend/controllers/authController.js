@@ -224,9 +224,23 @@ const performCascadeDelete = async (user) => {
     const activeTournaments = await Tournament.find({ estado: { $in: ['Abierto', 'En curso', 'Finalizado'] }, participantes: userId });
 
     for (const tourney of activeTournaments) {
+        let isWinner = false;
+        if (tourney.estado === 'Finalizado' && tourney.ganador) {
+            if (tourney.ganadorTipo === 'User' && tourney.ganador.toString() === userId.toString()) {
+                isWinner = true;
+            } else if (tourney.ganadorTipo === 'Team') {
+                const winningTeam = await Team.findById(tourney.ganador);
+                if (winningTeam && winningTeam.miembros.some(m => m.usuario.toString() === userId.toString())) {
+                    isWinner = true;
+                }
+            }
+        }
+
+        const userNameToSave = isWinner ? user.username : `${user.username} (Descalificado)`;
+
         // Guardar el snapshot usando Mongoose $set para asegurar la grabación del Map
         const snapUpdate = {};
-        snapUpdate[`snapNombresBots.${userId.toString()}`] = userNameDescalificado;
+        snapUpdate[`snapNombresBots.${userId.toString()}`] = userNameToSave;
         await Tournament.findByIdAndUpdate(tourney._id, { $set: snapUpdate });
 
         if (tourney.estado !== 'Finalizado') {

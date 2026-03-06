@@ -13,12 +13,27 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = getStoredItem('userToken');
-        const userData = getStoredItem('userData');
-        if (token && userData) {
-            setUser({ token, ...JSON.parse(userData) });
-        }
-        setLoading(false);
+        const loadUser = async () => {
+            const token = getStoredItem('userToken');
+            const userData = getStoredItem('userData');
+            if (token && userData) {
+                // Initialize with local data first for fast render
+                setUser({ token, ...JSON.parse(userData) });
+                try {
+                    // Fetch latest profile to sync roles and other updates invisibly
+                    const freshData = await authService.getProfile();
+                    if (freshData) {
+                        freshData.id = freshData._id || freshData.id;
+                        setStoredItem('userData', JSON.stringify(freshData));
+                        setUser({ token, ...freshData });
+                    }
+                } catch (err) {
+                    // Silently fail, it will be handled by the interceptor if 401
+                }
+            }
+            setLoading(false);
+        };
+        loadUser();
     }, []);
 
     // Conectar Socket.io globalmente en la app si el usuario hace login o re-carga la app
