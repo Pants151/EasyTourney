@@ -189,6 +189,12 @@ const TournamentDetails = () => {
 
     const handleSetWinnerBR = async (winnerId) => {
         if (!isOrganizer) return;
+
+        const participant = tournament.participantes.find(p => (p._id || p) === winnerId);
+        const confirmMsg = `¿Confirmar a "${participant?.username || 'este jugador'}" como ganador de la ronda?`;
+
+        if (!window.confirm(confirmMsg)) return;
+
         try {
             await tournamentService.reportBRRoundWinner(id, { winnerId });
             await fetchAll();
