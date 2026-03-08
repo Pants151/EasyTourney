@@ -2,11 +2,13 @@ import React, { useEffect, useState, useContext, useRef } from 'react';
 import gameService from '../services/gameService';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import useOnlineStatus from '../hooks/useOnlineStatus';
 import './TournamentForm.css';
 import './TournamentsPage.css';
 
 const AdminGames = () => {
     const { user, loading } = useContext(AuthContext);
+    const isOnline = useOnlineStatus();
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [editingId, setEditingId] = useState(null);
@@ -74,6 +76,7 @@ const AdminGames = () => {
 
     // --- LÓGICA DE BORRADO MASIVO ---
     const handleDeleteSelected = async () => {
+        if (!isOnline) return alert('No puedes realizar esta acción sin conexión');
         if (selectedIds.length === 0) return;
         if (window.confirm(`¿Estás seguro de que quieres eliminar los ${selectedIds.length} juegos seleccionados?`)) {
             try {
@@ -86,6 +89,7 @@ const AdminGames = () => {
     };
 
     const handleDeleteAll = async () => {
+        if (!isOnline) return alert('No puedes realizar esta acción sin conexión');
         if (window.confirm('¡ATENCIÓN! Vas a borrar TODOS los juegos de la base de datos. ¿Estás absolutamente seguro?')) {
             if (window.confirm('Esta es la última advertencia. Se borrarán todos los registros de juegos. ¿Proceder?')) {
                 try {
@@ -263,7 +267,7 @@ const AdminGames = () => {
                         </div>
 
                         <div className="d-flex gap-3">
-                            <button type="submit" className="btn-accent flex-grow-1">
+                            <button type="submit" className={`btn-accent flex-grow-1 ${!isOnline ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={!isOnline}>
                                 {editingId ? 'ACTUALIZAR DATOS' : 'CREAR JUEGO'}
                             </button>
                             {editingId && (
@@ -295,12 +299,12 @@ const AdminGames = () => {
                                 <button className="btn btn-info btn-sm fw-bold shadow-sm" onClick={() => setViewingItem(filteredGames.filter(g => selectedIds.includes(g._id)))}>
                                     <i className="icon-custom icon-eye me-1"></i> VISUALIZAR ({selectedIds.length})
                                 </button>
-                                <button className="btn btn-danger btn-sm fw-bold shadow-sm" onClick={handleDeleteSelected}>
+                                <button className="btn btn-danger btn-sm fw-bold shadow-sm" onClick={handleDeleteSelected} disabled={!isOnline}>
                                     <i className="icon-custom icon-trash me-1"></i> BORRAR SELECCIONADOS
                                 </button>
                             </>
                         )}
-                        <button className="btn btn-outline-danger btn-sm fw-bold shadow-sm" onClick={handleDeleteAll}>
+                        <button className="btn btn-outline-danger btn-sm fw-bold shadow-sm" onClick={handleDeleteAll} disabled={!isOnline}>
                             <i className="icon-custom icon-alert me-1"></i> BORRAR TODO
                         </button>
                     </div>

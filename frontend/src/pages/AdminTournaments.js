@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tournamentService from '../services/tournamentService';
+import useOnlineStatus from '../hooks/useOnlineStatus';
 import './TournamentForm.css'; // Reutilizamos estilos
 
 const AdminTournaments = () => {
     const [tournaments, setTournaments] = useState([]);
+    const isOnline = useOnlineStatus();
     const navigate = useNavigate();
 
     // Estados para Filtros
@@ -45,6 +47,7 @@ const AdminTournaments = () => {
     }, [modalPage]);
 
     const handleDelete = async (id, name) => {
+        if (!isOnline) return alert('No puedes realizar esta acción sin conexión');
         if (window.confirm(`¿Seguro que quieres borrar el torneo "${name}" y todos sus datos de forma permanente? Esta acción no se puede deshacer.`)) {
             try {
                 await tournamentService.deleteTournament(id);
@@ -72,6 +75,7 @@ const AdminTournaments = () => {
     };
 
     const handleDeleteSelected = async () => {
+        if (!isOnline) return alert('No puedes realizar esta acción sin conexión');
         if (selectedIds.length === 0) return;
         if (window.confirm(`¿Estás seguro de que quieres eliminar los ${selectedIds.length} torneos seleccionados?`)) {
             try {
@@ -84,6 +88,7 @@ const AdminTournaments = () => {
     };
 
     const handleDeleteAll = async () => {
+        if (!isOnline) return alert('No puedes realizar esta acción sin conexión');
         if (window.confirm('¡ATENCIÓN! Vas a borrar TODOS los torneos de la plataforma. ¿Estás absolutamente seguro?')) {
             if (window.confirm('Esta es la última advertencia. Se borrarán todos los registros asociados. ¿Proceder?')) {
                 try {

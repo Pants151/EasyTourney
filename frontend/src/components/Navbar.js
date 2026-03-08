@@ -1,10 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import useOnlineStatus from '../hooks/useOnlineStatus';
 import './Navbar.css';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const isOnline = useOnlineStatus();
     const navigate = useNavigate();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -85,6 +87,13 @@ const Navbar = () => {
                     </ul>
 
                     <ul className="navbar-nav align-items-lg-center">
+                        {!isOnline && (
+                            <li className="nav-item me-lg-3">
+                                <span className="badge rounded-pill bg-danger offline-badge animate-pulse">
+                                    <i className="fas fa-wifi-slash me-1"></i> MODO OFFLINE
+                                </span>
+                            </li>
+                        )}
                         {/* Mantenemos CUENTA solo si el usuario está logueado, eliminamos el 'else' de INICIO */}
                         {user && (
                             <li className="nav-item">
