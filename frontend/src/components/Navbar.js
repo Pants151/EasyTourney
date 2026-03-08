@@ -8,9 +8,11 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isAdminOpen, setIsAdminOpen] = useState(false);
 
     const handleNavigation = () => {
         setIsMenuOpen(false);
+        setIsAdminOpen(false);
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -50,10 +52,34 @@ const Navbar = () => {
                         <li className="nav-item">
                             <Link className="nav-link nav-link-custom" to="/games" onClick={handleNavigation}>JUEGOS</Link>
                         </li>
-                        {/* NUEVO: Acceso administrativo para Usuarios */}
+                        {/* SECCIÓN ADMIN: Desplegable profesional controlado por React */}
                         {user && user.rol === 'administrador' && (
-                            <li className="nav-item">
-                                <Link className="nav-link nav-link-custom text-warning fw-bold" to="/admin-users" onClick={handleNavigation}>USUARIOS</Link>
+                            <li className={`nav-item dropdown ${isAdminOpen ? 'show' : ''}`}>
+                                <button
+                                    className="nav-link dropdown-toggle nav-link-custom text-warning fw-bold bg-transparent border-0"
+                                    onClick={() => setIsAdminOpen(!isAdminOpen)}
+                                    aria-expanded={isAdminOpen}
+                                >
+                                    ADMIN
+                                </button>
+                                <ul className={`dropdown-menu dropdown-menu-dark border-secondary shadow-lg anim-dropdown ${isAdminOpen ? 'show' : ''}`} style={{ position: 'absolute' }}>
+                                    <li>
+                                        <Link className="dropdown-item py-2 px-4 fw-bold" to="/admin/tournaments" onClick={handleNavigation}>
+                                            <i className="icon-custom icon-eye me-2 small"></i> TORNEOS
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item py-2 px-4 fw-bold" to="/admin/games" onClick={handleNavigation}>
+                                            <i className="icon-custom icon-eye me-2 small"></i> JUEGOS
+                                        </Link>
+                                    </li>
+                                    <li><hr className="dropdown-divider border-secondary" /></li>
+                                    <li>
+                                        <Link className="dropdown-item py-2 px-4 fw-bold" to="/admin-users" onClick={handleNavigation}>
+                                            <i className="icon-custom icon-person me-2 small"></i> USUARIOS
+                                        </Link>
+                                    </li>
+                                </ul>
                             </li>
                         )}
                     </ul>

@@ -14,7 +14,7 @@
     transition: transform 0.3s ease;
     /* Aseguramos que el logo no sea tapado por el toggler */
     position: relative;
-    z-index: 10001; 
+    z-index: 10001;
 }
 
 .nav-logo:hover {
@@ -34,7 +34,8 @@
 }
 
 .nav-link-custom:hover {
-    color: #FF7300 !important; /* Naranja al pasar el ratón */
+    color: #FF7300 !important;
+    /* Naranja al pasar el ratón */
 }
 
 /* Línea decorativa inferior en escritorio */
@@ -58,7 +59,8 @@
 
 /* PERSONALIZACIÓN DEL BOTÓN HAMBURGUESA */
 .custom-toggler {
-    border-color: rgba(255, 115, 0, 0.5) !important; /* Borde naranja tenue */
+    border-color: rgba(255, 115, 0, 0.5) !important;
+    /* Borde naranja tenue */
     padding: 4px 8px;
 }
 
@@ -70,7 +72,8 @@
 
 /* Efecto visual al presionar el botón de hamburguesa */
 .custom-toggler:focus {
-    box-shadow: none; /* Quitamos el borde azul feo por defecto */
+    box-shadow: none;
+    /* Quitamos el borde azul feo por defecto */
     outline: none;
 }
 
@@ -84,27 +87,28 @@
         top: 70px;
         right: 0;
         width: 280px;
-        height: auto; 
+        height: auto;
         max-height: calc(100vh - 80px);
         background-color: #000000;
         border-left: 1px solid rgba(255, 115, 0, 0.2);
         border-bottom: 1px solid rgba(255, 115, 0, 0.2);
         border-bottom-left-radius: 8px;
         padding: 10px 20px 20px 20px;
-        
+
         /* 1. Forzamos que el elemento siempre exista para que la animación de cierre se vea */
-        display: block !important; 
-        
+        display: block !important;
+
         /* 2. Estado oculto (hacia la derecha) */
         transform: translateX(100%);
         opacity: 0;
-        visibility: hidden; /* Esto evita clics cuando está escondido */
+        visibility: hidden;
+        /* Esto evita clics cuando está escondido */
 
         /* 3. Transición completa: añadimos visibility para el cierre suave */
-        transition: transform 0.3s ease-in-out, 
-                    opacity 0.3s ease-in-out, 
-                    visibility 0.3s linear;
-        
+        transition: transform 0.3s ease-in-out,
+            opacity 0.3s ease-in-out,
+            visibility 0.3s linear;
+
         z-index: 9999;
         overflow-y: auto;
     }
@@ -129,11 +133,11 @@
         text-align: center;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    
+
     .nav-link-custom:last-child {
         border-bottom: none;
     }
-    
+
     /* Aseguramos que los botones de Login/Registro se ajusten */
     .ms-lg-3 {
         margin-left: 0 !important;
@@ -143,11 +147,95 @@
 }
 
 /* Estilo para los botones pequeños al final (Cerrar sesión / Login) */
-.btn-outline-light.btn-sm, .btn-accent.btn-sm {
+.btn-outline-light.btn-sm,
+.btn-accent.btn-sm {
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 1px;
     padding: 8px 16px;
     border-radius: 4px;
+}
+
+/* ESTILOS ESPECÍFICOS PARA EL DESPLEGABLE ADMIN */
+.dropdown-menu-dark {
+    background-color: #0c0c0c !important;
+    border: 1px solid rgba(255, 115, 0, 0.2);
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.dropdown-item {
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 115, 0, 0.1) !important;
+    color: #FF7300 !important;
+    padding-left: 1.8rem !important;
+    /* Efecto de desplazamiento */
+}
+
+.anim-dropdown {
+    animation: dropdownFade 0.3s ease-out;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajustes para móviles */
+@media (max-width: 991px) {
+    .dropdown-menu {
+        position: static !important;
+        /* Forzamos que ocupe su lugar en el flujo en móviles */
+        width: 100% !important;
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        border: none !important;
+        border-radius: 0;
+        margin-top: 0 !important;
+        padding-bottom: 10px;
+        box-shadow: none !important;
+        float: none !important;
+    }
+
+    /* Quitamos el desplazamiento vertical en móviles para que no pegue saltos al expandir */
+    .anim-dropdown {
+        animation: dropdownFadeMobile 0.3s ease-out !important;
+    }
+
+    @keyframes dropdownFadeMobile {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .dropdown-item {
+        text-align: center !important;
+        padding: 12px 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none !important;
+    }
+
+    .dropdown-item:hover {
+        padding-left: 0 !important;
+        background-color: rgba(255, 115, 0, 0.05) !important;
+    }
 }
