@@ -165,8 +165,21 @@ exports.updateUserProfile = async (req, res) => {
 
         // Validar si el nuevo email ya existe en OTRO usuario diferente al actual
         if (email && email !== user.email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json({ msg: 'Por favor, introduce un correo electrónico válido.' });
+            }
             const existingEmail = await User.findOne({ email, _id: { $ne: req.user.id } });
             if (existingEmail) return res.status(400).json({ msg: 'El correo electrónico ya está en uso.' });
+        }
+
+        // Validar fecha de nacimiento (no puede ser en el futuro)
+        if (fechaNacimiento) {
+            const birthDate = new Date(fechaNacimiento);
+            const today = new Date();
+            if (birthDate > today) {
+                return res.status(400).json({ msg: 'La fecha de nacimiento no puede ser en el futuro.' });
+            }
         }
 
         // --- GESTIÓN DE ROL Y BORRADO EN CASCADA DE TORNEOS ---

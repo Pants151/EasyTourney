@@ -82,6 +82,15 @@ const Account = () => {
             return;
         }
 
+        if (formData.fechaNacimiento) {
+            const birthDate = new Date(formData.fechaNacimiento);
+            const today = new Date();
+            if (birthDate > today) {
+                alert('La fecha de nacimiento no puede ser en el futuro.');
+                return;
+            }
+        }
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) {
             alert('Por favor, introduce un correo electrónico válido.');
@@ -166,6 +175,14 @@ const Account = () => {
                                             <option value="organizador">Organizador</option>
                                         </select>
                                     )}
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-md-12 mb-4">
+                                    <label className="form-label-custom">Correo Electrónico</label>
+                                    <input type="email" className="form-control form-control-custom" value={formData.email}
+                                        onChange={e => setFormData({ ...formData, email: e.target.value })} required maxLength="50" />
                                 </div>
                             </div>
 
