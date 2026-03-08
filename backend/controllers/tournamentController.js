@@ -611,37 +611,61 @@ exports.updateTournament = async (req, res) => {
 // Eliminar un torneo
 exports.deleteTournament = async (req, res) => {
     try {
-        const tournament = await Tournament.findById(req.params.id).populate('participantes');
-
-        if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
-
-        // Verificar que sea el organizador o un administrador
-        if (tournament.organizador.toString() !== req.user.id && req.user.rol !== 'administrador') {
-            return res.status(401).json({ msg: 'No autorizado' });
-        }
-
-        // 1. Identificar y borrar usuarios bots participantes
-        const botIds = tournament.participantes
-            .filter(p => p && p.isBot === true)
-            .map(p => p._id);
-
-        if (botIds.length > 0) {
-            await User.deleteMany({ _id: { $in: botIds } });
-        }
-
-        // 2. Borrar equipos asociados (sean bots o no, al borrar el torneo los equipos dejan de tener sentido)
-        await Team.deleteMany({ torneo: req.params.id });
-
-        // 3. Borrar las partidas asociadas
-        await Match.deleteMany({ torneo: req.params.id });
-
-        // 4. Borrar el torneo
-        await Tournament.findByIdAndDelete(req.params.id);
-
+        const success = await performTournamentDeletion(req.params.id, req.user);
+        if (!success) return res.status(401).json({ msg: 'No autorizado o torneo no encontrado' });
         res.json({ msg: 'Torneo eliminado correctamente' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error al eliminar el torneo');
+    }
+};
+
+// Función interna para reutilizar lógica de borrado
+async function performTournamentDeletion(tournamentId, currentUser) {
+    const tournament = await Tournament.findById(tournamentId).populate('participantes');
+    if (!tournament) return false;
+
+    // Verificar que sea el organizador o un administrador
+    if (tournament.organizador.toString() !== currentUser.id && currentUser.rol !== 'administrador') {
+        return false;
+    }
+
+    // 1. Identificar y borrar usuarios bots participantes
+    const botIds = tournament.participantes
+        .filter(p => p && p.isBot === true)
+        .map(p => p._id);
+
+    if (botIds.length > 0) {
+        await User.deleteMany({ _id: { $in: botIds } });
+    }
+
+    // 2. Borrar equipos asociados
+    await Team.deleteMany({ torneo: tournamentId });
+
+    // 3. Borrar las partidas asociadas
+    await Match.deleteMany({ torneo: tournamentId });
+
+    // 4. Borrar el torneo
+    await Tournament.findByIdAndDelete(tournamentId);
+    return true;
+}
+
+// Eliminar múltiples torneos (Solo Admin)
+exports.deleteTournamentsBulk = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids)) return res.status(400).json({ msg: 'Lista de IDs no válida' });
+
+        let deletedCount = 0;
+        for (const id of ids) {
+            const success = await performTournamentDeletion(id, req.user);
+            if (success) deletedCount++;
+        }
+
+        res.json({ msg: `${deletedCount} torneos eliminados correctamente` });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al eliminar torneos en bloque');
     }
 };
 

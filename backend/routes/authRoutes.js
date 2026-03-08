@@ -22,6 +22,9 @@ router.get('/users', [auth, adminAuth], authController.getAllUsers);
 // Ruta: GET /api/auth/users/:id - Obtener un usuario por ID (Solo Admin)
 router.get('/users/:id', [auth, adminAuth], authController.getUserByIdByAdmin);
 
+// Ruta: DELETE /api/auth/users/bulk - Eliminar múltiples usuarios (Solo Admin)
+router.delete('/users/bulk', [auth, adminAuth], authController.deleteUsersBulk);
+
 // Ruta: DELETE /api/auth/users/:id - Eliminar cualquier usuario (Solo Admin)
 router.delete('/users/:id', [auth, adminAuth], authController.deleteUserByAdmin);
 

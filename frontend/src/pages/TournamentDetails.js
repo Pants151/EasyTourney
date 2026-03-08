@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import tournamentService from '../services/tournamentService';
 import { AuthContext } from '../context/AuthContext';
@@ -42,7 +42,7 @@ const TournamentDetails = () => {
         window.scrollTo(0, 0);
     }, []);
 
-    const fetchAll = async () => {
+    const fetchAll = useCallback(async () => {
         try {
             const [tData, mData] = await Promise.all([
                 tournamentService.getTournamentById(id),
@@ -60,7 +60,7 @@ const TournamentDetails = () => {
             setTournament(tData);
             setMatches(mData);
         } catch (err) { console.error(err); }
-    };
+    }, [id]);
 
     useEffect(() => {
         fetchAll();
@@ -92,7 +92,7 @@ const TournamentDetails = () => {
             socket.off('participantUpdated', handleParticipantUpdate);
             socket.off('tournamentFinished', handleTournamentFinished);
         };
-    }, [id]);
+    }, [id, fetchAll]);
 
     if (!tournament) return <div className="text-center py-5 text-white">Cargando...</div>;
 

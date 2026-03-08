@@ -45,6 +45,7 @@ const changePassword = async (passwords) =>
 const getAllUsers = async () => (await axios.get(API_URL + 'users', getAuthHeaders())).data;
 const getUserByIdByAdmin = async (id) => (await axios.get(`${API_URL}users/${id}`, getAuthHeaders())).data;
 const deleteUserByAdmin = async (id) => (await axios.delete(`${API_URL}users/${id}`, getAuthHeaders())).data;
+const deleteUsersBulk = async (ids) => (await axios.delete(`${API_URL}users/bulk`, { ...getAuthHeaders(), data: { ids } })).data;
 const updateUserByAdmin = async (id, userData) => (await axios.put(`${API_URL}users/${id}`, userData, getAuthHeaders())).data;
 const changeUserPasswordByAdmin = async (id, passwordNuevo) => (await axios.put(`${API_URL}users/${id}/password`, { passwordNuevo }, getAuthHeaders())).data;
 
@@ -52,4 +53,22 @@ const forgotPassword = async (email) => (await axios.post(API_URL + 'forgot-pass
 const resetPassword = async (token, password) => (await axios.post(API_URL + `reset-password/${token}`, { password })).data;
 const logout = async () => (await axios.post(API_URL + 'logout', {}, getAuthHeaders())).data;
 
-export default { register, login, getProfile, updateProfile, deleteAccount, changePassword, getAllUsers, getUserByIdByAdmin, updateUserByAdmin, changeUserPasswordByAdmin, deleteUserByAdmin, forgotPassword, resetPassword, logout };
+const authService = {
+    register,
+    login,
+    getProfile,
+    updateProfile,
+    deleteAccount,
+    changePassword,
+    getAllUsers,
+    getUserByIdByAdmin,
+    updateUserByAdmin,
+    changeUserPasswordByAdmin,
+    deleteUserByAdmin,
+    deleteUsersBulk,
+    forgotPassword,
+    resetPassword,
+    logout
+};
+
+export default authService;

@@ -395,6 +395,34 @@ exports.deleteUserByAdmin = async (req, res) => {
     }
 };
 
+// Eliminar múltiples usuarios (Solo Admin)
+exports.deleteUsersBulk = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids)) return res.status(400).json({ msg: 'Lista de IDs no válida' });
+
+        const io = req.app.get('socketio');
+        let deletedCount = 0;
+
+        for (const id of ids) {
+            const userToDelete = await User.findById(id);
+            if (userToDelete && userToDelete._id.toString() !== req.user.id) {
+                // Expulsar si está conectado
+                if (io) {
+                    io.to('user_' + id).emit('force_logout');
+                }
+                await performCascadeDelete(userToDelete);
+                deletedCount++;
+            }
+        }
+
+        res.json({ msg: `${deletedCount} usuarios eliminados correctamente` });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al eliminar usuarios en bloque');
+    }
+};
+
 // Actualizar usuario por administrador
 exports.updateUserByAdmin = async (req, res) => {
     const { username, email, rol, pais, fechaNacimiento, idioma } = req.body;

@@ -17,12 +17,12 @@ exports.createGame = async (req, res) => {
         const { nombre, plataformas, caratula, logo, header } = req.body;
 
         // 2. Incluimos 'header' al crear la nueva instancia del modelo
-        const newGame = new Game({ 
-            nombre, 
-            plataformas, 
-            caratula, 
-            logo, 
-            header 
+        const newGame = new Game({
+            nombre,
+            plataformas,
+            caratula,
+            logo,
+            header
         });
 
         await newGame.save();
@@ -65,6 +65,20 @@ exports.deleteGame = async (req, res) => {
         res.json({ msg: 'Juego eliminado correctamente' });
     } catch (err) {
         res.status(500).send('Error al eliminar el juego');
+    }
+};
+
+// Eliminar múltiples juegos (Solo Admin)
+exports.deleteGamesBulk = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids)) return res.status(400).json({ msg: 'Lista de IDs no válida' });
+
+        await Game.deleteMany({ _id: { $in: ids } });
+        res.json({ msg: 'Juegos eliminados correctamente' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al eliminar juegos en bloque');
     }
 };
 
