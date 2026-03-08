@@ -7,7 +7,13 @@ const User = require('../models/User');
 // Crear un nuevo torneo con validaciones
 exports.createTournament = async (req, res) => {
     try {
-        const { nombre, fechaInicio, formato, tamanoEquipoMax, alMejorDe } = req.body;
+        console.log("DEBUG: Datos recibidos en createTournament:", req.body);
+        const { nombre, fechaInicio, formato } = req.body;
+
+        // Asegurar que los valores numéricos sean números (por si llegan como strings)
+        const tamanoEquipoMax = parseInt(req.body.tamanoEquipoMax) || 2;
+        const alMejorDe = parseInt(req.body.alMejorDe) || 1;
+        const limiteParticipantes = parseInt(req.body.limiteParticipantes) || 16;
 
         // 1. Validar nombre duplicado
         const existingName = await Tournament.findOne({ nombre });
@@ -15,22 +21,30 @@ exports.createTournament = async (req, res) => {
             return res.status(400).json({ msg: 'Ya existe un torneo con este nombre.' });
         }
 
-        // 2. Validar fecha (No puede ser pasada)
-        if (new Date(fechaInicio) < new Date()) {
+        // 2. Validar fecha (No puede ser pasada, permitimos un margen de 1 min por latencia)
+        const dateLimit = new Date();
+        dateLimit.setMinutes(dateLimit.getMinutes() - 1);
+        if (new Date(fechaInicio) < dateLimit) {
             return res.status(400).json({ msg: 'La fecha de inicio no puede ser anterior a la actual.' });
         }
 
         const newTournament = new Tournament({
             ...req.body,
-            tamanoEquipoMax: formato === 'Equipos' ? tamanoEquipoMax : 2,
+            tamanoEquipoMax: ['Equipos', 'Battle Royale - Por equipos'].includes(formato) ? tamanoEquipoMax : 2,
+            alMejorDe: ['Battle Royale', 'Battle Royale - Por equipos'].includes(formato) ? alMejorDe : 1,
+            limiteParticipantes,
             organizador: req.user.id,
-            alMejorDe: formato === 'Battle Royale' ? (alMejorDe || 1) : 1
+            ganadorTipo: ['Equipos', 'Battle Royale - Por equipos'].includes(formato) ? 'Team' : 'User',
+            tipoGanadorRonda: ['Battle Royale - Por equipos'].includes(formato) ? 'Team' : 'User'
         });
 
         const tournament = await newTournament.save();
         res.json(tournament);
     } catch (err) {
-        console.error(err.message);
+        console.error("ERROR AL CREAR TORNEO:", err);
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ msg: 'Error de validación: ' + Object.values(err.errors).map(e => e.message).join(', ') });
+        }
         res.status(500).send('Error al crear el torneo');
     }
 };
@@ -95,7 +109,7 @@ exports.getTournamentById = async (req, res) => {
         await Tournament.populate(tournament, [
             { path: 'organizador', select: 'username' },
             { path: 'participantes', select: 'username isBot pais idioma fechaNacimiento', options: { retainNullValues: true } },
-            { path: 'ganadoresRondaBR', select: 'username', options: { retainNullValues: true } },
+            { path: 'ganadoresRondaBR', select: 'username nombre', options: { retainNullValues: true } },
             { path: 'ganador', options: { strictPopulate: false } },
             { path: 'juego' },
             { path: 'equipos', populate: { path: 'miembros.usuario', select: 'username isBot pais idioma fechaNacimiento' }, options: { retainNullValues: true } }
@@ -196,15 +210,23 @@ exports.getTournamentById = async (req, res) => {
         // Hidratar ganadoresRondaBR
         if (tournament.ganadoresRondaBR) {
             tournament.ganadoresRondaBR = tournament.ganadoresRondaBR.map((g, index) => {
-                if (!g || !g.username) {
+                // Si es equipo, comprobamos 'nombre'. Si es usuario, 'username'.
+                const isTeam = tournament.formato === 'Battle Royale - Por equipos';
+                if (!g || (isTeam ? !g.nombre : !g.username)) {
                     const id = rawGanadoresBR[index]?.toString();
                     if (id) {
-                        const snapName = getSnap(snapBots, id);
-                        if (snapName) {
-                            const isDeletedRealUser = snapName.includes('(Descalificado)');
-                            return { _id: id, username: snapName, isBot: !isDeletedRealUser, isDeleted: isDeletedRealUser };
+                        if (isTeam) {
+                            const snapEquipName = getSnap(snapEquips, id);
+                            if (snapEquipName) return { _id: id, nombre: snapEquipName, isBot: true };
+                            return { _id: id, nombre: "EQUIPO DESCALIFICADO", isBot: false, isDeleted: true };
+                        } else {
+                            const snapName = getSnap(snapBots, id);
+                            if (snapName) {
+                                const isDeletedRealUser = snapName.includes('(Descalificado)');
+                                return { _id: id, username: snapName, isBot: !isDeletedRealUser, isDeleted: isDeletedRealUser };
+                            }
+                            return { _id: id, username: "DESCALIFICADO", isBot: false, isDeleted: true };
                         }
-                        return { _id: id, username: "DESCALIFICADO", isBot: false, isDeleted: true };
                     }
                 }
                 return g;
@@ -230,8 +252,11 @@ exports.generateBrackets = async (req, res) => {
         }
 
         // Validación mínima común
-        let entities = tournament.formato === 'Equipos' ? [...tournament.equipos] : [...tournament.participantes];
-        if (entities.length < 2) return res.status(400).json({ msg: 'Mínimo 2 participantes para iniciar' });
+        let entities = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? [...tournament.equipos] : [...tournament.participantes];
+        if (entities.length < 2) {
+            const entName = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? 'equipos' : 'participantes';
+            return res.status(400).json({ msg: `Mínimo 2 ${entName} para iniciar` });
+        }
 
         // LÓGICA ESPECÍFICA PARA BATTLE ROYALE
         if (tournament.formato === 'Battle Royale') {
@@ -563,7 +588,9 @@ exports.updateTournament = async (req, res) => {
         if (fechaInicio) {
             const timeDiff = Math.abs(new Date(fechaInicio).getTime() - new Date(tournament.fechaInicio).getTime());
             if (timeDiff > 60000) {
-                if (new Date(fechaInicio) < new Date()) {
+                const dateLimit = new Date();
+                dateLimit.setMinutes(dateLimit.getMinutes() - 1);
+                if (new Date(fechaInicio) < dateLimit) {
                     return res.status(400).json({ msg: 'La nueva fecha no puede ser anterior a la actual.' });
                 }
             }
@@ -573,6 +600,10 @@ exports.updateTournament = async (req, res) => {
         await tournament.save();
         res.json(tournament);
     } catch (err) {
+        console.error("ERROR AL ACTUALIZAR TORNEO:", err);
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ msg: 'Error de validación: ' + Object.values(err.errors).map(e => e.message).join(', ') });
+        }
         res.status(500).send('Error al actualizar el torneo');
     }
 };
@@ -846,26 +877,39 @@ exports.reportBRRoundWinner = async (req, res) => {
         const tournament = await Tournament.findById(req.params.id);
 
         if (tournament.descalificados.includes(winnerId)) {
-            return res.status(400).json({ msg: 'Un participante descalificado no puede ganar rondas.' });
+            return res.status(400).json({ msg: 'Este participante/equipo está descalificado y no puede ganar rondas.' });
         }
 
+        const isTeamsBR = tournament.formato === 'Battle Royale - Por equipos';
         tournament.ganadoresRondaBR.push(winnerId);
+        if (isTeamsBR) {
+            tournament.tipoGanadorRonda = 'Team';
+        } else {
+            tournament.tipoGanadorRonda = 'User';
+        }
 
-        // Contar cuántas veces ha ganado este usuario
+        // Contar cuántas veces ha ganado este ID
         const victorias = tournament.ganadoresRondaBR.filter(id => id.toString() === winnerId).length;
 
         // Si alcanza el objetivo, el torneo finaliza
         if (victorias >= tournament.alMejorDe) {
             tournament.estado = 'Finalizado';
             tournament.ganador = winnerId;
-            tournament.ganadorTipo = 'User';
+            tournament.ganadorTipo = isTeamsBR ? 'Team' : 'User';
 
             // --- SNAPSHOT Y LIMPIEZA DE BOTS AL FINALIZAR ---
             await performBotSnapshotAndCleanup(tournament);
 
             const io = req.app.get('socketio');
-            const user = await User.findById(winnerId);
-            io.to(req.params.id).emit('tournamentFinished', { winnerName: user ? user.username : 'Ganador' });
+            let winnerName = 'Ganador';
+            if (isTeamsBR) {
+                const team = await Team.findById(winnerId);
+                winnerName = team ? team.nombre : 'Equipo Ganador';
+            } else {
+                const user = await User.findById(winnerId);
+                winnerName = user ? user.username : 'Ganador';
+            }
+            io.to(req.params.id).emit('tournamentFinished', { winnerName });
         }
 
         await tournament.save();
@@ -902,7 +946,7 @@ exports.addBot = async (req, res) => {
             return name;
         };
 
-        if (tournament.formato === 'Equipos') {
+        if (['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)) {
             if (tournament.equipos.length >= tournament.limiteParticipantes) {
                 return res.status(400).json({ msg: 'El torneo ya esta lleno de equipos' });
             }
@@ -1230,6 +1274,10 @@ exports.cancelTournament = async (req, res) => {
         }
 
         tournament.estado = 'Cancelado';
+
+        // --- SNAPSHOT Y LIMPIEZA DE BOTS AL CANCELAR ---
+        await performBotSnapshotAndCleanup(tournament);
+
         await tournament.save();
 
         const io = req.app.get('socketio');

@@ -111,14 +111,14 @@ const TournamentDetails = () => {
     const canRenameBots = (isOrganizer || isAdmin) && tournament.estado === 'Abierto';
 
     // Determinamos el conteo según el formato
-    const currentCount = tournament.formato === 'Equipos'
+    const currentCount = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
         ? tournament.equipos?.length || 0
         : tournament.participantes?.length || 0;
 
     const hasValidPowerOfTwo = isPowerOfTwo(currentCount);
 
     // 1. Determinamos si es Battle Royale
-    const isBR = tournament.formato === 'Battle Royale';
+    const isBR = ['Battle Royale', 'Battle Royale - Por equipos'].includes(tournament.formato);
 
     // 2. Ajustamos la validación del conteo
     const canStartTournament = isBR ? currentCount >= 2 : hasValidPowerOfTwo;
@@ -126,8 +126,9 @@ const TournamentDetails = () => {
     // Ejemplo de reporte visual de ganador
     const handleSetWinnerClick = (match, p1, p2, winnerId) => {
         if (!isOrganizer) return;
-        const p1Name = tournament.formato === 'Equipos' ? p1?.nombre : p1?.username;
-        const p2Name = tournament.formato === 'Equipos' ? p2?.nombre : p2?.username;
+        const isTeams = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato);
+        const p1Name = isTeams ? p1?.nombre : p1?.username;
+        const p2Name = isTeams ? p2?.nombre : p2?.username;
 
         setScoreModal({
             isOpen: true,
@@ -159,7 +160,7 @@ const TournamentDetails = () => {
             // Necesitamos saber si el ganador es el player 1 o el player 2 en el modal
             // Para simplificar, buscamos el match original
             const match = matches.find(m => m._id === scoreModal.matchId);
-            const isWinnerP1 = tournament.formato === 'Equipos'
+            const isWinnerP1 = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
                 ? match.equipo1?._id === scoreModal.winnerId || match.equipo1 === scoreModal.winnerId
                 : match.jugador1?._id === scoreModal.winnerId || match.jugador1 === scoreModal.winnerId;
 
@@ -192,12 +193,20 @@ const TournamentDetails = () => {
 
         const isDisqualified = tournament.descalificados?.includes(winnerId);
         if (isDisqualified) {
-            alert("No se puede seleccionar a un participante descalificado como ganador.");
+            alert("No se puede seleccionar a un descalificado como ganador.");
             return;
         }
 
-        const participant = tournament.participantes.find(p => (p._id || p) === winnerId);
-        const confirmMsg = `¿Confirmar a "${participant?.username || 'este jugador'}" como ganador de la ronda?`;
+        let winnerName = "este participante";
+        if (tournament.formato === 'Battle Royale - Por equipos') {
+            const team = tournament.equipos.find(t => (t._id || t) === winnerId);
+            winnerName = team?.nombre || "este equipo";
+        } else {
+            const participant = tournament.participantes.find(p => (p._id || p) === winnerId);
+            winnerName = participant?.username || "este jugador";
+        }
+
+        const confirmMsg = `¿Confirmar a "${winnerName}" como ganador de la ronda?`;
 
         if (!window.confirm(confirmMsg)) return;
 
@@ -270,7 +279,7 @@ const TournamentDetails = () => {
     };
 
     const handleInscribirse = () => {
-        if (tournament.formato === 'Equipos') {
+        if (['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)) {
             setShowTeamModal(true); // Abrir ventana de equipos
         } else {
             handleJoin(); // Inscripción directa 1v1 o BR
@@ -386,9 +395,9 @@ const TournamentDetails = () => {
             ['Organizador', tournament.organizador?.username || 'Desconocido'],
             ['Juego', tournament.juego?.nombre],
             ['Formato', tournament.formato],
-            ['Participantes', tournament.participantes?.length],
+            ['Participantes', ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? tournament.equipos?.length : tournament.participantes?.length],
             ['Estado', tournament.estado.toUpperCase()],
-            ['CAMPEÓN', tournament.formato === 'Equipos' ? tournament.ganador?.nombre : tournament.ganador?.username]
+            ['CAMPEÓN', ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? tournament.ganador?.nombre : tournament.ganador?.username]
         ];
 
         if (tournament.formato === 'Equipos' && tournament.estado === 'Finalizado' && tournament.ganador) {
@@ -413,10 +422,10 @@ const TournamentDetails = () => {
         });
 
         // LÓGICA PARA BATTLE ROYALE EN EL PDF
-        if (tournament.formato === 'Battle Royale' && tournament.ganadoresRondaBR?.length > 0) {
+        if ((tournament.formato === 'Battle Royale' || tournament.formato === 'Battle Royale - Por equipos') && tournament.ganadoresRondaBR?.length > 0) {
             const brBody = tournament.ganadoresRondaBR.map((g, index) => [
                 `Ronda ${index + 1}`,
-                g.username || "Usuario"
+                g.nombre || g.username || "Equipo"
             ]);
 
             doc.text("Historial de Rondas (Battle Royale)", 14, doc.lastAutoTable.finalY + 15);
@@ -446,7 +455,7 @@ const TournamentDetails = () => {
         }
 
         // Listado de Participantes con estado
-        const participantsBody = tournament.formato === 'Equipos'
+        const participantsBody = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
             ? tournament.equipos?.map(t => [t.nombre, tournament.descalificados?.includes(t._id) ? 'DESCALIFICADO' : 'ACTIVO'])
             : tournament.participantes?.map(p => [p.username, tournament.descalificados?.includes(p._id) ? 'DESCALIFICADO' : 'ACTIVO']);
 
@@ -553,7 +562,7 @@ const TournamentDetails = () => {
                                     {isBR && currentCount < 2 && (
                                         <div className="text-warning small fw-bold mb-1">
                                             <i className="bi bi-exclamation-triangle me-1"></i>
-                                            Se requieren al menos 2 participantes para iniciar.
+                                            Se requieren al menos 2 {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? 'equipos' : 'participantes'} para iniciar.
                                         </div>
                                     )}
 
@@ -590,7 +599,7 @@ const TournamentDetails = () => {
                                 <li className="mb-2"><i className="bi bi-calendar-event text-accent me-2"></i> {new Date(tournament.fechaInicio).toLocaleDateString()}</li>
                                 <li className="mb-2">
                                     <i className="bi bi-people text-accent me-2"></i>
-                                    {currentCount} / {tournament.limiteParticipantes} {tournament.formato === 'Equipos' ? 'Equipos' : 'Inscritos'}
+                                    {currentCount} / {tournament.limiteParticipantes} {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? 'Equipos' : 'Inscritos'}
                                 </li>
                                 <li className="mb-2">
                                     <i className="bi bi-pc-display text-accent me-2"></i>
@@ -621,11 +630,11 @@ const TournamentDetails = () => {
                                     <div className="fs-1 mb-1">🏆</div>
                                     <h6 className="text-accent fw-bold text-uppercase mb-1" style={{ letterSpacing: '1px', fontSize: '0.8rem' }}>Campeón</h6>
                                     <h5 className="text-white fw-bolder mb-0">
-                                        {tournament.formato === 'Equipos'
+                                        {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
                                             ? (tournament.ganador.nombre || "Equipo Desconocido")
                                             : (tournament.ganador.username || "Usuario Desconocido")}
                                     </h5>
-                                    {tournament.formato === 'Equipos' && tournament.equipos && (
+                                    {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) && tournament.equipos && (
                                         <div className="mt-2" style={{ fontSize: '0.8rem', color: '#aab0c4' }}>
                                             {(() => {
                                                 const winningTeamId = tournament.ganador._id || tournament.ganador;
@@ -693,18 +702,26 @@ const TournamentDetails = () => {
                             {/* VISTA FASES (Brackets) */}
                             {activeTab === 'fases' && (
                                 <div className="fases-content">
-                                    {tournament.formato === 'Battle Royale' ? (
+                                    {(tournament.formato === 'Battle Royale' || tournament.formato === 'Battle Royale - Por equipos') ? (
                                         <div className="br-phases-container text-white">
                                             {/* HISTORIAL DE RONDAS */}
                                             <div className="rounds-history mb-4 p-4 bg-dark-secondary rounded shadow-sm">
                                                 <h5 className="text-accent text-uppercase fw-bold mb-3">Historial de Rondas</h5>
                                                 <div className="d-flex flex-column gap-2">
-                                                    {tournament.ganadoresRondaBR?.length > 0 ? tournament.ganadoresRondaBR.map((g, index) => (
-                                                        <div key={index} className="d-flex justify-content-between border-bottom border-secondary pb-2">
-                                                            <span className="text-dim">Ronda {index + 1}</span>
-                                                            <span className="fw-bold text-white">🏆 {g.username || "Usuario"}</span>
-                                                        </div>
-                                                    )) : <p className="text-dim small">No se han jugado rondas aún.</p>}
+                                                    {tournament.ganadoresRondaBR?.length > 0 ? tournament.ganadoresRondaBR.map((g, index) => {
+                                                        let winnerName = "Cargando...";
+                                                        if (tournament.formato === 'Battle Royale - Por equipos') {
+                                                            winnerName = g.nombre || g.username || "Equipo";
+                                                        } else {
+                                                            winnerName = g.username || "Usuario";
+                                                        }
+                                                        return (
+                                                            <div key={index} className="d-flex justify-content-between border-bottom border-secondary pb-2">
+                                                                <span className="text-dim">Ronda {index + 1}</span>
+                                                                <span className="fw-bold text-white">🏆 {winnerName}</span>
+                                                            </div>
+                                                        );
+                                                    }) : <p className="text-dim small">No se han jugado rondas aún.</p>}
                                                 </div>
                                                 <div className="mt-3 text-end">
                                                     <small className="text-accent fw-bold">Objetivo: {tournament.alMejorDe} victorias</small>
@@ -716,23 +733,43 @@ const TournamentDetails = () => {
                                                 <div className="organizer-controls p-4 bg-dark-secondary rounded border border-accent shadow-sm">
                                                     <h5 className="text-white text-uppercase fw-bold mb-3">Seleccionar Ganador de Ronda</h5>
                                                     <div className="d-flex flex-wrap gap-2">
-                                                        {tournament.participantes.map(p => {
-                                                            const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
-                                                            const isDisqualified = tournament.descalificados?.includes(p._id);
-                                                            const isDisabled = p.isDeleted || isDisqualified;
-                                                            return (
-                                                                <button key={p._id}
-                                                                    className={`btn btn-outline-light d-flex flex-column align-items-center p-3 ${isDisabled ? 'opacity-50' : ''}`}
-                                                                    onClick={() => handleSetWinnerBR(p._id)}
-                                                                    style={{ minWidth: '120px' }}
-                                                                    disabled={isDisabled}>
-                                                                    <span className={`fw-bold ${isDisabled ? 'text-decoration-line-through text-danger' : ''}`}>
-                                                                        {p.username} {isDisqualified ? '(DSQ)' : ''}
-                                                                    </span>
-                                                                    <span className="badge bg-accent mt-2">{wins} / {tournament.alMejorDe}</span>
-                                                                </button>
-                                                            );
-                                                        })}
+                                                        {tournament.formato === 'Battle Royale - Por equipos' ? (
+                                                            tournament.equipos?.map(team => {
+                                                                const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === team._id).length || 0;
+                                                                const isDisqualified = tournament.descalificados?.includes(team._id);
+                                                                const isDisabled = isDisqualified;
+                                                                return (
+                                                                    <button key={team._id}
+                                                                        className={`btn btn-outline-light d-flex flex-column align-items-center p-3 ${isDisabled ? 'opacity-50' : ''}`}
+                                                                        onClick={() => handleSetWinnerBR(team._id)}
+                                                                        style={{ minWidth: '120px' }}
+                                                                        disabled={isDisabled}>
+                                                                        <span className={`fw-bold ${isDisabled ? 'text-decoration-line-through text-danger' : ''}`}>
+                                                                            {team.nombre} {isDisqualified ? '(DSQ)' : ''}
+                                                                        </span>
+                                                                        <span className="badge bg-accent mt-2">{wins} / {tournament.alMejorDe}</span>
+                                                                    </button>
+                                                                );
+                                                            })
+                                                        ) : (
+                                                            tournament.participantes.map(p => {
+                                                                const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
+                                                                const isDisqualified = tournament.descalificados?.includes(p._id);
+                                                                const isDisabled = p.isDeleted || isDisqualified;
+                                                                return (
+                                                                    <button key={p._id}
+                                                                        className={`btn btn-outline-light d-flex flex-column align-items-center p-3 ${isDisabled ? 'opacity-50' : ''}`}
+                                                                        onClick={() => handleSetWinnerBR(p._id)}
+                                                                        style={{ minWidth: '120px' }}
+                                                                        disabled={isDisabled}>
+                                                                        <span className={`fw-bold ${isDisabled ? 'text-decoration-line-through text-danger' : ''}`}>
+                                                                            {p.username} {isDisqualified ? '(DSQ)' : ''}
+                                                                        </span>
+                                                                        <span className="badge bg-accent mt-2">{wins} / {tournament.alMejorDe}</span>
+                                                                    </button>
+                                                                );
+                                                            })
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}
@@ -742,21 +779,39 @@ const TournamentDetails = () => {
                                                 <div className="participant-view p-4 bg-dark-secondary rounded shadow-sm">
                                                     <h5 className="text-white text-uppercase fw-bold mb-3">Marcador Actual</h5>
                                                     <div className="row">
-                                                        {tournament.participantes.map(p => {
-                                                            const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
-                                                            const isDisqualified = tournament.descalificados?.includes(p._id);
-                                                            const isDisabled = p.isDeleted || isDisqualified;
-                                                            return (
-                                                                <div key={p._id} className="col-md-4 mb-2">
-                                                                    <div className={`p-2 border border-secondary rounded text-center ${isDisabled ? 'opacity-50 border-danger' : ''}`}>
-                                                                        <div className={`fw-bold ${isDisabled ? 'text-danger' : ''}`}>
-                                                                            {p.username} {isDisqualified ? '(DSQ)' : ''}
+                                                        {tournament.formato === 'Battle Royale - Por equipos' ? (
+                                                            tournament.equipos?.map(team => {
+                                                                const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === team._id).length || 0;
+                                                                const isDisqualified = tournament.descalificados?.includes(team._id);
+                                                                const isDisabled = isDisqualified;
+                                                                return (
+                                                                    <div key={team._id} className="col-md-4 mb-2">
+                                                                        <div className={`p-2 border border-secondary rounded text-center ${isDisabled ? 'opacity-50 border-danger' : ''}`}>
+                                                                            <div className={`fw-bold ${isDisabled ? 'text-danger' : ''}`}>
+                                                                                {team.nombre} {isDisqualified ? '(DSQ)' : ''}
+                                                                            </div>
+                                                                            <div className="text-accent">{wins} victorias</div>
                                                                         </div>
-                                                                        <div className="text-accent">{wins} victorias</div>
                                                                     </div>
-                                                                </div>
-                                                            );
-                                                        })}
+                                                                );
+                                                            })
+                                                        ) : (
+                                                            tournament.participantes.map(p => {
+                                                                const wins = tournament.ganadoresRondaBR?.filter(id => (id._id || id) === p._id).length || 0;
+                                                                const isDisqualified = tournament.descalificados?.includes(p._id);
+                                                                const isDisabled = p.isDeleted || isDisqualified;
+                                                                return (
+                                                                    <div key={p._id} className="col-md-4 mb-2">
+                                                                        <div className={`p-2 border border-secondary rounded text-center ${isDisabled ? 'opacity-50 border-danger' : ''}`}>
+                                                                            <div className={`fw-bold ${isDisabled ? 'text-danger' : ''}`}>
+                                                                                {p.username} {isDisqualified ? '(DSQ)' : ''}
+                                                                            </div>
+                                                                            <div className="text-accent">{wins} victorias</div>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}
@@ -769,7 +824,7 @@ const TournamentDetails = () => {
                                                         <h6 className="round-title text-accent">Ronda {rNum}</h6>
                                                         <div className="matches-list">
                                                             {rounds[rNum].map((m) => {
-                                                                const isTeams = tournament.formato === 'Equipos';
+                                                                const isTeams = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato);
                                                                 const p1 = isTeams ? m.equipo1 : m.jugador1;
                                                                 const p2 = isTeams ? m.equipo2 : m.jugador2;
                                                                 const p1Name = isTeams ? p1?.nombre : p1?.username;
@@ -831,7 +886,7 @@ const TournamentDetails = () => {
                             {/* VISTA PARTICIPANTES (Tarjetas) */}
                             {activeTab === 'participantes' && (
                                 <div className="row">
-                                    {tournament.formato === 'Equipos' ? (
+                                    {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? (
                                         tournament.equipos?.map(team => {
                                             const pendientes = team.miembros.filter(m => m.estado === 'Pendiente');
                                             const isMyTeam = user && team.capitan === user.id;
@@ -1061,7 +1116,7 @@ const TournamentDetails = () => {
                                         ) : (
                                             <>
                                                 {/* Contador de slots */}
-                                                {tournament.formato === 'Equipos' ? (
+                                                {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? (
                                                     <p className="text-dim mb-3">
                                                         Equipos inscritos: <strong className="text-white">{tournament.equipos?.length || 0}</strong> / {tournament.limiteParticipantes}
                                                     </p>
@@ -1075,7 +1130,7 @@ const TournamentDetails = () => {
                                                     <button
                                                         className="btn btn-warning fw-bold btn-sm"
                                                         disabled={
-                                                            tournament.formato === 'Equipos'
+                                                            ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
                                                                 ? (tournament.equipos?.length || 0) >= tournament.limiteParticipantes
                                                                 : (tournament.participantes?.length || 0) >= tournament.limiteParticipantes
                                                         }
@@ -1089,7 +1144,7 @@ const TournamentDetails = () => {
                                                         }}
                                                     >
                                                         <i className="bi bi-plus-circle me-1"></i>
-                                                        {tournament.formato === 'Equipos' ? 'Añadir Equipo Bot' : 'Añadir Bot'}
+                                                        {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? 'Añadir Equipo Bot' : 'Añadir Bot'}
                                                     </button>
 
                                                     <button
@@ -1111,7 +1166,7 @@ const TournamentDetails = () => {
 
                                                 {/* Vista previa de participantes/equipos con badge BOT */}
                                                 <div className="mt-4">
-                                                    {tournament.formato === 'Equipos' ? (
+                                                    {['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? (
                                                         <>
                                                             <p className="text-dim small text-uppercase fw-bold mb-2">Equipos registrados:</p>
                                                             <div className="d-flex flex-wrap gap-2">

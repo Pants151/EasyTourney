@@ -44,10 +44,10 @@
 
 .btn-delete-custom {
     /* Usamos !important para asegurar que sobrescriba los estilos de Bootstrap .btn */
-    background-color: rgba(255, 77, 77, 0.08) !important; 
+    background-color: rgba(255, 77, 77, 0.08) !important;
     color: #ff4d4d !important;
     /* Aumentamos el grosor del borde para que "exista" visualmente */
-    border: 2px solid #ff4d4d !important; 
+    border: 2px solid #ff4d4d !important;
     font-weight: 800 !important;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -83,4 +83,29 @@
 /* Espaciado para el Navbar fijo */
 .mt-navbar {
     margin-top: 80px;
+}
+
+/* Alertas de formulario */
+.form-alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+
+.form-alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-color: #dc3545;
+    color: #ff8e98;
+}
+
+.error-feedback {
+    display: block;
+    color: #ff4d4d;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    font-weight: 600;
 }

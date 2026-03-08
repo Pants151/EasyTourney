@@ -11,10 +11,11 @@ const Login = () => {
     const navigate = useNavigate();
 
     // Redirigir si ya está logueado para no sobrescribir la sesión actual accidentalmente
-    if (user) {
-        navigate('/');
-        return null;
-    }
+    React.useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
+    }, [user, navigate]);
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 

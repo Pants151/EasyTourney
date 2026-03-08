@@ -108,26 +108,27 @@ const EditTournament = () => {
                                         <option value="1v1">1 vs 1</option>
                                         <option value="Equipos">Por Equipos</option>
                                         <option value="Battle Royale">Battle Royale</option>
+                                        <option value="Battle Royale - Por equipos">Battle Royale - Por equipos</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div className="row">
                                 <div className="col-md-6 mb-4">
-                                    <label className="form-label-custom">{formData.formato === 'Equipos' ? 'Límite de Equipos' : 'Límite de Participantes'}</label>
+                                    <label className="form-label-custom">{['Equipos', 'Battle Royale - Por equipos'].includes(formData.formato) ? 'Límite de Equipos' : 'Límite de Participantes'}</label>
                                     <select className="form-select form-select-custom" value={formData.limiteParticipantes}
                                         disabled={isLocked} onChange={e => setFormData({ ...formData, limiteParticipantes: e.target.value })}>
                                         {[2, 4, 8, 16, 32, 64].map(num => <option key={num} value={num}>{num}</option>)}
                                     </select>
                                 </div>
-                                {formData.formato === 'Equipos' && (
+                                {['Equipos', 'Battle Royale - Por equipos'].includes(formData.formato) && (
                                     <div className="col-md-6 mb-4">
                                         <label className="form-label-custom">Jugadores por Equipo (2-6)</label>
                                         <input type="number" className="form-control-custom form-control" value={formData.tamanoEquipoMax}
                                             disabled={isLocked} onChange={e => setFormData({ ...formData, tamanoEquipoMax: e.target.value })} min="2" max="6" />
                                     </div>
                                 )}
-                                {formData.formato === 'Battle Royale' && (
+                                {['Battle Royale', 'Battle Royale - Por equipos'].includes(formData.formato) && (
                                     <div className="col-md-6 mb-4">
                                         <label className="form-label-custom">Al mejor de (Victorias)</label>
                                         <input type="number" className="form-control-custom form-control" value={formData.alMejorDe}

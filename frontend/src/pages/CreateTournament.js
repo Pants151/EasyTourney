@@ -90,10 +90,11 @@ const CreateTournament = () => {
                                         <option value="1v1">1v1 (Individual)</option>
                                         <option value="Equipos">Por Equipos</option>
                                         <option value="Battle Royale">Battle Royale</option>
+                                        <option value="Battle Royale - Por equipos">Battle Royale - Por equipos</option>
                                     </select>
                                 </div>
 
-                                {formData.formato === 'Equipos' && (
+                                {['Equipos', 'Battle Royale - Por equipos'].includes(formData.formato) && (
                                     <div className="col-md-6 mb-4">
                                         <label className="form-label-custom">Integrantes por Equipo (2-6)</label>
                                         <input type="number" className="form-control form-control-custom"
@@ -102,7 +103,7 @@ const CreateTournament = () => {
                                     </div>
                                 )}
 
-                                {formData.formato === 'Battle Royale' && (
+                                {['Battle Royale', 'Battle Royale - Por equipos'].includes(formData.formato) && (
                                     <div className="col-md-6 mb-4">
                                         <label className="form-label-custom">Al mejor de (Victorias para ganar)</label>
                                         <input type="number" className="form-control form-control-custom"
@@ -113,7 +114,7 @@ const CreateTournament = () => {
 
                                 <div className="col-md-6 mb-4">
                                     <label className="form-label-custom">
-                                        {formData.formato === 'Equipos' ? 'Límite de Equipos' : 'Límite de Participantes'}
+                                        {['Equipos', 'Battle Royale - Por equipos'].includes(formData.formato) ? 'Límite de Equipos' : 'Límite de Participantes'}
                                     </label>
                                     <select
                                         name="limiteParticipantes"
@@ -123,7 +124,7 @@ const CreateTournament = () => {
                                     >
                                         {[2, 4, 8, 16, 32, 64].map(num => (
                                             <option key={num} value={num}>
-                                                {num} {formData.formato === 'Equipos' ? 'Equipos' : 'Participantes'}
+                                                {num} {['Equipos', 'Battle Royale - Por equipos'].includes(formData.formato) ? 'Equipos' : 'Participantes'}
                                             </option>
                                         ))}
                                     </select>
