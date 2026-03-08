@@ -343,6 +343,18 @@ exports.changePassword = async (req, res) => {
     }
 };
 
+// Obtener datos de UN usuario (Solo para Administradores)
+exports.getUserByIdByAdmin = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password');
+        if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error al obtener el usuario');
+    }
+};
+
 // Obtener todos los usuarios (Solo para Administradores)
 exports.getAllUsers = async (req, res) => {
     try {
@@ -385,7 +397,7 @@ exports.deleteUserByAdmin = async (req, res) => {
 
 // Actualizar usuario por administrador
 exports.updateUserByAdmin = async (req, res) => {
-    const { username, email, rol } = req.body;
+    const { username, email, rol, pais, fechaNacimiento, idioma } = req.body;
     try {
         let user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
@@ -418,12 +430,57 @@ exports.updateUserByAdmin = async (req, res) => {
 
         user.username = username || user.username;
         user.email = email || user.email;
+        if (req.body.pais !== undefined) user.pais = req.body.pais;
+        if (req.body.fechaNacimiento !== undefined) user.fechaNacimiento = req.body.fechaNacimiento;
+        if (req.body.idioma !== undefined) user.idioma = req.body.idioma;
 
         await user.save();
-        res.json({ _id: user.id, username: user.username, email: user.email, rol: user.rol });
+        res.json({
+            _id: user.id,
+            username: user.username,
+            email: user.email,
+            rol: user.rol,
+            pais: user.pais,
+            fechaNacimiento: user.fechaNacimiento,
+            idioma: user.idioma
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error al actualizar el usuario');
+    }
+};
+
+// Cambiar contraseña de cualquier usuario (Solo para Administradores)
+exports.changeUserPasswordByAdmin = async (req, res) => {
+    const { passwordNuevo } = req.body;
+    try {
+        if (!passwordNuevo || passwordNuevo.length < 6) {
+            return res.status(400).json({ msg: 'La nueva contraseña debe tener al menos 6 caracteres.' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(passwordNuevo, salt);
+
+        // --- INVALIDAR SESIÓN ACTUAL ---
+        // Al cambiar la contraseña, invalidamos el sessionToken para que el usuario tenga que loguearse de nuevo
+        // y no haya conflictos de 409 al intentar entrar con la nueva pass.
+        user.sessionToken = undefined;
+
+        await user.save();
+
+        // Expulsar en vivo si estuviera conectado
+        const io = req.app.get('socketio');
+        if (io) {
+            io.to('user_' + user._id.toString()).emit('force_logout');
+        }
+
+        res.json({ msg: `Contraseña de ${user.username} actualizada correctamente` });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
     }
 };
 

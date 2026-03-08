@@ -19,10 +19,16 @@ router.put('/change-password', auth, authController.changePassword);
 // Ruta: GET /api/auth/users - Obtener todos los usuarios (Solo Admin)
 router.get('/users', [auth, adminAuth], authController.getAllUsers);
 
+// Ruta: GET /api/auth/users/:id - Obtener un usuario por ID (Solo Admin)
+router.get('/users/:id', [auth, adminAuth], authController.getUserByIdByAdmin);
+
 // Ruta: DELETE /api/auth/users/:id - Eliminar cualquier usuario (Solo Admin)
 router.delete('/users/:id', [auth, adminAuth], authController.deleteUserByAdmin);
 
 // Ruta: PUT /api/auth/users/:id - Actualizar cualquier usuario (Solo Admin)
 router.put('/users/:id', [auth, adminAuth], authController.updateUserByAdmin);
+
+// Ruta: PUT /api/auth/users/:id/password - Cambiar contraseña de usuario (Solo Admin)
+router.put('/users/:id/password', [auth, adminAuth], authController.changeUserPasswordByAdmin);
 
 module.exports = router;

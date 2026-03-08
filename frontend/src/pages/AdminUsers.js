@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import authService from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 import './TournamentForm.css'; // Reutilizamos estilos de contenedores
 
 const AdminUsers = () => {
@@ -9,10 +10,7 @@ const AdminUsers = () => {
     const [filterUsername, setFilterUsername] = useState('');
     const [filterEmail, setFilterEmail] = useState('');
     const [filterRol, setFilterRol] = useState('');
-
-    const [editingUser, setEditingUser] = useState(null); // Usuario en modo edición
-    const [editFormData, setEditFormData] = useState({ username: '', email: '', rol: '' });
-    const [editError, setEditError] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -34,39 +32,7 @@ const AdminUsers = () => {
     };
 
     const handleEditClick = (user) => {
-        setEditingUser(user._id);
-        setEditFormData({ username: user.username, email: user.email, rol: user.rol });
-        setEditError('');
-    };
-
-    const handleCancelEdit = () => {
-        setEditingUser(null);
-        setEditError('');
-    };
-
-    const handleSaveEdit = async (e, id) => {
-        e.preventDefault();
-        setEditError('');
-
-        if (editFormData.username.trim().length < 3) {
-            return setEditError('El nombre debe tener al menos 3 caracteres.');
-        }
-
-        const originalUser = users.find(u => u._id === id);
-        if (originalUser && (originalUser.rol === 'organizador' || originalUser.rol === 'administrador') && editFormData.rol === 'participante') {
-            if (!window.confirm("ATENCIÓN: Estás a punto de cambiar el rol de este usuario a Participante. Esto BORRARÁ permanentemente TODOS los torneos que haya organizado. ¿Estás absolutamente seguro/a?")) {
-                return; // Cancelar
-            }
-        }
-
-        try {
-            const updatedUser = await authService.updateUserByAdmin(id, editFormData);
-            // Actualizar la lista local
-            setUsers(users.map(u => u._id === id ? { ...u, ...updatedUser } : u));
-            setEditingUser(null); // Cerrar modo edición
-        } catch (err) {
-            setEditError(err.response?.data?.msg || "Error al actualizar usuario");
-        }
+        navigate(`/admin/edit-user/${user._id}`);
     };
 
     // Funcionalidad de filtrado
@@ -121,41 +87,7 @@ const AdminUsers = () => {
                                 </tr>
                             ) : (
                                 filteredUsers.map(u => (
-                                    editingUser === u._id ? (
-                                        <tr key={u._id} className="table-secondary align-middle">
-                                            <td colSpan="4" className="p-0">
-                                                <div className="p-3 bg-dark border border-secondary rounded m-2">
-                                                    <h6 className="text-white mb-3">Editando a {u.username}</h6>
-                                                    {editError && <div className="alert alert-danger py-1 px-2 small">{editError}</div>}
-                                                    <form className="row g-2 align-items-end" onSubmit={(e) => handleSaveEdit(e, u._id)}>
-                                                        <div className="col-md-3">
-                                                            <label className="form-label-custom small mb-1">Username</label>
-                                                            <input type="text" className="form-control form-control-sm form-control-custom"
-                                                                value={editFormData.username} onChange={e => setEditFormData({ ...editFormData, username: e.target.value })} required minLength="3" maxLength="20" />
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <label className="form-label-custom small mb-1">Email</label>
-                                                            <input type="email" className="form-control form-control-sm form-control-custom"
-                                                                value={editFormData.email} onChange={e => setEditFormData({ ...editFormData, email: e.target.value })} required maxLength="50" />
-                                                        </div>
-                                                        <div className="col-md-2">
-                                                            <label className="form-label-custom small mb-1">Rol</label>
-                                                            <select className="form-select form-select-sm form-select-custom"
-                                                                value={editFormData.rol} onChange={e => setEditFormData({ ...editFormData, rol: e.target.value })}>
-                                                                <option value="participante">Participante</option>
-                                                                <option value="organizador">Organizador</option>
-                                                                <option value="administrador">Administrador</option>
-                                                            </select>
-                                                        </div>
-                                                        <div className="col-md-3 text-end d-flex justify-content-end gap-2">
-                                                            <button type="button" className="btn btn-outline-light btn-sm" onClick={handleCancelEdit}>Cancelar</button>
-                                                            <button type="submit" className="btn btn-warning btn-sm fw-bold">Guardar</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ) : (
+                                    (
                                         <tr key={u._id}>
                                             <td>{u.username}</td>
                                             <td>{u.email}</td>

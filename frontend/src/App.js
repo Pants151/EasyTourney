@@ -20,6 +20,7 @@ import GamesPage from './pages/GamesPage';
 import AdminUsers from './pages/AdminUsers';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
+import AdminEditUser from './pages/AdminEditUser';
 import './App.css';
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/admin/tournaments" element={<AdminTournaments />} />
+              <Route path="/admin/edit-user/:id" element={<AdminEditUser />} />
             </Routes>
           </main>
           <Footer />
