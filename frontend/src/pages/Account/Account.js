@@ -15,34 +15,29 @@ const Account = () => {
     const [passwords, setPasswords] = useState({ passwordActual: '', passwordNuevo: '' });
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const data = await authService.getProfile();
+        if (user) {
+            // Formatear la fechaNacimiento de ISO (2000-01-01T00:00:00.000Z) a AAAA-MM-DD para el input type="date"
+            let formattedDate = '';
+            if (user.fechaNacimiento) {
+                formattedDate = new Date(user.fechaNacimiento).toISOString().split('T')[0];
+            }
 
-                // Formatear la fechaNacimiento de ISO (2000-01-01T00:00:00.000Z) a AAAA-MM-DD para el input type="date"
-                let formattedDate = '';
-                if (data.fechaNacimiento) {
-                    formattedDate = new Date(data.fechaNacimiento).toISOString().split('T')[0];
-                }
+            // Asegurar que el idioma sea siempre un array (ya que en la BD es a veces String)
+            let userIdiomas = [];
+            if (user.idioma) {
+                userIdiomas = Array.isArray(user.idioma) ? user.idioma : user.idioma.split(',');
+            }
 
-                // Asegurar que el idioma sea siempre un array (ya que en la BD es a veces String)
-                let userIdiomas = [];
-                if (data.idioma) {
-                    userIdiomas = Array.isArray(data.idioma) ? data.idioma : data.idioma.split(',');
-                }
-
-                setFormData({
-                    username: data.username,
-                    email: data.email,
-                    rol: data.rol,
-                    pais: data.pais || 'España',
-                    fechaNacimiento: formattedDate,
-                    idioma: userIdiomas
-                });
-            } catch (err) { console.error(err); }
-        };
-        fetchProfile();
-    }, []);
+            setFormData({
+                username: user.username || '',
+                email: user.email || '',
+                rol: user.rol || '',
+                pais: user.pais || 'España',
+                fechaNacimiento: formattedDate,
+                idioma: userIdiomas
+            });
+        }
+    }, [user]);
 
     const availableLanguages = [
         { code: 'es', name: 'Español' },

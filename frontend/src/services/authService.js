@@ -36,7 +36,27 @@ const getAuthHeaders = () => ({
     headers: { 'x-auth-token': getStoredItem('userToken') }
 });
 
-const getProfile = async () => (await axios.get(API_URL + 'profile', getAuthHeaders())).data;
+let profilePromise = null;
+
+const getProfile = async () => {
+    if (profilePromise) return profilePromise;
+
+    profilePromise = (async () => {
+        try {
+            const response = await axios.get(API_URL + 'profile', getAuthHeaders());
+            return response.data;
+        } finally {
+            // Reset promise after a short delay or immediately to allow future fresh fetches
+            // but prevent simultaneous redundant calls.
+            setTimeout(() => {
+                profilePromise = null;
+            }, 1000);
+        }
+    })();
+
+    return profilePromise;
+};
+
 const updateProfile = async (userData) => (await axios.put(API_URL + 'profile', userData, getAuthHeaders())).data;
 const deleteAccount = async () => (await axios.delete(API_URL + 'profile', getAuthHeaders())).data;
 const changePassword = async (passwords) =>
