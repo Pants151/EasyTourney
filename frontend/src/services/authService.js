@@ -62,7 +62,19 @@ const deleteAccount = async () => (await axios.delete(API_URL + 'profile', getAu
 const changePassword = async (passwords) =>
     (await axios.put(API_URL + 'change-password', passwords, getAuthHeaders())).data;
 
-const getAllUsers = async () => (await axios.get(API_URL + 'users', getAuthHeaders())).data;
+let allUsersPromise = null;
+const getAllUsers = async () => {
+    if (allUsersPromise) return allUsersPromise;
+    allUsersPromise = (async () => {
+        try {
+            return (await axios.get(API_URL + 'users', getAuthHeaders())).data;
+        } finally {
+            setTimeout(() => { allUsersPromise = null; }, 1000);
+        }
+    })();
+    return allUsersPromise;
+};
+
 const getUserByIdByAdmin = async (id) => (await axios.get(`${API_URL}users/${id}`, getAuthHeaders())).data;
 const deleteUserByAdmin = async (id) => (await axios.delete(`${API_URL}users/${id}`, getAuthHeaders())).data;
 const deleteUsersBulk = async (ids) => (await axios.delete(`${API_URL}users/bulk`, { ...getAuthHeaders(), data: { ids } })).data;

@@ -19,6 +19,10 @@ export const AuthProvider = ({ children }) => {
             if (token && userData) {
                 // Initialize with local data first for fast render
                 setUser({ token, ...JSON.parse(userData) });
+
+                // UNBLOCK: Set loading to false early so components can start their own fetches
+                setLoading(false);
+
                 try {
                     // Fetch latest profile to sync roles and other updates invisibly
                     const freshData = await authService.getProfile();
@@ -30,8 +34,9 @@ export const AuthProvider = ({ children }) => {
                 } catch (err) {
                     // Silently fail, it will be handled by the interceptor if 401
                 }
+            } else {
+                setLoading(false);
             }
-            setLoading(false);
         };
         loadUser();
     }, []);

@@ -9,7 +9,18 @@ const getAuthHeaders = () => {
     return { headers: { 'x-auth-token': token } };
 };
 
-const getGames = async () => (await axios.get(API_URL)).data;
+let gamesPromise = null;
+const getGames = async () => {
+    if (gamesPromise) return gamesPromise;
+    gamesPromise = (async () => {
+        try {
+            return (await axios.get(API_URL)).data;
+        } finally {
+            setTimeout(() => { gamesPromise = null; }, 1000);
+        }
+    })();
+    return gamesPromise;
+};
 const createGame = async (data) => (await axios.post(API_URL, data, getAuthHeaders())).data;
 const updateGame = async (id, data) => (await axios.put(`${API_URL}${id}`, data, getAuthHeaders())).data;
 const deleteGame = async (id) => (await axios.delete(`${API_URL}${id}`, getAuthHeaders())).data;

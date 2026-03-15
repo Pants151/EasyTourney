@@ -23,8 +23,31 @@ const createTournament = async (data) => axios.post(API_URL, data, getAuthHeader
 const updateTournament = async (id, data) => axios.put(`${API_URL}/${id}`, data, getAuthHeaders());
 const deleteTournament = async (id) => axios.delete(`${API_URL}/${id}`, getAuthHeaders());
 const deleteTournamentsBulk = async (ids) => axios.delete(`${API_URL}/delete/bulk`, { ...getAuthHeaders(), data: { ids } });
-const getTournaments = async () => (await axios.get(API_URL)).data;
-const getTournamentById = async (id) => (await axios.get(`${API_URL}/${id}`)).data;
+let tournamentsPromise = null;
+const getTournaments = async () => {
+    if (tournamentsPromise) return tournamentsPromise;
+    tournamentsPromise = (async () => {
+        try {
+            return (await axios.get(API_URL)).data;
+        } finally {
+            setTimeout(() => { tournamentsPromise = null; }, 1000);
+        }
+    })();
+    return tournamentsPromise;
+};
+
+let tournamentDetailPromises = {};
+const getTournamentById = async (id) => {
+    if (tournamentDetailPromises[id]) return tournamentDetailPromises[id];
+    tournamentDetailPromises[id] = (async () => {
+        try {
+            return (await axios.get(`${API_URL}/${id}`)).data;
+        } finally {
+            setTimeout(() => { delete tournamentDetailPromises[id]; }, 1000);
+        }
+    })();
+    return tournamentDetailPromises[id];
+};
 const joinTournament = async (id) => axios.put(`${API_URL}/join/${id}`, {}, getAuthHeaders());
 const generateBrackets = async (id) => axios.post(`${API_URL}/generate/${id}`, {}, getAuthHeaders());
 const publishTournament = async (id) => axios.put(`${API_URL}/publish/${id}`, {}, getAuthHeaders());
