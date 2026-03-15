@@ -14,7 +14,6 @@ require('./models/Match');
 const authRoutes = require('./routes/authRoutes');
 const tournamentRoutes = require('./routes/tournamentRoutes');
 
-
 const app = express();
 const server = http.createServer(app);
 
@@ -30,20 +29,19 @@ io.on('connection', (socket) => {
         socket.join(tournamentId);
     });
 
-    // --- GESTIÓN DE SALAS DE USUARIO PARA DESCONEXIONES FORZOSAS ---
+    // Salas de usuario para desconexiones forzosas
     socket.on('joinUserRoom', (userId) => {
         socket.join('user_' + userId);
     });
 });
 
-// Hacer io accesible en los controladores
+// Inyectar io en la app
 app.set('socketio', io);
 
-// Middlewares
 app.use(cors());
-app.use(express.json()); // Permite leer JSON en las peticiones
+app.use(express.json());
 
-// Middleware de Logging para depuración (ayuda al usuario a ver qué llega)
+// Router logging
 app.use((req, res, next) => {
     if (req.method !== 'GET') {
         console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.originalUrl}`);
@@ -57,15 +55,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/games', require('./routes/gameRoutes'));
 app.use('/api/tournaments', tournamentRoutes);
 
-// Conexión a MongoDB
 connectDB();
 
-// Ruta de prueba inicial
 app.get('/', (req, res) => {
     res.send('Servidor de EasyTourney funcionando 🚀');
 });
 
-// Arrancar el servidor
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

@@ -7,24 +7,23 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 
-// Lógica de Registro
+// Registro
 exports.register = async (req, res) => {
     try {
         const { username, email, password, pais, fechaNacimiento, idioma, rol } = req.body;
 
-        // Verificar si el correo ya existe
+        // Validar email único
         let userEmail = await User.findOne({ email });
         if (userEmail) {
-            return res.status(400).json({ msg: 'Este correo electrónico ya está registrado.' }); //
+            return res.status(400).json({ msg: 'Este correo electrónico ya está registrado.' }); 
         }
 
-        // Verificar si el nombre de usuario ya existe
+        // Validar username único
         let userUsername = await User.findOne({ username });
         if (userUsername) {
-            return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' }); // Nuevo control
+            return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' }); 
         }
 
-        // Crear el nuevo usuario
         const user = new User({
             username,
             email,
@@ -35,14 +34,13 @@ exports.register = async (req, res) => {
             rol
         });
 
-        // Encriptar contraseña
+        // Hashear password
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt); //
+        user.password = await bcrypt.hash(password, salt); 
 
-        // Guardar en la base de datos
-        await user.save(); //
+        await user.save(); 
 
-        res.status(201).json({ msg: 'Usuario registrado correctamente' }); //
+        res.status(201).json({ msg: 'Usuario registrado correctamente' }); 
 
     } catch (err) {
         console.error(err.message);
@@ -50,25 +48,23 @@ exports.register = async (req, res) => {
     }
 };
 
-// Lógica de Login
+// Login
 exports.login = async (req, res) => {
     try {
-        const { email, password, forceLogout } = req.body; // Se añade forceLogout
+        const { email, password, forceLogout } = req.body; 
 
-        // Verificar si el usuario existe
         let user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ msg: 'Credenciales inválidas' });
         }
 
-        // Comparar la contraseña ingresada con la encriptada en la BD
+        // Verificar password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ msg: 'Credenciales inválidas' });
         }
 
-        // --- PROTECCIÓN INTERACTIVA DE SESIONES CONCURRENTES ---
-        // Si el usuario ya tiene un token de sesión activo y NO ha marcado la casilla mental de forceLogout
+        // Protección de sesiones concurrentes
         if (user.sessionToken && !forceLogout) {
             return res.status(409).json({
                 code: 'ACTIVE_SESSION',
@@ -76,39 +72,35 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Si ha dicho que sí (forceLogout) y había una sesión, disparamos el evento para echarle EN VIVO
+        // Forzar logout remoto si es necesario
         if (user.sessionToken && forceLogout) {
             const io = req.app.get('socketio');
             if (io) {
-                // Emitimos a la sala privada del usuario la orden de desconexión
                 io.to('user_' + user.id).emit('force_logout');
             }
         }
 
-        // Generar un token de sesión único cada vez que inicia sesión (Aplastando el anterior si lo hubiera)
+        // Renovar token de sesión
         const sessionToken = crypto.randomBytes(16).toString('hex');
 
-        // Guardarlo en el usuario en base de datos
         user.sessionToken = sessionToken;
         await user.save();
 
-        // Si todo es correcto, crear el JWT inyectando el sessionToken
+        // Crear JWT
         const payload = {
             user: {
                 id: user.id,
-                rol: user.rol, // Importante para EasyTourney para saber si es organizador
+                rol: user.rol, 
                 sessionToken: sessionToken
             }
         };
 
-        // Firmar el token (expira en 24 horas)
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
             { expiresIn: 86400 },
             (err, token) => {
                 if (err) throw err;
-                // DEVOLVEMOS TAMBIÉN EL USUARIO
                 res.json({
                     token,
                     user: { id: user.id, username: user.username, rol: user.rol }
@@ -122,14 +114,13 @@ exports.login = async (req, res) => {
     }
 };
 
-// Lógica de Logout
+// Logout
 exports.logout = async (req, res) => {
     try {
-        // Obtenemos el usuario autenticado a través del middleware
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
-        // Limpiamos su token de sesión en la base de datos para que quede "limpio"
+        // Invalidar sesión
         user.sessionToken = null;
         await user.save();
 
@@ -140,7 +131,7 @@ exports.logout = async (req, res) => {
     }
 };
 
-// Obtener perfil del usuario actual
+// Perfil de usuario
 exports.getUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
@@ -150,20 +141,20 @@ exports.getUserProfile = async (req, res) => {
     }
 };
 
-// Actualizar perfil con comprobación de duplicados
+// Actualizar perfil
 exports.updateUserProfile = async (req, res) => {
     const { username, email, pais, fechaNacimiento, rol } = req.body;
     try {
         let user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
-        // Validar si el nuevo username ya existe en OTRO usuario diferente al actual
+        // Validar colisiones de username
         if (username && username !== user.username) {
             const existingUsername = await User.findOne({ username, _id: { $ne: req.user.id } });
             if (existingUsername) return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' });
         }
 
-        // Validar si el nuevo email ya existe en OTRO usuario diferente al actual
+        // Validar colisiones de email
         if (email && email !== user.email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
@@ -173,7 +164,7 @@ exports.updateUserProfile = async (req, res) => {
             if (existingEmail) return res.status(400).json({ msg: 'El correo electrónico ya está en uso.' });
         }
 
-        // Validar fecha de nacimiento (no puede ser en el futuro)
+        // Validar fechaNacimiento
         if (fechaNacimiento) {
             const birthDate = new Date(fechaNacimiento);
             const today = new Date();
@@ -182,10 +173,9 @@ exports.updateUserProfile = async (req, res) => {
             }
         }
 
-        // --- GESTIÓN DE ROL Y BORRADO EN CASCADA DE TORNEOS ---
-        // Solo usuarios normales pueden cambiar entre organizador y participante
+        // Gestión de roles y referencias huérfanas
         if (user.rol !== 'administrador' && rol && ['participante', 'organizador'].includes(rol) && rol !== user.rol) {
-            // Si baja a participante, borramos sus torneos organizados
+            // Limpiar torneos si pierde permisos de organizador
             if (user.rol === 'organizador' && rol === 'participante') {
                 const userTournaments = await Tournament.find({ organizador: user._id });
                 for (const tournament of userTournaments) {
@@ -210,11 +200,11 @@ exports.updateUserProfile = async (req, res) => {
     }
 };
 
-// Función auxiliar para realizar el borrado en cascada
+// Borrado en cascada (Torneos y Matches)
 const performCascadeDelete = async (user) => {
     const userId = user._id;
 
-    // 1. Si es organizador: Borrar sus torneos y todo lo que contienen
+    // Limpiar torneos organizados
     const userTournaments = await Tournament.find({ organizador: userId });
     for (const tournament of userTournaments) {
         await Match.deleteMany({ torneo: tournament._id });
@@ -222,17 +212,14 @@ const performCascadeDelete = async (user) => {
         await Tournament.findByIdAndDelete(tournament._id);
     }
 
-    // 2. Si es participante: 
-    // Sacarlo de los torneos en "Borrador" y sus equipos en "Borrador"
+    // Eliminar de torneos en Borrador
     const draftTournaments = await Tournament.find({ estado: 'Borrador', participantes: userId });
     for (const draft of draftTournaments) {
         await Team.updateMany({ torneo: draft._id, "miembros.usuario": userId }, { $pull: { miembros: { usuario: userId } } });
         await Tournament.findByIdAndUpdate(draft._id, { $pull: { participantes: userId } });
     }
 
-    // Para torneos en "Abierto", "En curso" o "Finalizado", SE CONSERVA su ID para mostrarlo
-    // Guardamos el nombre del usuario real en snapNombresBots para no perder su nombre de pila
-    // al ser borrado, asignándole el sufijo '(Descalificado)'.
+    // Preservar nombre para historial
     const userNameDescalificado = `${user.username} (Descalificado)`;
     const activeTournaments = await Tournament.find({ estado: { $in: ['Abierto', 'En curso', 'Finalizado'] }, participantes: userId });
 
@@ -251,7 +238,7 @@ const performCascadeDelete = async (user) => {
 
         const userNameToSave = isWinner ? user.username : `${user.username} (Descalificado)`;
 
-        // Guardar el snapshot usando Mongoose $set para asegurar la grabación del Map
+        // Guardar snapshot
         const snapUpdate = {};
         snapUpdate[`snapNombresBots.${userId.toString()}`] = userNameToSave;
         await Tournament.findByIdAndUpdate(tourney._id, { $set: snapUpdate });
@@ -260,7 +247,7 @@ const performCascadeDelete = async (user) => {
             if (tourney.formato === 'Equipos') {
                 const team = await Team.findOne({ torneo: tourney._id, "miembros.usuario": userId });
                 if (team) {
-                    // Buscamos partidos pendientes del equipo
+                    // Forzar W.O. en partidos pendientes
                     const pendingMatches = await Match.find({
                         torneo: tourney._id,
                         ganador: { $exists: false },
@@ -300,11 +287,10 @@ const performCascadeDelete = async (user) => {
         }
     }
 
-    // Finalmente, borrar el usuario
     await User.findByIdAndDelete(userId);
 };
 
-// Eliminar cuenta propia (Usuario normal)
+// Auto-borrado de cuenta
 exports.deleteUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -316,7 +302,7 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// Cambiar contraseña con validación de longitud
+// Cambiar password
 exports.changePassword = async (req, res) => {
     const { passwordActual, passwordNuevo } = req.body;
     try {
@@ -343,7 +329,7 @@ exports.changePassword = async (req, res) => {
     }
 };
 
-// Obtener datos de UN usuario (Solo para Administradores)
+// Admin: Mostrar usuario
 exports.getUserByIdByAdmin = async (req, res) => {
     try {
         const user = await User.findById(req.params.id).select('-password');
@@ -355,10 +341,10 @@ exports.getUserByIdByAdmin = async (req, res) => {
     }
 };
 
-// Obtener todos los usuarios (Solo para Administradores)
+// Admin: Listar usuarios
 exports.getAllUsers = async (req, res) => {
     try {
-        // Buscamos todos los usuarios EXCEPTO el que hace la petición ($ne: req.user.id) y descartamos los bots
+        // Excluir al propio admin y a bots
         const users = await User.find({ _id: { $ne: req.user.id }, isBot: { $ne: true } })
             .select('-password')
             .sort({ username: 1 });
@@ -370,18 +356,18 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Eliminar usuario por administrador
+// Admin: Borrar usuario
 exports.deleteUserByAdmin = async (req, res) => {
     try {
         const userToDelete = await User.findById(req.params.id);
         if (!userToDelete) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
-        // Evitar que el admin se borre a sí mismo desde aquí
+        // Prevenir auto-borrado accidental
         if (userToDelete._id.toString() === req.user.id) {
             return res.status(400).json({ msg: 'No puedes borrar tu propia cuenta de administrador desde este panel' });
         }
 
-        // --- Expulsar al usuario si está conectado en tiempo real ---
+        // Forzar desconexión en vivo
         const io = req.app.get('socketio');
         if (io) {
             io.to('user_' + userToDelete._id.toString()).emit('force_logout');
@@ -395,7 +381,7 @@ exports.deleteUserByAdmin = async (req, res) => {
     }
 };
 
-// Eliminar múltiples usuarios (Solo Admin)
+// Admin: Borrado masivo
 exports.deleteUsersBulk = async (req, res) => {
     try {
         const { ids } = req.body;
@@ -407,7 +393,6 @@ exports.deleteUsersBulk = async (req, res) => {
         for (const id of ids) {
             const userToDelete = await User.findById(id);
             if (userToDelete && userToDelete._id.toString() !== req.user.id) {
-                // Expulsar si está conectado
                 if (io) {
                     io.to('user_' + id).emit('force_logout');
                 }
@@ -423,28 +408,26 @@ exports.deleteUsersBulk = async (req, res) => {
     }
 };
 
-// Actualizar usuario por administrador
+// Admin: Actualizar usuario
 exports.updateUserByAdmin = async (req, res) => {
     const { username, email, rol, pais, fechaNacimiento, idioma } = req.body;
     try {
         let user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
-        // Validar si el nuevo username ya existe en OTRO usuario
+        // Validar colisiones
         if (username && username !== user.username) {
             const existingUsername = await User.findOne({ username, _id: { $ne: req.params.id } });
             if (existingUsername) return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' });
         }
 
-        // Validar si el nuevo email ya existe en OTRO usuario
         if (email && email !== user.email) {
             const existingEmail = await User.findOne({ email, _id: { $ne: req.params.id } });
             if (existingEmail) return res.status(400).json({ msg: 'El correo electrónico ya está en uso.' });
         }
 
-        // --- GESTIÓN DE ROL Y BORRADO EN CASCADA DE TORNEOS ---
         if (rol && ['participante', 'organizador', 'administrador'].includes(rol) && rol !== user.rol) {
-            // Si baja a participante desde organizador o admin, borramos sus torneos organizados
+            // Limpiar torneos si pierde permisos
             if ((user.rol === 'organizador' || user.rol === 'administrador') && rol === 'participante') {
                 const userTournaments = await Tournament.find({ organizador: user._id });
                 for (const tournament of userTournaments) {
@@ -478,7 +461,7 @@ exports.updateUserByAdmin = async (req, res) => {
     }
 };
 
-// Cambiar contraseña de cualquier usuario (Solo para Administradores)
+// Admin: Cambiar password
 exports.changeUserPasswordByAdmin = async (req, res) => {
     const { passwordNuevo } = req.body;
     try {
@@ -492,14 +475,11 @@ exports.changeUserPasswordByAdmin = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(passwordNuevo, salt);
 
-        // --- INVALIDAR SESIÓN ACTUAL ---
-        // Al cambiar la contraseña, invalidamos el sessionToken para que el usuario tenga que loguearse de nuevo
-        // y no haya conflictos de 409 al intentar entrar con la nueva pass.
+        // Invalidar sesión activa
         user.sessionToken = undefined;
 
         await user.save();
 
-        // Expulsar en vivo si estuviera conectado
         const io = req.app.get('socketio');
         if (io) {
             io.to('user_' + user._id.toString()).emit('force_logout');
@@ -512,7 +492,7 @@ exports.changeUserPasswordByAdmin = async (req, res) => {
     }
 };
 
-// Solicitar recuperación de contraseña
+// Request reset password
 exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
     try {
@@ -522,20 +502,19 @@ exports.forgotPassword = async (req, res) => {
             return res.status(404).json({ msg: 'No existe ningún usuario con ese correo electrónico' });
         }
 
-        // Generar token de reseteo aleatorio
+        // Generar token
         const resetToken = crypto.randomBytes(20).toString('hex');
 
-        // Guardar token y expiración en el usuario (1 hora de validez)
+        // Asignar caducidad (1h)
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hora en ms
         await user.save();
 
-        // Generar URL de reseteo
-        // Se asume que en el FRONTEND_URL está la URL de la aplicación React (ej. http://localhost:3000)
+        // Construir URL
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
-        // Crear mensaje y enviar correo
+        // Enviar email
         const message = `Has recibido este correo porque tú (o alguien más) ha solicitado el restablecimiento de la contraseña en EasyTourney.\n\nPor favor, haz clic en el siguiente enlace, o pégalo en tu navegador para completar el proceso:\n\n${resetUrl}\n\nSi no fuiste tú, por favor ignora este correo y tu contraseña permanecerá sin cambios.\n`;
 
         try {
@@ -561,10 +540,10 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-// Restablecer contraseña con el token
+// Ejecutar reset password
 exports.resetPassword = async (req, res) => {
     try {
-        // Buscar usuario con ese token que además no haya expirado
+        // Validar token activo
         const user = await User.findOne({
             resetPasswordToken: req.params.token,
             resetPasswordExpires: { $gt: Date.now() }
@@ -574,17 +553,16 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ msg: 'El token de recuperación de contraseña es inválido o ha expirado.' });
         }
 
-        // Validar contraseña
         const { password } = req.body;
         if (!password || password.length < 6) {
             return res.status(400).json({ msg: 'La nueva contraseña debe tener al menos 6 caracteres.' });
         }
 
-        // Hashear la nueva contraseña y guardarla
+        // Hashear password
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
 
-        // Limpiar los campos del token para que no se reusen
+        // Invalidar token de un solo uso
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
 

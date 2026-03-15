@@ -3,25 +3,24 @@ const Match = require('../models/Match');
 const Team = require('../models/Team');
 const User = require('../models/User');
 
-// Crear un nuevo torneo
-// Crear un nuevo torneo con validaciones
+// Crear torneo
 exports.createTournament = async (req, res) => {
     try {
         console.log("DEBUG: Datos recibidos en createTournament:", req.body);
         const { nombre, fechaInicio, formato } = req.body;
 
-        // Asegurar que los valores numéricos sean números (por si llegan como strings)
+        // Parsear numéricos
         const tamanoEquipoMax = parseInt(req.body.tamanoEquipoMax) || 2;
         const alMejorDe = parseInt(req.body.alMejorDe) || 1;
         const limiteParticipantes = parseInt(req.body.limiteParticipantes) || 16;
 
-        // Validar nombre duplicado
+        // Validar nombre único
         const existingName = await Tournament.findOne({ nombre });
         if (existingName) {
             return res.status(400).json({ msg: 'Ya existe un torneo con este nombre.' });
         }
 
-        // Validar fecha (No puede ser pasada, permitimos un margen de 1 min por latencia)
+        // Validar fecha futura
         const dateLimit = new Date();
         dateLimit.setMinutes(dateLimit.getMinutes() - 1);
         if (new Date(fechaInicio) < dateLimit) {
@@ -49,10 +48,10 @@ exports.createTournament = async (req, res) => {
     }
 };
 
-// Obtener todos los torneos
+// Listar torneos
 exports.getTournaments = async (req, res) => {
     try {
-        // Añadimos 'juego' al populate para obtener logos y carátulas
+        // Populate juego
         const tournaments = await Tournament.find()
             .populate('organizador', 'username')
             .populate('juego')
@@ -64,7 +63,7 @@ exports.getTournaments = async (req, res) => {
     }
 };
 
-// Inscribirse en un torneo
+// Inscribirse al torneo
 exports.joinTournament = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id);
@@ -73,12 +72,10 @@ exports.joinTournament = async (req, res) => {
             return res.status(404).json({ msg: 'Torneo no encontrado' });
         }
 
-        // Verificar si el usuario ya está inscrito
         if (tournament.participantes.includes(req.user.id)) {
             return res.status(400).json({ msg: 'Ya estás inscrito en este torneo' });
         }
 
-        // Añadir el usuario al array de participantes
         tournament.participantes.push(req.user.id);
         await tournament.save();
 
@@ -92,20 +89,19 @@ exports.joinTournament = async (req, res) => {
     }
 };
 
-// Obtener un torneo por ID
+// Mostrar torneo
 exports.getTournamentById = async (req, res) => {
     try {
-        // Obtención de torneo 'crudo' para mantener IDs originales
+        // Cargar torneo crudo
         let tournament = await Tournament.findById(req.params.id).lean();
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        // Guardar IDs crudos para hidratación posterior
         const rawParticipantes = tournament.participantes ? [...tournament.participantes] : [];
         const rawEquipos = tournament.equipos ? [...tournament.equipos] : [];
         const rawGanador = tournament.ganador;
         const rawGanadoresBR = tournament.ganadoresRondaBR ? [...tournament.ganadoresRondaBR] : [];
 
-        // Poblar datos
+        // Populate relacional
         await Tournament.populate(tournament, [
             { path: 'organizador', select: 'username' },
             { path: 'participantes', select: 'username isBot pais idioma fechaNacimiento', options: { retainNullValues: true } },
@@ -115,7 +111,7 @@ exports.getTournamentById = async (req, res) => {
             { path: 'equipos', populate: { path: 'miembros.usuario', select: 'username isBot pais idioma fechaNacimiento' }, options: { retainNullValues: true } }
         ]);
 
-        // HIDRATACIÓN DE BOTS Y USUARIOS ELIMINADOS
+        // Hidratar bots y eliminados
         const snapBots = tournament.snapNombresBots || new Map();
         const snapEquips = tournament.snapNombresEquipos || new Map();
         const snapMembers = tournament.snapEquiposMiembros || new Map();
@@ -126,7 +122,6 @@ exports.getTournamentById = async (req, res) => {
             return snapMap[id];
         };
 
-        // Hidratar participantes (Bots en finalizados O usuarios eliminados "DESCALIFICADO")
         tournament.participantes = tournament.participantes.map((p, index) => {
             if (!p || !p.username) {
                 const id = rawParticipantes[index]?.toString();
@@ -142,7 +137,6 @@ exports.getTournamentById = async (req, res) => {
             return p;
         }).filter(Boolean);
 
-        // Hidratar equipos
         tournament.equipos = tournament.equipos.map((team, index) => {
             if (!team || !team.nombre) {
                 const id = rawEquipos[index]?.toString();
@@ -165,7 +159,6 @@ exports.getTournamentById = async (req, res) => {
                     return { _id: id, nombre: "EQUIPO DESCALIFICADO", isBot: false, isDeleted: true, miembros: [] };
                 }
             } else if (team && team.miembros) {
-                // Hidratar miembros eliminados dentro de un equipo válido
                 team.miembros = team.miembros.map(m => {
                     if (!m.usuario || !m.usuario.username) {
                         const mid = m.usuario?._id?.toString() || m.usuario?.toString();
@@ -184,7 +177,6 @@ exports.getTournamentById = async (req, res) => {
             return team;
         }).filter(Boolean);
 
-        // Hidratar ganador
         if (!tournament.ganador || (!tournament.ganador.username && !tournament.ganador.nombre)) {
             const gId = rawGanador?.toString();
             if (gId) {
@@ -207,7 +199,6 @@ exports.getTournamentById = async (req, res) => {
             }
         }
 
-        // Hidratar ganadoresRondaBR
         if (tournament.ganadoresRondaBR) {
             tournament.ganadoresRondaBR = tournament.ganadoresRondaBR.map((g, index) => {
                 // Si es equipo, comprobamos 'nombre'. Si es usuario, 'username'.
@@ -240,39 +231,39 @@ exports.getTournamentById = async (req, res) => {
     }
 };
 
-// Generar Brackets (Soporta 1v1 y Equipos)
+// Generar Brackets
 exports.generateBrackets = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id).populate('participantes').populate('equipos');
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        // PROTECCIÓN CONTRA DOBLE CLIC / MÚLTIPLES LLAMADAS
+        // Prevenir regeneración
         if (tournament.estado === 'En curso' || tournament.estado === 'Finalizado') {
             return res.status(400).json({ msg: 'El torneo ya ha sido iniciado y los brackets generados.' });
         }
 
-        // Validación mínima común
+        // Validar cuórum
         let entities = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? [...tournament.equipos] : [...tournament.participantes];
         if (entities.length < 2) {
             const entName = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato) ? 'equipos' : 'participantes';
             return res.status(400).json({ msg: `Mínimo 2 ${entName} para iniciar` });
         }
 
-        // LÓGICA ESPECÍFICA PARA BATTLE ROYALE
+        // Init Battle Royale
         if (tournament.formato === 'Battle Royale') {
             tournament.estado = 'En curso';
             await tournament.save();
             return res.json({ msg: 'Torneo de Battle Royale iniciado correctamente' });
         }
 
-        // LÓGICA PARA 1V1 Y EQUIPOS (Brackets)
+        // Shuffling para Brackets
         entities.sort(() => 0.5 - Math.random());
 
         for (let i = 0; i < entities.length; i += 2) {
             const matchData = {
                 torneo: tournament._id,
                 ronda: 1,
-                ganadorTipo: tournament.formato === 'Equipos' ? 'Team' : 'User' // <-- IMPORTANTE
+                ganadorTipo: tournament.formato === 'Equipos' ? 'Team' : 'User' 
             };
 
             if (tournament.formato === 'Equipos') {
@@ -310,7 +301,7 @@ exports.generateBrackets = async (req, res) => {
     }
 };
 
-// Publicar torneo (Cambiar estado a Abierto)
+// Publicar torneo
 exports.publishTournament = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id);
@@ -319,7 +310,6 @@ exports.publishTournament = async (req, res) => {
             return res.status(404).json({ msg: 'Torneo no encontrado' });
         }
 
-        // Verificar que el usuario sea el organizador
         if (tournament.organizador.toString() !== req.user.id) {
             return res.status(401).json({ msg: 'No autorizado' });
         }
@@ -334,7 +324,7 @@ exports.publishTournament = async (req, res) => {
     }
 };
 
-// Obtener todas las partidas de un torneo
+// Obtener partidas
 exports.getTournamentMatches = async (req, res) => {
     try {
         const tournamentId = req.params.id;
@@ -342,7 +332,6 @@ exports.getTournamentMatches = async (req, res) => {
 
         let matches = await Match.find({ torneo: tournamentId }).sort({ ronda: 1 }).lean();
 
-        // Guardar IDs crudos
         const rawMatchData = matches.map(m => ({
             jugador1: m.jugador1,
             jugador2: m.jugador2,
@@ -351,7 +340,7 @@ exports.getTournamentMatches = async (req, res) => {
             ganador: m.ganador
         }));
 
-        // Poblar
+        // Populate
         await Match.populate(matches, [
             { path: 'jugador1', select: 'username isBot' },
             { path: 'jugador2', select: 'username isBot' },
@@ -360,7 +349,7 @@ exports.getTournamentMatches = async (req, res) => {
             { path: 'ganador' }
         ]);
 
-        // Hidratación
+        // Hidratación visual
         if (tournament && (tournament.snapNombresBots || tournament.snapNombresEquipos)) {
             const snapBots = tournament.snapNombresBots || {};
             const snapEquips = tournament.snapNombresEquipos || {};
@@ -373,7 +362,7 @@ exports.getTournamentMatches = async (req, res) => {
 
             matches = matches.map((m, i) => {
                 const raw = rawMatchData[i];
-                // Jugador 1
+                
                 if (!m.jugador1 || !m.jugador1.username) {
                     const id = raw.jugador1?.toString();
                     if (id) {
@@ -384,7 +373,7 @@ exports.getTournamentMatches = async (req, res) => {
                         }
                     }
                 }
-                // Jugador 2
+                
                 if (!m.jugador2 || !m.jugador2.username) {
                     const id = raw.jugador2?.toString();
                     if (id) {
@@ -395,7 +384,7 @@ exports.getTournamentMatches = async (req, res) => {
                         }
                     }
                 }
-                // Equipo 1
+                
                 if (!m.equipo1 || !m.equipo1.nombre) {
                     const id = raw.equipo1?.toString();
                     if (id) {
@@ -403,7 +392,7 @@ exports.getTournamentMatches = async (req, res) => {
                         if (snapEquipName) m.equipo1 = { _id: id, nombre: snapEquipName, isBot: true };
                     }
                 }
-                // Equipo 2
+                
                 if (!m.equipo2 || !m.equipo2.nombre) {
                     const id = raw.equipo2?.toString();
                     if (id) {
@@ -411,7 +400,7 @@ exports.getTournamentMatches = async (req, res) => {
                         if (snapEquipName) m.equipo2 = { _id: id, nombre: snapEquipName, isBot: true };
                     }
                 }
-                // Ganador
+                
                 if (!m.ganador || (!m.ganador.username && !m.ganador.nombre)) {
                     const id = raw.ganador?.toString();
                     if (id) {
@@ -440,10 +429,9 @@ exports.getTournamentMatches = async (req, res) => {
     }
 };
 
-// Obtener torneos del organizador actual
+// Torneos organizados
 exports.getMyTournaments = async (req, res) => {
     try {
-        // Buscamos torneos donde el organizador coincida con el ID del usuario autenticado
         const tournaments = await Tournament.find({ organizador: req.user.id })
             .populate('juego')
             .sort({ fechaInicio: -1 });
@@ -454,7 +442,7 @@ exports.getMyTournaments = async (req, res) => {
     }
 };
 
-// Actualizar resultado de una partida
+// Update match
 exports.updateMatchResult = async (req, res) => {
     try {
         const { ganadorId, resultado } = req.body;
@@ -462,7 +450,6 @@ exports.updateMatchResult = async (req, res) => {
 
         if (!match) return res.status(404).json({ msg: 'Partida no encontrada' });
 
-        // Guardamos el ganador y su tipo (Team o User) basado en el formato del torneo
         match.ganador = ganadorId;
         match.ganadorTipo = match.torneo.formato === 'Equipos' ? 'Team' : 'User';
         match.resultado = resultado;
@@ -476,7 +463,7 @@ exports.updateMatchResult = async (req, res) => {
     } catch (err) { res.status(500).send('Error al actualizar resultado'); }
 };
 
-// Avanzar de ronda corregido
+// Avanzar ronda
 exports.advanceTournament = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id);
@@ -493,7 +480,7 @@ exports.advanceTournament = async (req, res) => {
             tournament.ganador = winners[0];
             tournament.ganadorTipo = tournament.formato === 'Equipos' ? 'Team' : 'User';
 
-            // --- SNAPSHOT Y LIMPIEZA DE BOTS AL FINALIZAR ---
+            // Clear bots
             await performBotSnapshotAndCleanup(tournament);
 
             await tournament.save();
@@ -546,20 +533,19 @@ exports.advanceTournament = async (req, res) => {
     } catch (err) { res.status(500).send('Error al avanzar ronda'); }
 };
 
-// Actualizar datos de un torneo con validaciones
+// Modificar torneo
 exports.updateTournament = async (req, res) => {
     try {
         let tournament = await Tournament.findById(req.params.id);
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        // Administrador puede editar cualquier torneo. El organizador solo sus torneos.
         if (tournament.organizador.toString() !== req.user.id && req.user.rol !== 'administrador') {
             return res.status(401).json({ msg: 'No autorizado' });
         }
 
         const { nombre, fechaInicio } = req.body;
 
-        // PROTECCIÓN: Si el torneo ya no es Borrador, prohibir cambios estructurales
+        // Proteger estado en curso
         if (tournament.estado !== 'Borrador') {
             const { juego, formato, limiteParticipantes, tamanoEquipoMax, alMejorDe } = req.body;
 
@@ -575,7 +561,7 @@ exports.updateTournament = async (req, res) => {
             }
         }
 
-        // Validar nombre duplicado (si el nombre ha cambiado)
+        // Validar unique nombre
         if (nombre && nombre !== tournament.nombre) {
             const existingName = await Tournament.findOne({ nombre, _id: { $ne: req.params.id } });
             if (existingName) {
@@ -583,7 +569,7 @@ exports.updateTournament = async (req, res) => {
             }
         }
 
-        // Validar fecha solo si se cambia notablemente (ignoramos milisegundos y segundos eliminados)
+        // Validar fecha futura
         if (fechaInicio) {
             const timeDiff = Math.abs(new Date(fechaInicio).getTime() - new Date(tournament.fechaInicio).getTime());
             if (timeDiff > 60000) {
@@ -607,7 +593,7 @@ exports.updateTournament = async (req, res) => {
     }
 };
 
-// Eliminar un torneo
+// Eliminar torneo
 exports.deleteTournament = async (req, res) => {
     try {
         const success = await performTournamentDeletion(req.params.id, req.user);
@@ -619,17 +605,16 @@ exports.deleteTournament = async (req, res) => {
     }
 };
 
-// Función interna para reutilizar lógica de borrado
+// Lógica borrado torneo
 async function performTournamentDeletion(tournamentId, currentUser) {
     const tournament = await Tournament.findById(tournamentId).populate('participantes');
     if (!tournament) return false;
 
-    // Verificar que sea el organizador o un administrador
     if (tournament.organizador.toString() !== currentUser.id && currentUser.rol !== 'administrador') {
         return false;
     }
 
-    // 1. Identificar y borrar usuarios bots participantes
+    // Eliminar bots
     const botIds = tournament.participantes
         .filter(p => p && p.isBot === true)
         .map(p => p._id);
@@ -638,18 +623,14 @@ async function performTournamentDeletion(tournamentId, currentUser) {
         await User.deleteMany({ _id: { $in: botIds } });
     }
 
-    // 2. Borrar equipos asociados
+    // Eliminar referenciados
     await Team.deleteMany({ torneo: tournament._id });
-
-    // 3. Borrar las partidas asociadas
     await Match.deleteMany({ torneo: tournament._id });
-
-    // 4. Borrar el torneo
     await Tournament.findByIdAndDelete(tournament._id);
     return true;
 }
 
-// Eliminar múltiples torneos (Solo Admin)
+// Admin: Borrado masivo
 exports.deleteTournamentsBulk = async (req, res) => {
     try {
         const { ids } = req.body;
@@ -669,18 +650,18 @@ exports.deleteTournamentsBulk = async (req, res) => {
 };
 
 
-// Crear un equipo
+// Crear equipo
 exports.createTeam = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id);
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        // Verificar que no se ha alcanzado el límite de equipos
+        // Validar cuórum
         if (tournament.equipos.length >= tournament.limiteParticipantes) {
             return res.status(400).json({ msg: `El torneo ya ha alcanzado el límite de ${tournament.limiteParticipantes} equipos.` });
         }
 
-        // Verificar que el usuario no sea ya capitán de otro equipo en este torneo
+        // Validar unicidad capitan
         const existingTeam = await Team.findOne({ torneo: tournament._id, capitan: req.user.id });
         if (existingTeam) {
             return res.status(400).json({ msg: 'Ya eres capitán de un equipo en este torneo.' });
@@ -705,23 +686,22 @@ exports.createTeam = async (req, res) => {
     } catch (err) { res.status(500).send('Error al crear equipo'); }
 };
 
-// Abandonar Torneo (Participante)
+// Abandonar torneo
 exports.leaveTournament = async (req, res) => {
     try {
         const tournament = await Tournament.findById(req.params.id);
         if (tournament.estado !== 'Abierto' && tournament.estado !== 'Borrador')
             return res.status(400).json({ msg: 'No puedes abandonar un torneo en curso o finalizado' });
 
-        // Si el torneo es por equipos, buscar si el usuario es capitán
         const team = await Team.findOne({ torneo: tournament._id, capitan: req.user.id });
         if (team) {
-            // Es capitán: se borra el equipo y se expulsa a todos los miembros
+            // Cascade si capitán
             const memberIds = team.miembros.map(m => m.usuario.toString());
             tournament.participantes = tournament.participantes.filter(p => !memberIds.includes(p.toString()));
             tournament.equipos = tournament.equipos.filter(e => e.toString() !== team._id.toString());
             await Team.findByIdAndDelete(team._id);
         } else {
-            // No es capitán: solo se borra a sí mismo
+            // Eliminar miembro
             tournament.participantes = tournament.participantes.filter(p => p.toString() !== req.user.id);
             await Team.updateMany({ torneo: tournament._id }, { $pull: { miembros: { usuario: req.user.id } } });
         }
@@ -735,7 +715,7 @@ exports.leaveTournament = async (req, res) => {
     } catch (err) { res.status(500).send('Error al abandonar'); }
 };
 
-// Abandonar o Expulsar del torneo
+// Force leave
 exports.handleExitTournament = async (req, res) => {
     try {
         const { id, userId } = req.params; // id del torneo, userId opcional (para expulsar)
@@ -746,19 +726,17 @@ exports.handleExitTournament = async (req, res) => {
             return res.status(400).json({ msg: 'No se puede salir/expulsar con el torneo en curso' });
         }
 
-        // ¿Es el usuario el capitán de algún equipo?
         const team = await Team.findOne({ torneo: id, capitan: targetUser });
 
         if (team) {
-            // Si es capitán, eliminamos el equipo y a todos sus miembros del torneo
+            // Cascade si capitán
             const memberIds = team.miembros.map(m => m.usuario.toString());
             tournament.participantes = tournament.participantes.filter(p => !memberIds.includes(p.toString()));
             tournament.equipos = tournament.equipos.filter(e => e.toString() !== team._id.toString());
             await Team.findByIdAndDelete(team._id);
         } else {
-            // Si no es capitán, solo lo quitamos a él
+            // Remove participant
             tournament.participantes = tournament.participantes.filter(p => p.toString() !== targetUser);
-            // También lo quitamos de la lista de miembros de cualquier equipo donde esté
             await Team.updateMany({ torneo: id }, { $pull: { miembros: { usuario: targetUser } } });
         }
 
@@ -773,7 +751,7 @@ exports.handleExitTournament = async (req, res) => {
     }
 };
 
-// Expulsar Participante (Organizador)
+// Expulsar participante
 exports.expelParticipant = async (req, res) => {
     try {
         const { tournamentId, userId } = req.params;
@@ -790,7 +768,6 @@ exports.expelParticipant = async (req, res) => {
         const userToExpel = await User.findById(userId);
         if (!userToExpel) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
-        // Lógica idéntica a abandonar (si es capitán se borra equipo, si no, solo el miembro)
         const team = await Team.findOne({ torneo: tournamentId, capitan: userId });
 
         let usersToDelete = [];
@@ -799,7 +776,7 @@ exports.expelParticipant = async (req, res) => {
         if (team) {
             const memberIds = team.miembros.map(m => m.usuario.toString());
 
-            // Si el equipo es de bots, recolectar todos sus miembros para borrar
+            // Recolectar bots
             const teamMembers = await User.find({ _id: { $in: memberIds }, isBot: true });
             teamMembers.forEach(m => {
                 if (!usersToDelete.includes(m._id.toString())) usersToDelete.push(m._id.toString());
@@ -815,7 +792,7 @@ exports.expelParticipant = async (req, res) => {
 
         await tournament.save();
 
-        // Borrado definitivo de los bots de la BD
+        // Limpiar DB de bots
         if (usersToDelete.length > 0) {
             await User.deleteMany({ _id: { $in: usersToDelete } });
         }
@@ -830,7 +807,7 @@ exports.expelParticipant = async (req, res) => {
     }
 };
 
-// Unirse a un equipo (Solicitud pendiente)
+// Join equipo
 exports.joinTeam = async (req, res) => {
     try {
         const team = await Team.findById(req.params.teamId);
@@ -838,13 +815,12 @@ exports.joinTeam = async (req, res) => {
 
         const tournament = await Tournament.findById(team.torneo);
 
-        // Verificar límite de miembros (Solo aceptados)
+        // Validar límite
         const acceptedMembers = team.miembros.filter(m => m.estado === 'Aceptado');
         if (acceptedMembers.length >= tournament.tamanoEquipoMax) {
             return res.status(400).json({ msg: 'El equipo ya está lleno' });
         }
 
-        // Verificar si ya está en este equipo
         if (team.miembros.some(m => m.usuario.toString() === req.user.id)) {
             return res.status(400).json({ msg: 'Ya has solicitado unirte o eres parte del equipo' });
         }
@@ -858,7 +834,7 @@ exports.joinTeam = async (req, res) => {
     }
 };
 
-// Aceptar o rechazar miembros (Solo Capitán)
+// Team admin action
 exports.respondToTeamRequest = async (req, res) => {
     try {
         const { userId, action } = req.body; // action: 'accept' o 'reject'
@@ -873,7 +849,7 @@ exports.respondToTeamRequest = async (req, res) => {
             const member = team.miembros.find(m => m.usuario.toString() === userId);
             if (member) member.estado = 'Aceptado';
 
-            // Al aceptar, también lo añadimos a la lista general del torneo si no estaba
+            // Añadir a lista general
             const tournament = await Tournament.findById(team.torneo);
             if (!tournament.participantes.includes(userId)) {
                 tournament.participantes.push(userId);
@@ -893,7 +869,7 @@ exports.respondToTeamRequest = async (req, res) => {
     }
 };
 
-// Nueva función para reportar ganador de ronda en BR
+// Reportar ronda BR
 exports.reportBRRoundWinner = async (req, res) => {
     try {
         const { winnerId } = req.body;
@@ -911,7 +887,7 @@ exports.reportBRRoundWinner = async (req, res) => {
             tournament.tipoGanadorRonda = 'User';
         }
 
-        // Contar cuántas veces ha ganado este ID
+        // Contar victorias
         const victorias = tournament.ganadoresRondaBR.filter(id => id.toString() === winnerId).length;
 
         // Si alcanza el objetivo, el torneo finaliza
@@ -920,7 +896,7 @@ exports.reportBRRoundWinner = async (req, res) => {
             tournament.ganador = winnerId;
             tournament.ganadorTipo = isTeamsBR ? 'Team' : 'User';
 
-            // --- SNAPSHOT Y LIMPIEZA DE BOTS AL FINALIZAR ---
+            // Limpiar bots al finalizar BR
             await performBotSnapshotAndCleanup(tournament);
 
             const io = req.app.get('socketio');
@@ -944,9 +920,7 @@ exports.reportBRRoundWinner = async (req, res) => {
     } catch (err) { res.status(500).send('Error al reportar ronda'); }
 };
 
-// --- FUNCIONES DE ADMINISTRADOR: RELLENO CON BOTS ---
-
-// Anade UN participante/equipo bot al torneo (solo admin, solo estado Abierto)
+// Añadir bot
 exports.addBot = async (req, res) => {
     try {
         if (req.user.rol !== 'administrador') return res.status(403).json({ msg: 'Solo administradores' });
@@ -957,7 +931,7 @@ exports.addBot = async (req, res) => {
 
         const io = req.app.get('socketio');
 
-        // Función auxiliar para generar un nombre de bot único
+        // Generador nombre bot
         const generateUniqueBotName = async (baseName) => {
             let name = baseName;
             let counter = 1;
@@ -1028,7 +1002,7 @@ exports.addBot = async (req, res) => {
     }
 };
 
-// Elimina todos los bots de un torneo (solo admin)
+// Clear bots
 exports.clearBots = async (req, res) => {
     try {
         if (req.user.rol !== 'administrador') return res.status(403).json({ msg: 'Solo administradores' });
@@ -1060,7 +1034,7 @@ exports.clearBots = async (req, res) => {
     }
 };
 
-// --- FUNCIÓN AUXILIAR PARA SNAPSHOT Y LIMPIEZA AL FINALIZAR ---
+// Snapshot y cleanup bots
 const performBotSnapshotAndCleanup = async (tournament) => {
     try {
         const fullTournament = await Tournament.findById(tournament._id)
@@ -1073,7 +1047,7 @@ const performBotSnapshotAndCleanup = async (tournament) => {
 
         if (!fullTournament) return;
 
-        // Preservar la info previa de los usuarios desconectados que ya están en el Map
+        // Preservar info previa
         const getMapAsObj = (m) => m ? (typeof m.entries === 'function' ? Object.fromEntries(m) : { ...m }) : {};
         const snapBots = getMapAsObj(fullTournament.snapNombresBots);
         const snapEquips = getMapAsObj(fullTournament.snapNombresEquipos);
@@ -1082,7 +1056,7 @@ const performBotSnapshotAndCleanup = async (tournament) => {
         const botIds = [];
         const botTeamIds = [];
 
-        // 1. Recolectar bots individuales
+        // Bots individuales
         fullTournament.participantes.forEach(p => {
             if (p && p.isBot) {
                 snapBots[p._id.toString()] = p.username;
@@ -1090,7 +1064,7 @@ const performBotSnapshotAndCleanup = async (tournament) => {
             }
         });
 
-        // 2. Ganadores de ronda BR
+        // BR winners
         fullTournament.ganadoresRondaBR.forEach(g => {
             if (g && g.isBot) {
                 snapBots[g._id.toString()] = g.username;
@@ -1098,7 +1072,7 @@ const performBotSnapshotAndCleanup = async (tournament) => {
             }
         });
 
-        // 3. Equipos de bots
+        // Bot teams
         fullTournament.equipos.forEach(t => {
             if (!t) return;
             const isBotTeam = (t.capitan && botIds.some(bid => bid.equals(t.capitan))) || t.nombre?.startsWith('BotEquipo');
@@ -1118,9 +1092,7 @@ const performBotSnapshotAndCleanup = async (tournament) => {
             }
         });
 
-        // MongoDB Map puede comportarse de forma extraña si no se asigna correctamente
-        // Usaremos un objeto normal, pero Mongoose lo convertirá si el modelo es Map. 
-        // O mejor, lo asignamos directamente al documento tournament que vino del controller
+        // Hidratar snapmaps
         tournament.snapNombresBots = snapBots;
         tournament.snapNombresEquipos = snapEquips;
         tournament.snapEquiposMiembros = snapMembers;
@@ -1135,7 +1107,7 @@ const performBotSnapshotAndCleanup = async (tournament) => {
     }
 };
 
-// Admin/Organizer: Renombrar Bot o Equipo
+// Renombrar bot/equipo
 exports.renameBot = async (req, res) => {
     try {
         const { id, entityId } = req.params;
@@ -1154,7 +1126,6 @@ exports.renameBot = async (req, res) => {
         }
 
         if (type === 'user') {
-            // Verificar si el nuevo nombre ya existe
             const nameTaken = await User.findOne({ username: newName });
             if (nameTaken) return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' });
 
@@ -1166,15 +1137,12 @@ exports.renameBot = async (req, res) => {
             await bot.save();
 
         } else if (type === 'team') {
-            // Verificar si el equipo ya existe en este mismo torneo
             const teamTaken = await Team.findOne({ torneo: id, nombre: newName });
             if (teamTaken) return res.status(400).json({ msg: 'Ya existe un equipo con ese nombre en este torneo.' });
 
             const team = await Team.findById(entityId);
             if (!team) return res.status(404).json({ msg: 'Equipo no encontrado' });
 
-            // Validamos que sea un equipo de bots (o que se permita a los admins renombrar este equipo en concreto)
-            // Para asegurar, validamos que su capitán sea null o empiece con "Bot" o lo consideremos bot
             team.nombre = newName;
             await team.save();
         } else {
@@ -1191,7 +1159,7 @@ exports.renameBot = async (req, res) => {
     }
 };
 
-// Descalificar Participante o Equipo (Organizador/Admin)
+// Descalificar
 exports.disqualifyParticipant = async (req, res) => {
     try {
         const { id, type, targetId } = req.params;
@@ -1199,7 +1167,6 @@ exports.disqualifyParticipant = async (req, res) => {
 
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        // Verificación de permisos
         const isAuth = req.user.rol === 'administrador' || tournament.organizador.toString() === req.user.id;
         if (!isAuth) return res.status(403).json({ msg: 'No autorizado' });
 
@@ -1210,22 +1177,20 @@ exports.disqualifyParticipant = async (req, res) => {
         const io = req.app.get('socketio');
 
         if (type === 'user') {
-            // Obtener nombre para el snapshot
             const user = await User.findById(targetId);
             if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
-            // Guardar en snapshot
             const snapBots = tournament.snapNombresBots || new Map();
             snapBots.set(targetId, `${user.username} (Descalificado)`);
             tournament.snapNombresBots = snapBots;
 
-            // Marcar como descalificado (sin quitarlo de la lista principal)
+            // Flag descalificación
             if (!tournament.descalificados) tournament.descalificados = [];
             if (!tournament.descalificados.includes(targetId)) {
                 tournament.descalificados.push(targetId);
             }
 
-            // Resolver enfrentamientos pendientes en Brackets
+            // Resolver ramas W.O.
             const pendingMatches = await Match.find({
                 torneo: id,
                 ganador: { $exists: false },
@@ -1238,25 +1203,24 @@ exports.disqualifyParticipant = async (req, res) => {
                 await m.save();
             }
 
-            // Borrar de equipos si existiera
+            // Remover membresías
             await Team.updateMany({ torneo: id }, { $pull: { miembros: { usuario: targetId } } });
 
         } else if (type === 'team') {
             const team = await Team.findById(targetId);
             if (!team) return res.status(404).json({ msg: 'Equipo no encontrado' });
 
-            // Guardar en snapshot
             const snapEquips = tournament.snapNombresEquipos || new Map();
             snapEquips.set(targetId, `${team.nombre} (Descalificado)`);
             tournament.snapNombresEquipos = snapEquips;
 
-            // Marcar como descalificado
+            // Flag descalificación
             if (!tournament.descalificados) tournament.descalificados = [];
             if (!tournament.descalificados.includes(targetId)) {
                 tournament.descalificados.push(targetId);
             }
 
-            // Resolver enfrentamientos
+            // Resolver ramas W.O.
             const pendingMatches = await Match.find({
                 torneo: id,
                 ganador: { $exists: false },
@@ -1281,7 +1245,7 @@ exports.disqualifyParticipant = async (req, res) => {
     }
 };
 
-// Cancelar Torneo (Organizador/Admin)
+// Cancelar torneo
 exports.cancelTournament = async (req, res) => {
     try {
         const { id } = req.params;
@@ -1298,13 +1262,13 @@ exports.cancelTournament = async (req, res) => {
 
         tournament.estado = 'Cancelado';
 
-        // --- SNAPSHOT Y LIMPIEZA DE BOTS AL CANCELAR ---
+        // Cascade cleanup bots
         await performBotSnapshotAndCleanup(tournament);
 
         await tournament.save();
 
         const io = req.app.get('socketio');
-        io.to(id).emit('tournamentCancelled'); // Avisar a los clientes
+        io.to(id).emit('tournamentCancelled'); 
 
         res.json({ msg: 'Torneo cancelado correctamente' });
     } catch (err) {

@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-    // 1. Crear un transportador (transporter)
+    // Crear transportador
     const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
@@ -11,7 +11,7 @@ const sendEmail = async (options) => {
         }
     });
 
-    // 2. Definir las opciones del email
+    // Opciones del email
     const mailOptions = {
         from: '"EasyTourney Support" <support@easytourney.com>',
         to: options.email,
@@ -20,7 +20,7 @@ const sendEmail = async (options) => {
         html: options.html
     };
 
-    // 3. Enviar el email
+    // Enviar email
     await transporter.sendMail(mailOptions);
 };
 

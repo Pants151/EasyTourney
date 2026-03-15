@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
         type: Date
     },
     sessionToken: {
-        type: String // Para protección de sesiones concurrentes
+        type: String 
     },
     isBot: {
         type: Boolean,

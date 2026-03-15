@@ -1,6 +1,5 @@
 const Game = require('../models/Game');
 
-// Obtener todos los juegos
 exports.getGames = async (req, res) => {
     try {
         const games = await Game.find().sort({ nombre: 1 });
@@ -10,13 +9,10 @@ exports.getGames = async (req, res) => {
     }
 };
 
-// Crear un juego (Solo Admin)
 exports.createGame = async (req, res) => {
     try {
-        // Añadimos 'header' a la desestructuración del cuerpo
         const { nombre, plataformas, caratula, logo, header } = req.body;
 
-        // Incluimos 'header' al crear la nueva instancia del modelo
         const newGame = new Game({
             nombre,
             plataformas,
@@ -28,12 +24,11 @@ exports.createGame = async (req, res) => {
         await newGame.save();
         res.json(newGame);
     } catch (err) {
-        console.error(err); // Es buena práctica imprimir el error para depurar
+        console.error(err); 
         res.status(500).send('Error al guardar el juego');
     }
 };
 
-// Actualizar un juego (Solo Admin)
 exports.updateGame = async (req, res) => {
     try {
         const { nombre, plataformas, caratula, logo, header } = req.body;
@@ -55,7 +50,6 @@ exports.updateGame = async (req, res) => {
     }
 };
 
-// Eliminar un juego (Solo Admin)
 exports.deleteGame = async (req, res) => {
     try {
         const game = await Game.findById(req.params.id);
@@ -68,7 +62,6 @@ exports.deleteGame = async (req, res) => {
     }
 };
 
-// Eliminar múltiples juegos (Solo Admin)
 exports.deleteGamesBulk = async (req, res) => {
     try {
         const { ids } = req.body;
@@ -82,10 +75,9 @@ exports.deleteGamesBulk = async (req, res) => {
     }
 };
 
-// Obtener los 5 primeros juegos (para el Home)
 exports.getTop5Games = async (req, res) => {
     try {
-        // Simplemente obtenemos los primeros 5. Más adelante aquí iría una agregación compleja.
+        // TO-DO: Reemplazar con agregación compleja
         const games = await Game.find().limit(5);
         res.json(games);
     } catch (err) {

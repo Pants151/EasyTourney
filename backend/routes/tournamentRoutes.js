@@ -1,17 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const tournamentController = require('../controllers/tournamentController');
-const auth = require('../middleware/auth'); // Importamos nuestro guardia
+const auth = require('../middleware/auth');
 
-// @route   POST api/tournaments
-// @desc    Crear un torneo
-// @access  Privado (Necesita Token)
 router.post('/', auth, tournamentController.createTournament);
 router.put('/join/:id', auth, tournamentController.joinTournament);
 
-// @route   GET api/tournaments
-// @desc    Obtener todos los torneos
-// @access  Público
 router.get('/my-tournaments', auth, tournamentController.getMyTournaments);
 router.get('/', tournamentController.getTournaments);
 router.delete('/delete/bulk', auth, tournamentController.deleteTournamentsBulk);
@@ -23,16 +17,16 @@ router.put('/match/:id', auth, tournamentController.updateMatchResult);
 router.post('/advance/:id', auth, tournamentController.advanceTournament);
 router.put('/:id', auth, tournamentController.updateTournament);
 router.delete('/:id', auth, tournamentController.deleteTournament);
-router.post('/team/:id', auth, tournamentController.createTeam); // Crear equipo
-router.put('/team/join/:teamId', auth, tournamentController.joinTeam); // Solicitar unirse
-router.put('/team/respond/:teamId', auth, tournamentController.respondToTeamRequest); // Aceptar/Rechazar miembro
-router.put('/leave/:id', auth, tournamentController.leaveTournament); // Abandonar torneo
-router.delete('/:tournamentId/expel/:userId', auth, tournamentController.expelParticipant); // Expulsar participante (Organizador)
-router.put('/:id/br-round', auth, tournamentController.reportBRRoundWinner); // Reportar ganador de ronda Battle Royale
-router.post('/:id/add-bot', auth, tournamentController.addBot);               // Admin: añadir bot
-router.put('/:id/rename-bot/:entityId', auth, tournamentController.renameBot); // Admin: renombrar bot
-router.delete('/:id/clear-bots', auth, tournamentController.clearBots);        // Admin: limpiar bots
-router.put('/:id/disqualify/:type/:targetId', auth, tournamentController.disqualifyParticipant); // Descalificar (Organizador)
-router.put('/:id/cancel', auth, tournamentController.cancelTournament); // Cancelar torneo (Organizador)
+router.post('/team/:id', auth, tournamentController.createTeam);
+router.put('/team/join/:teamId', auth, tournamentController.joinTeam);
+router.put('/team/respond/:teamId', auth, tournamentController.respondToTeamRequest);
+router.put('/leave/:id', auth, tournamentController.leaveTournament);
+router.delete('/:tournamentId/expel/:userId', auth, tournamentController.expelParticipant);
+router.put('/:id/br-round', auth, tournamentController.reportBRRoundWinner);
+router.post('/:id/add-bot', auth, tournamentController.addBot);
+router.put('/:id/rename-bot/:entityId', auth, tournamentController.renameBot);
+router.delete('/:id/clear-bots', auth, tournamentController.clearBots);
+router.put('/:id/disqualify/:type/:targetId', auth, tournamentController.disqualifyParticipant);
+router.put('/:id/cancel', auth, tournamentController.cancelTournament);
 
 module.exports = router;
