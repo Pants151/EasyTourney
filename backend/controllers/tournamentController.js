@@ -640,13 +640,13 @@ async function performTournamentDeletion(tournamentId, currentUser) {
     }
 
     // 2. Borrar equipos asociados
-    await Team.deleteMany({ torneo: tournamentId });
+    await Team.deleteMany({ torneo: tournament._id });
 
     // 3. Borrar las partidas asociadas
-    await Match.deleteMany({ torneo: tournamentId });
+    await Match.deleteMany({ torneo: tournament._id });
 
     // 4. Borrar el torneo
-    await Tournament.findByIdAndDelete(tournamentId);
+    await Tournament.findByIdAndDelete(tournament._id);
     return true;
 }
 

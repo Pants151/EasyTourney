@@ -45,7 +45,7 @@ const TournamentsPage = () => {
     // Función para manejar la inscripción desde la lista
     const handleQuickJoin = async (e, t) => {
         e.stopPropagation();
-        if (t.formato === 'Equipos') {
+        if (t.formato === 'Equipos' || t.formato === 'Battle Royale - Por equipos') {
             // Redirigir a detalles para que elija equipo
             navigate(`/tournament/${t._id}?join=true`);
         } else {
