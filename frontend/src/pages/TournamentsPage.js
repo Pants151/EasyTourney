@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'; // Añadido useC
 import tournamentService from '../services/tournamentService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext'; // Importar el contexto
+import iconTrophy from '../assets/images/icon-trophy.png';
 import './TournamentsPage.css';
 
 const TournamentsPage = () => {
@@ -123,7 +124,7 @@ const TournamentsPage = () => {
                 <div className="header-page mb-5">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <div className="d-flex align-items-center gap-3">
-                            <img src="/assets/images/icon-trophy.png" alt="Trophy Icon" style={{ maxHeight: '40px' }} />
+                            <img src={iconTrophy} alt="Trophy Icon" style={{ maxHeight: '40px' }} />
                             <h1 className="fw-bolder text-uppercase m-0 text-white">{getPageTitle()}</h1>
                         </div>
 

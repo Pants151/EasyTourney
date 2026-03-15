@@ -1,11 +1,12 @@
 import React from 'react';
+import logoBig from '../assets/images/logo-big.png';
 import './ContactUs.css';
 
 const ContactUs = () => {
     return (
         <div className="contact-page-wrapper">
             <div className="container text-center animate__animated animate__fadeIn">
-                <img src="/assets/images/logo-big.png" alt="EasyTourney Logo" className="contact-main-logo mb-4" />
+                <img src={logoBig} alt="EasyTourney Logo" className="contact-main-logo mb-4" />
 
                 <h2 className="text-accent text-uppercase fw-bolder letter-spacing-2 mb-5">Contáctanos...</h2>
 

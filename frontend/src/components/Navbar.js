@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import useOnlineStatus from '../hooks/useOnlineStatus';
+import logoNav from '../assets/images/logo-nav.png';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -32,7 +33,7 @@ const Navbar = () => {
             <div className="container">
                 {/* Logo - Ya cumple la función de ir a Inicio */}
                 <Link className="navbar-brand py-0" to="/" onClick={handleNavigation}>
-                    <img src="/assets/images/logo-nav.png" alt="EasyTourney" className="nav-logo" />
+                    <img src={logoNav} alt="EasyTourney" className="nav-logo" />
                 </Link>
 
                 <button

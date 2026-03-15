@@ -1,4 +1,8 @@
 import React from 'react';
+import logoBig from '../assets/images/logo-big.png';
+import aboutVision from '../assets/images/about-vision.jpg';
+import aboutMission from '../assets/images/about-mission.jpg';
+import aboutAuthor from '../assets/images/about-author.jpg';
 import './AboutUs.css';
 
 const AboutUs = () => {
@@ -6,7 +10,7 @@ const AboutUs = () => {
         <div className="about-page-wrapper">
             {/* ENCABEZADO CON LOGO GRANDE */}
             <div className="container text-center mb-5 animate__animated animate__fadeIn">
-                <img src="/assets/images/logo-big.png" alt="EasyTourney Logo" className="about-main-logo mb-4" />
+                <img src={logoBig} alt="EasyTourney Logo" className="about-main-logo mb-4" />
                 <h2 className="text-accent text-uppercase fw-bolder letter-spacing-2">Sobre Nosotros...</h2>
             </div>
 
@@ -15,7 +19,7 @@ const AboutUs = () => {
                 <section className="row align-items-center mb-100 animate__animated animate__fadeInLeft">
                     <div className="col-lg-5 mb-4 mb-lg-0">
                         <div className="about-img-container">
-                            <img src="/assets/images/about-vision.jpg" alt="Nuestra Visión" className="img-fluid rounded about-img shadow-lg" />
+                            <img src={aboutVision} alt="Nuestra Visión" className="img-fluid rounded about-img shadow-lg" />
                         </div>
                     </div>
                     <div className="col-lg-7 ps-lg-5">
@@ -53,7 +57,7 @@ const AboutUs = () => {
                     </div>
                     <div className="col-lg-5 mb-4 mb-lg-0">
                         <div className="about-img-container">
-                            <img src="/assets/images/about-mission.jpg" alt="Nuestra Misión" className="img-fluid rounded about-img shadow-lg" />
+                            <img src={aboutMission} alt="Nuestra Misión" className="img-fluid rounded about-img shadow-lg" />
                         </div>
                     </div>
                 </section>
@@ -63,7 +67,7 @@ const AboutUs = () => {
                     <h4 className="text-white text-uppercase fw-bold mb-4">Hecho por...</h4>
                     <div className="author-card mx-auto">
                         <div className="author-img-wrapper mb-3">
-                            <img src="/assets/images/about-author.jpg" alt="José Antonio Valenzuela Núñez" className="author-img" />
+                            <img src={aboutAuthor} alt="José Antonio Valenzuela Núñez" className="author-img" />
                         </div>
                         <h5 className="text-accent fw-bold m-0">José Antonio Valenzuela Núñez</h5>
                         <p className="text-dim small text-uppercase mt-1">Desarrollador de EasyTourney</p>

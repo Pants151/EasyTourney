@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'; // Importar useC
 import gameService from '../services/gameService';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext'; // Importar el contexto
+import iconController from '../assets/images/icon-controller.png';
 import './TournamentsPage.css'; // Reutilizamos estilos globales
 import './GamesPage.css';
 
@@ -39,7 +40,7 @@ const GamesPage = () => {
                 <div className="header-page mb-5">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <div className="d-flex align-items-center gap-3">
-                            <img src="/assets/images/icon-controller.png" alt="Controller Icon" style={{ maxHeight: '40px' }} />
+                            <img src={iconController} alt="Controller Icon" style={{ maxHeight: '40px' }} />
                             <h1 className="fw-bolder text-uppercase m-0 text-white">JUEGOS</h1>
                         </div>
 

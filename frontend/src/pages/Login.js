@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import PasswordInput from '../components/PasswordInput';
+import logoNav from '../assets/images/logo-nav.png';
 import './TournamentForm.css'; // Reutilizamos los estilos de formulario
 
 const Login = () => {
@@ -53,7 +54,7 @@ const Login = () => {
                 <div className="col-md-6 col-lg-5">
                     <div className="form-container-custom p-4 p-md-5">
                         <div className="text-center mb-4">
-                            <img src="/assets/images/logo-nav.png" alt="Logo" height="50" className="mb-3" />
+                            <img src={logoNav} alt="Logo" height="50" className="mb-3" />
                             <h2 className="text-uppercase fw-bolder text-white">Iniciar <span className="text-accent">Sesión</span></h2>
                         </div>
 

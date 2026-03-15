@@ -2,6 +2,11 @@ import React, { useEffect, useState, useContext } from 'react';
 import gameService from '../services/gameService';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import backgroundHero from '../assets/images/mi-fondo-hero.jpg';
+import logoBig from '../assets/images/logo-big.png';
+import esportsVideo from '../assets/images/esports-video.mp4';
+import iconTrophy from '../assets/images/icon-trophy.png';
+import iconController from '../assets/images/icon-controller.png';
 import './Home.css';
 
 const Home = () => {
@@ -70,7 +75,7 @@ const Home = () => {
                 className="hero-section d-flex align-items-center justify-content-center"
                 style={{
                     // Mantenemos tu ruta directa a public sin imports fallidos
-                    backgroundImage: "url('/assets/images/mi-fondo-hero.jpg')",
+                    backgroundImage: `url(${backgroundHero})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
@@ -83,7 +88,7 @@ const Home = () => {
                 <div className="hero-content text-center text-uppercase position-relative z-2">
                     {/* Envolvemos el logo en un contenedor para controlar su escala */}
                     <div className="hero-logo-container mb-2 animate-fade-up">
-                        <img src="/assets/images/logo-big.png" alt="Logo Grande" className="hero-logo img-fluid" />
+                        <img src={logoBig} alt="Logo Grande" className="hero-logo img-fluid" />
                     </div>
 
                     {/* Texto en blanco puro */}
@@ -163,7 +168,7 @@ const Home = () => {
                 <div className="video-background-container">
                     <video autoPlay loop muted playsInline className="video-bg">
                         {/* Asegúrate de tener este archivo en /public/assets/images/ */}
-                        <source src="/assets/images/esports-video.mp4" type="video/mp4" />
+                        <source src={esportsVideo} type="video/mp4" />
                     </video>
                     <div className="video-overlay-gradient"></div>
                 </div>
@@ -181,14 +186,14 @@ const Home = () => {
 
                             <div className="d-flex feature-icons">
                                 <div className="feature-item d-flex align-items-center me-5">
-                                    <img src="/assets/images/icon-trophy.png" alt="Trofeo" height="50" className="me-3" />
+                                    <img src={iconTrophy} alt="Trofeo" height="50" className="me-3" />
                                     <div>
                                         <h5 className="fw-bold mb-0">TORNEOS ÉPICOS</h5>
                                         <small className="text-dim">Juega y compite</small>
                                     </div>
                                 </div>
                                 <div className="feature-item d-flex align-items-center">
-                                    <img src="/assets/images/icon-controller.png" alt="Mando" height="50" className="me-3" />
+                                    <img src={iconController} alt="Mando" height="50" className="me-3" />
                                     <div>
                                         <h5 className="fw-bold mb-0">PLATAFORMAS MÚLTIPLES</h5>
                                         <small className="text-dim">Montones de plataformas disponibles</small>

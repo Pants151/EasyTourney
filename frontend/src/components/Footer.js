@@ -1,6 +1,7 @@
 /* frontend/src/components/Footer.js */
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logoNav from '../assets/images/logo-nav.png';
 import './Footer.css';
 
 const Footer = () => {
@@ -17,13 +18,13 @@ const Footer = () => {
             <div className="container text-center">
                 {/* Logo con ruta robusta y clase para control de tamaño */}
                 <Link to="/" onClick={handleScrollToTop}>
-                    <img 
-                        src={process.env.PUBLIC_URL + "/assets/images/logo-nav.png"} 
-                        alt="EasyTourney Logo" 
-                        className="footer-logo mb-4" 
+                    <img
+                        src={logoNav}
+                        alt="EasyTourney Logo"
+                        className="footer-logo mb-4"
                     />
                 </Link>
-                
+
                 {/* Enlaces de navegación con scroll suave */}
                 <div className="footer-links d-flex justify-content-center flex-wrap gap-4 mb-4">
                     <Link to="/tournaments" className="footer-link-item" onClick={handleScrollToTop}>
