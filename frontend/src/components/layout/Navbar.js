@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import useOnlineStatus from '../hooks/useOnlineStatus';
-import logoNav from '../assets/images/logo-nav.png';
+import { AuthContext } from '../../context/AuthContext';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
+import logoNav from '../../assets/images/logo-nav.png';
 import './Navbar.css';
 
 const Navbar = () => {

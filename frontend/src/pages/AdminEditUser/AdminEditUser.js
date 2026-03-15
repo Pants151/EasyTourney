@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import authService from '../../services/authService';
-import PasswordInput from '../../components/PasswordInput';
+import PasswordInput from '../../components/common/PasswordInput';
 import '../TournamentForm.css';
 
 const AdminEditUser = () => {

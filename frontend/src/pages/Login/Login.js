@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../../services/authService';
-import PasswordInput from '../../components/PasswordInput';
+import PasswordInput from '../../components/common/PasswordInput';
 import logoNav from '../../assets/images/logo-nav.png';
 import '../TournamentForm.css'; // Reutilizamos los estilos de formulario
 

@@ -1,7 +1,7 @@
 /* frontend/src/components/Footer.js */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoNav from '../assets/images/logo-nav.png';
+import logoNav from '../../assets/images/logo-nav.png';
 import './Footer.css';
 
 const Footer = () => {

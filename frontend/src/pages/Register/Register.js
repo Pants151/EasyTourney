@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import authService from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
-import PasswordInput from '../../components/PasswordInput';
+import PasswordInput from '../../components/common/PasswordInput';
 import '../TournamentForm.css';
 
 const Register = () => {
