@@ -17,14 +17,16 @@ export const AuthProvider = ({ children }) => {
             const token = getStoredItem('userToken');
             const userData = getStoredItem('userData');
             if (token && userData) {
-                // Initialize with local data first for fast render
-                setUser({ token, ...JSON.parse(userData) });
-
-                // UNBLOCK: Set loading to false early so components can start their own fetches
-                setLoading(false);
-
                 try {
-                    // Fetch latest profile to sync roles and other updates invisibly
+                    const parsed = JSON.parse(userData);
+                    setUser({ token, ...parsed });
+
+                    // Si ya tenemos email, no hace falta bloquear el render inicial
+                    if (parsed.email) {
+                        setLoading(false);
+                    }
+
+                    // Intentar sincronizar perfil fresco
                     const freshData = await authService.getProfile();
                     if (freshData) {
                         freshData.id = freshData._id || freshData.id;
@@ -32,7 +34,11 @@ export const AuthProvider = ({ children }) => {
                         setUser({ token, ...freshData });
                     }
                 } catch (err) {
-                    // Silently fail, it will be handled by the interceptor if 401
+                    console.error("Auth sync error:", err);
+                    // Si el perfil falla pero el interceptor 401 no se ha activado,
+                    // al menos dejamos de cargar para que la app intente seguir.
+                } finally {
+                    setLoading(false);
                 }
             } else {
                 setLoading(false);
@@ -40,6 +46,7 @@ export const AuthProvider = ({ children }) => {
         };
         loadUser();
     }, []);
+
 
     // Conectar Socket.io globalmente en la app si el usuario hace login o re-carga la app
     useEffect(() => {

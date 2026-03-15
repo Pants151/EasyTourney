@@ -1,25 +1,29 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authService from '../../services/authService';
 import { AuthContext } from '../../context/AuthContext';
 import AccountView from './AccountView';
 
 const Account = () => {
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout, loading } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '', email: '', rol: '', pais: '', fechaNacimiento: '', idioma: []
     });
+
     // Estado separado para el cambio de contraseña
     const [passwords, setPasswords] = useState({ passwordActual: '', passwordNuevo: '' });
 
     useEffect(() => {
-        if (user) {
-            // Formatear la fechaNacimiento de ISO (2000-01-01T00:00:00.000Z) a AAAA-MM-DD para el input type="date"
+        // Solo sincronizar si el usuario existe y ha cambiado (o es la primera vez que lo recibimos completo)
+        if (user && user.email) {
             let formattedDate = '';
             if (user.fechaNacimiento) {
-                formattedDate = new Date(user.fechaNacimiento).toISOString().split('T')[0];
+                try {
+                    formattedDate = new Date(user.fechaNacimiento).toISOString().split('T')[0];
+                } catch (e) { }
             }
 
-            // Asegurar que el idioma sea siempre un array (ya que en la BD es a veces String)
             let userIdiomas = [];
             if (user.idioma) {
                 userIdiomas = Array.isArray(user.idioma) ? user.idioma : user.idioma.split(',');
@@ -35,6 +39,39 @@ const Account = () => {
             });
         }
     }, [user]);
+
+    // PROTECCIÓN: Si el usuario no existe, redirigir a login
+    useEffect(() => {
+        if (!loading && !user) {
+            navigate('/login');
+        }
+    }, [user, loading, navigate]);
+
+    if (loading) {
+        return (
+            <div className="container py-5 mt-navbar text-center text-white">
+                <div className="spinner-border text-accent mb-3" role="status"></div>
+                <p className="text-uppercase fw-bold">Verificando sesión...</p>
+            </div>
+        );
+    }
+
+    // Si no hay email pero el AuthContext ya no está "loading", es que el perfil ha fallado
+    // Renderizamos de todos modos para que el usuario no se quede bloqueado,
+    // o al menos mostramos un mensaje de error si es crítico.
+    if (user && !user.email) {
+        return (
+            <div className="container py-5 mt-navbar text-center text-white">
+                <div className="spinner-border text-accent mb-3" role="status"></div>
+                <p className="text-uppercase fw-bold">Sincronizando perfil...</p>
+                <button className="btn btn-outline-light btn-sm mt-3" onClick={() => window.location.reload()}>
+                    Reintentar conexión
+                </button>
+            </div>
+        );
+    }
+
+
 
     const availableLanguages = [
         { code: 'es', name: 'Español' },
