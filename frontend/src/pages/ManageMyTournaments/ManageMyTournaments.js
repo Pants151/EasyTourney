@@ -1,8 +1,8 @@
 /* frontend/src/pages/ManageMyTournaments.js */
 import React, { useEffect, useState } from 'react';
-import tournamentService from '../services/tournamentService';
+import tournamentService from '../../services/tournamentService';
 import { useNavigate } from 'react-router-dom';
-import './TournamentsPage.css'; // Reutilizamos estilos base
+import '../TournamentsPage/TournamentsPage.css'; // Reutilizamos estilos base
 
 const ManageMyTournaments = () => {
     const [myTournaments, setMyTournaments] = useState([]);
@@ -54,10 +54,10 @@ const ManageMyTournaments = () => {
                             <div className="tournament-card-page h-100 bg-dark-secondary shadow-sm">
                                 {/* Imagen: Ahora usamos la carátula o logo del juego */}
                                 <div className="card-image-wrapper">
-                                    <img 
-                                        src={t.juego?.caratula || t.juego?.logo} 
-                                        alt={t.juego?.nombre} 
-                                        className="game-logo-card" 
+                                    <img
+                                        src={t.juego?.caratula || t.juego?.logo}
+                                        alt={t.juego?.nombre}
+                                        className="game-logo-card"
                                     />
                                 </div>
 
@@ -65,10 +65,10 @@ const ManageMyTournaments = () => {
                                     {/* 2. LOGO Y NOMBRE DEL JUEGO */}
                                     <div className="d-flex align-items-center mb-2">
                                         {t.juego?.logo && (
-                                            <img 
-                                                src={t.juego.logo} 
-                                                alt="Icon" 
-                                                style={{ width: '20px', height: '20px', objectFit: 'contain' }} 
+                                            <img
+                                                src={t.juego.logo}
+                                                alt="Icon"
+                                                style={{ width: '20px', height: '20px', objectFit: 'contain' }}
                                                 className="me-2"
                                             />
                                         )}
@@ -79,7 +79,7 @@ const ManageMyTournaments = () => {
 
                                     {/* Nombre del Torneo */}
                                     <h5 className="fw-bold mb-1 text-white text-truncate">{t.nombre}</h5>
-                                    
+
                                     {/* 3. ESTADO DEBAJO DEL NOMBRE */}
                                     <div className="mb-4">
                                         <span className={`badge ${t.estado === 'Borrador' ? 'bg-warning' : 'bg-accent'}`} style={{ fontSize: '0.7rem' }}>
@@ -95,10 +95,10 @@ const ManageMyTournaments = () => {
                                             <button className="btn btn-outline-light btn-sm flex-grow-1" onClick={() => navigate(`/edit-tournament/${t._id}`)}>
                                                 Editar Datos
                                             </button>
-                                            
+
                                             {/* 4. BOTÓN BORRAR CON UNA X CLARA */}
-                                            <button 
-                                                className="btn btn-danger btn-sm px-3 fw-bold" 
+                                            <button
+                                                className="btn btn-danger btn-sm px-3 fw-bold"
                                                 onClick={() => handleDelete(t._id)}
                                                 title="Eliminar Torneo"
                                             >

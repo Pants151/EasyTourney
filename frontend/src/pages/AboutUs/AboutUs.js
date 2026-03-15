@@ -1,8 +1,8 @@
 import React from 'react';
-import logoBig from '../assets/images/logo-big.png';
-import aboutVision from '../assets/images/about-vision.jpg';
-import aboutMission from '../assets/images/about-mission.jpg';
-import aboutAuthor from '../assets/images/about-author.jpg';
+import logoBig from '../../assets/images/logo-big.png';
+import aboutVision from '../../assets/images/about-vision.jpg';
+import aboutMission from '../../assets/images/about-mission.jpg';
+import aboutAuthor from '../../assets/images/about-author.jpg';
 import './AboutUs.css';
 
 const AboutUs = () => {

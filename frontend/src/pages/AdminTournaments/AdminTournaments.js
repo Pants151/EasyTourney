@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import tournamentService from '../services/tournamentService';
-import useOnlineStatus from '../hooks/useOnlineStatus';
-import './TournamentForm.css'; // Reutilizamos estilos
+import tournamentService from '../../services/tournamentService';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
+import '../TournamentForm.css'; // Reutilizamos estilos
 
 const AdminTournaments = () => {
     const [tournaments, setTournaments] = useState([]);

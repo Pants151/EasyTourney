@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import authService from '../services/authService';
+import authService from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
-import PasswordInput from '../components/PasswordInput';
-import './TournamentForm.css';
+import PasswordInput from '../../components/PasswordInput';
+import '../TournamentForm.css';
 
 const Register = () => {
     const [formData, setFormData] = useState({ username: '', email: '', password: '', rol: 'participante', pais: 'España', fechaNacimiento: '', idioma: ['es'] });

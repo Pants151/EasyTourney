@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
-import { AuthContext } from '../context/AuthContext';
-import PasswordInput from '../components/PasswordInput';
-import './TournamentForm.css';
+import authService from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
+import PasswordInput from '../../components/PasswordInput';
+import '../TournamentForm.css';
 
 const Account = () => {
     const { user, logout } = useContext(AuthContext); // Extraemos user del context

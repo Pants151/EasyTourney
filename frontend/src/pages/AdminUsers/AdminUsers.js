@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import authService from '../services/authService';
+import authService from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
-import './TournamentForm.css'; // Reutilizamos estilos de contenedores
+import '../TournamentForm.css'; // Reutilizamos estilos de contenedores
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);

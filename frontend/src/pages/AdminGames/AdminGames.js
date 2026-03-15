@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import gameService from '../services/gameService';
-import { AuthContext } from '../context/AuthContext';
+import gameService from '../../services/gameService';
+import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import useOnlineStatus from '../hooks/useOnlineStatus';
-import './TournamentForm.css';
-import './TournamentsPage.css';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
+import '../TournamentForm.css';
+import '../TournamentsPage/TournamentsPage.css';
 
 const AdminGames = () => {
     const { user, loading } = useContext(AuthContext);

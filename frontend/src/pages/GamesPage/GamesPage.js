@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react'; // Importar useContext
-import gameService from '../services/gameService';
+import gameService from '../../services/gameService';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; // Importar el contexto
-import iconController from '../assets/images/icon-controller.png';
-import './TournamentsPage.css'; // Reutilizamos estilos globales
+import { AuthContext } from '../../context/AuthContext'; // Importar el contexto
+import iconController from '../../assets/images/icon-controller.png';
+import '../TournamentsPage/TournamentsPage.css'; // Reutilizamos estilos globales
 import './GamesPage.css';
 
 const GamesPage = () => {

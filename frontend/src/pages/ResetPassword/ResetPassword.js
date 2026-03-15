@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import authService from '../services/authService';
-import PasswordInput from '../components/PasswordInput';
-import './TournamentForm.css';
+import authService from '../../services/authService';
+import PasswordInput from '../../components/PasswordInput';
+import '../TournamentForm.css';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');

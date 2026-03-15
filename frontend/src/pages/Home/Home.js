@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
-import gameService from '../services/gameService';
+import gameService from '../../services/gameService';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import backgroundHero from '../assets/images/mi-fondo-hero.jpg';
-import logoBig from '../assets/images/logo-big.png';
-import esportsVideo from '../assets/images/esports-video.mp4';
-import iconTrophy from '../assets/images/icon-trophy.png';
-import iconController from '../assets/images/icon-controller.png';
+import { AuthContext } from '../../context/AuthContext';
+import backgroundHero from '../../assets/images/mi-fondo-hero.jpg';
+import logoBig from '../../assets/images/logo-big.png';
+import esportsVideo from '../../assets/images/esports-video.mp4';
+import iconTrophy from '../../assets/images/icon-trophy.png';
+import iconController from '../../assets/images/icon-controller.png';
 import './Home.css';
 
 const Home = () => {

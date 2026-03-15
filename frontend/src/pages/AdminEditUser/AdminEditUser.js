@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import authService from '../services/authService';
-import PasswordInput from '../components/PasswordInput';
-import './TournamentForm.css';
+import authService from '../../services/authService';
+import PasswordInput from '../../components/PasswordInput';
+import '../TournamentForm.css';
 
 const AdminEditUser = () => {
     const { id } = useParams();

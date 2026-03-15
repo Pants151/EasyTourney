@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import tournamentService from '../services/tournamentService';
-import gameService from '../services/gameService';
-import './TournamentForm.css';
+import tournamentService from '../../services/tournamentService';
+import gameService from '../../services/gameService';
+import '../TournamentForm.css';
 
 const EditTournament = () => {
     const { id } = useParams();

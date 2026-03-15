@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react'; // Añadido useContext
-import tournamentService from '../services/tournamentService';
+import tournamentService from '../../services/tournamentService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; // Importar el contexto
-import iconTrophy from '../assets/images/icon-trophy.png';
+import { AuthContext } from '../../context/AuthContext'; // Importar el contexto
+import iconTrophy from '../../assets/images/icon-trophy.png';
 import './TournamentsPage.css';
 
 const TournamentsPage = () => {

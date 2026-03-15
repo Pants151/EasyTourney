@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import tournamentService from '../services/tournamentService';
-import gameService from '../services/gameService';
+import tournamentService from '../../services/tournamentService';
+import gameService from '../../services/gameService';
 import { useNavigate } from 'react-router-dom';
-import './TournamentForm.css';
+import '../TournamentForm.css';
 
 const CreateTournament = () => {
     const [games, setGames] = useState([]);

@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import tournamentService from '../services/tournamentService';
-import { AuthContext } from '../context/AuthContext';
+import tournamentService from '../../services/tournamentService';
+import { AuthContext } from '../../context/AuthContext';
 import './TournamentDetails.css';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import io from 'socket.io-client';
-import config from '../config';
+import config from '../../config';
 
 const socket = io(config.SOCKET_URL);
 

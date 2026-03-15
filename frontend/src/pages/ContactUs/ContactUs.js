@@ -1,5 +1,5 @@
 import React from 'react';
-import logoBig from '../assets/images/logo-big.png';
+import logoBig from '../../assets/images/logo-big.png';
 import './ContactUs.css';
 
 const ContactUs = () => {
