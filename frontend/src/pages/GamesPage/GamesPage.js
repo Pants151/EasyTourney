@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useContext } from 'react'; // Importar useContext
+import React, { useEffect, useState, useContext } from 'react';
 import gameService from '../../services/gameService';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext'; // Importar el contexto
-import iconController from '../../assets/images/icon-controller.png';
-import '../TournamentsPage/TournamentsPage.css'; // Reutilizamos estilos globales
-import './GamesPage.css';
+import { AuthContext } from '../../context/AuthContext';
+import GamesPageView from './GamesPageView';
 
 const GamesPage = () => {
     const [games, setGames] = useState([]);
@@ -31,82 +29,17 @@ const GamesPage = () => {
 
     const displayedGames = filteredGames.slice(0, limit);
 
-    return (
-        <div className="tournaments-page-wrapper mt-navbar">
-            <div className="container py-5">
-                <div className="header-page mb-5">
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-                        <div className="d-flex align-items-center gap-3">
-                            <img src={iconController} alt="Controller Icon" style={{ maxHeight: '40px' }} />
-                            <h1 className="fw-bolder text-uppercase m-0 text-white">JUEGOS</h1>
-                        </div>
-
-                        {/* Botón exclusivo para Administradores */}
-                        {user?.rol === 'administrador' && (
-                            <button
-                                className="btn btn-accent"
-                                onClick={() => navigate('/admin/games')}
-                            >
-                                Gestionar Juegos
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="search-box-wrapper w-100">
-                        <input
-                            type="text"
-                            className="search-input-custom"
-                            placeholder="Buscar juego..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <i className="bi bi-search search-icon-page"></i>
-                    </div>
-                </div>
-
-                <div className="row">
-                    {displayedGames.map(game => (
-                        <div key={game._id} className="col-lg-3 col-md-4 col-6 mb-4">
-                            <div className="game-card-full" onClick={() => navigate(`/tournaments?game=${game._id}`)}>
-                                <div className="game-cover-wrapper shadow-lg">
-                                    <img src={game.caratula} alt={game.nombre} className="img-fluid" />
-                                    <div className="game-card-overlay">
-                                        <button className="btn btn-accent btn-sm">VER TORNEOS</button>
-                                    </div>
-                                </div>
-                                <h6 className="text-center mt-3 text-uppercase fw-bold text-white letter-spacing-1">
-                                    {game.nombre}
-                                </h6>
-                            </div>
-                        </div>
-                    ))}
-                    {filteredGames.length === 0 && (
-                        <div className="col-12 text-center py-5">
-                            <p className="text-dim">No se encontraron juegos que coincidan con la búsqueda.</p>
-                        </div>
-                    )}
-                </div>
-
-                <div className="text-center mt-4 d-flex justify-content-center gap-3">
-                    {limit > 8 && (
-                        <button
-                            className="btn btn-outline-light"
-                            onClick={() => {
-                                setLimit(8);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
-                        >
-                            VER MENOS JUEGOS
-                        </button>
-                    )}
-                    {filteredGames.length > limit && (
-                        <button className="btn btn-view-more" onClick={() => setLimit(limit + 4)}>
-                            VER MÁS JUEGOS
-                        </button>
-                    )}
-                </div>
-            </div>
-        </div>
+        return (
+        <GamesPageView
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            user={user}
+            navigate={navigate}
+            displayedGames={displayedGames}
+            filteredGames={filteredGames}
+            limit={limit}
+            setLimit={setLimit}
+        />
     );
 };
 
