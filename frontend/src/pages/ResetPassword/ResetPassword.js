@@ -25,6 +25,7 @@ const ResetPassword = () => {
         }
 
         try {
+            // Validar token y cambiar password
             const res = await authService.resetPassword(token, password);
             setMessage(res.msg || 'La contraseña se ha restablecido correctamente.');
             setTimeout(() => navigate('/login'), 3000);

@@ -12,6 +12,7 @@ const ForgotPassword = () => {
         setMessage('');
         setError('');
         try {
+            // Solicitar link de recuperación
             const res = await authService.forgotPassword(email);
             setMessage(res.msg || 'Correo de recuperación enviado exitosamente');
         } catch (err) {

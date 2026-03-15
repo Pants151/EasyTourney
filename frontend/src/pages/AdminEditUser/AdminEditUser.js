@@ -19,11 +19,13 @@ const AdminEditUser = () => {
 
                 let formattedDate = '';
                 if (data.fechaNacimiento) {
+                    // Formatear fecha para input HTML
                     formattedDate = new Date(data.fechaNacimiento).toISOString().split('T')[0];
                 }
 
                 let userIdiomas = [];
                 if (data.idioma) {
+                    // Asegurar que sea array (viniendo de coma o directo)
                     userIdiomas = Array.isArray(data.idioma) ? data.idioma : data.idioma.split(',');
                 }
 
@@ -77,6 +79,7 @@ const AdminEditUser = () => {
         }
 
         try {
+            // Guardar cambios del perfil
             await authService.updateUserByAdmin(id, formData);
             alert('Usuario actualizado con éxito');
         } catch (err) {
@@ -93,6 +96,7 @@ const AdminEditUser = () => {
         }
 
         try {
+            // Forzar nueva contraseña
             await authService.changeUserPasswordByAdmin(id, passwordNuevo);
             alert('Contraseña actualizada con éxito');
             setPasswordNuevo('');

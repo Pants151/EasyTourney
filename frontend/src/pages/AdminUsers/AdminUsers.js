@@ -7,6 +7,8 @@ const AdminUsers = () => {
     const [users, setUsers] = useState([]);
 
     const [filterRol, setFilterRol] = useState('');
+    const [filterUsername, setFilterUsername] = useState('');
+    const [filterEmail, setFilterEmail] = useState('');
     const navigate = useNavigate();
 
     // Paginación y selección
