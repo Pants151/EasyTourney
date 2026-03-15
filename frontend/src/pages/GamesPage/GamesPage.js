@@ -31,9 +31,6 @@ const GamesPage = () => {
 
     const displayedGames = filteredGames.slice(0, limit);
 
-    // Si el contexto está cargando, mostramos un spinner o mensaje
-    if (loading) return <div className="text-center py-5 text-white">Verificando permisos...</div>;
-
     return (
         <div className="tournaments-page-wrapper mt-navbar">
             <div className="container py-5">

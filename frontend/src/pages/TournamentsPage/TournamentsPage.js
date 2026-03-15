@@ -15,19 +15,34 @@ const TournamentsPage = () => {
     const gameFilter = searchParams.get('game');
 
     useEffect(() => {
+        // Pintar primero desde caché local si existe para evitar parpadeos
+        try {
+            const cached = localStorage.getItem('cachedTournaments');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed)) {
+                    setTournaments(parsed);
+                }
+            }
+        } catch (e) {
+            // Ignorar errores de localStorage/JSON
+        }
+
         const fetchTournaments = async () => {
             try {
                 const data = await tournamentService.getTournaments();
                 setTournaments(data);
+                try {
+                    localStorage.setItem('cachedTournaments', JSON.stringify(data));
+                } catch (e) {
+                    // Ignorar si no se puede cachear
+                }
             } catch (err) {
                 console.error("Error cargando torneos", err);
             }
         };
         fetchTournaments();
     }, []);
-
-    // SI EL CONTEXTO ESTÁ CARGANDO, NO RENDERIZAMOS AÚN
-    if (loading) return <div className="text-center py-5 text-white">Cargando usuario...</div>;
 
     const filtered = tournaments.filter(t => {
         const matchesSearch = t.nombre.toLowerCase().includes(searchTerm.toLowerCase());
