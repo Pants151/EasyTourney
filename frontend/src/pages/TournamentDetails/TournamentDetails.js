@@ -10,7 +10,6 @@ import config from '../../config';
 
 const socket = io(config.SOCKET_URL);
 
-// Añadir esta utilidad arriba
 const isPowerOfTwo = (n) => n > 1 && (n & (n - 1)) === 0;
 
 const TournamentDetails = () => {
@@ -19,14 +18,14 @@ const TournamentDetails = () => {
     const { user } = useContext(AuthContext);
     const [tournament, setTournament] = useState(null);
     const [matches, setMatches] = useState([]);
-    const [activeTab, setActiveTab] = useState('fases'); // Estado para el mini-nav
+    const [activeTab, setActiveTab] = useState('fases');
     const [showTeamModal, setShowTeamModal] = useState(false);
     const [newTeamName, setNewTeamName] = useState("");
     const [streamData, setStreamData] = useState({ plataforma: 'Twitch', url: '' });
-    const [isGenerating, setIsGenerating] = useState(false); // Estado para evitar doble clic
-    const [selectedParticipant, setSelectedParticipant] = useState(null); // Para el modal de detalles
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [selectedParticipant, setSelectedParticipant] = useState(null);
 
-    // Nuevo estado para el modal de puntuación
+
     const [scoreModal, setScoreModal] = useState({
         isOpen: false,
         matchId: null,
@@ -37,7 +36,6 @@ const TournamentDetails = () => {
         score2: ''
     });
 
-    // Fix scroll al montar el componente
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -49,7 +47,7 @@ const TournamentDetails = () => {
                 tournamentService.getTournamentMatches(id)
             ]);
 
-            // Enriquecer participantes con nombre de equipo si aplica
+            // Enriquecer participantes con su equipo si aplica
             if (tData.formato === 'Equipos' && tData.equipos) {
                 tData.participantes = tData.participantes.map(p => {
                     const team = tData.equipos.find(t => t.miembros.some(m => (m.usuario._id || m.usuario) === p._id));
@@ -65,7 +63,6 @@ const TournamentDetails = () => {
     useEffect(() => {
         fetchAll();
 
-        // Socket.io logic
         socket.emit('joinTournament', id);
 
         const handleBracketUpdate = () => {
@@ -98,7 +95,7 @@ const TournamentDetails = () => {
 
     const isOrganizer = user && tournament.organizador && (user.id === tournament.organizador._id || user.id === tournament.organizador);
 
-    // Check all possible admin configurations including typos
+    // Verificar si es administrador
     const isAdmin = user && (
         user.rol === 'administrador' ||
         user.rol === 'admin' ||
@@ -110,20 +107,19 @@ const TournamentDetails = () => {
 
     const canRenameBots = (isOrganizer || isAdmin) && tournament.estado === 'Abierto';
 
-    // Determinamos el conteo según el formato
+    // Conteo según formato
     const currentCount = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
         ? tournament.equipos?.length || 0
         : tournament.participantes?.length || 0;
 
     const hasValidPowerOfTwo = isPowerOfTwo(currentCount);
 
-    // 1. Determinamos si es Battle Royale
+    // Determinamos si es BR
     const isBR = ['Battle Royale', 'Battle Royale - Por equipos'].includes(tournament.formato);
 
-    // 2. Ajustamos la validación del conteo
+    // Ajustar validación de participantes
     const canStartTournament = isBR ? currentCount >= 2 : hasValidPowerOfTwo;
 
-    // Ejemplo de reporte visual de ganador
     const handleSetWinnerClick = (match, p1, p2, winnerId) => {
         if (!isOrganizer) return;
         const isTeams = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato);
@@ -155,10 +151,7 @@ const TournamentDetails = () => {
                 return;
             }
 
-            // Validar que el ganador tenga más puntos
-            // scoreModal.winnerId corresponde a p1 o p2?
-            // Necesitamos saber si el ganador es el player 1 o el player 2 en el modal
-            // Para simplificar, buscamos el match original
+            // Validar puntos
             const match = matches.find(m => m._id === scoreModal.matchId);
             const isWinnerP1 = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
                 ? match.equipo1?._id === scoreModal.winnerId || match.equipo1 === scoreModal.winnerId
@@ -280,15 +273,14 @@ const TournamentDetails = () => {
 
     const handleInscribirse = () => {
         if (['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)) {
-            setShowTeamModal(true); // Abrir ventana de equipos
+            setShowTeamModal(true);
         } else {
-            handleJoin(); // Inscripción directa 1v1 o BR
+            handleJoin();
         }
     };
 
     const handleCreateTeam = async () => {
         try {
-            // Llamada al servicio para crear equipo
             await tournamentService.createTeam(id, { nombre: newTeamName });
             alert("Equipo creado. Eres el capitán.");
             window.location.reload();
@@ -306,7 +298,6 @@ const TournamentDetails = () => {
     const handleExpulsar = async (userId) => {
         if (!window.confirm("¿Estás seguro de expulsar a este participante?")) return;
         try {
-            // Cambiamos kickParticipant por expelParticipant
             await tournamentService.expelParticipant(id, userId);
             alert("Participante expulsado.");
             window.location.reload();
@@ -351,21 +342,21 @@ const TournamentDetails = () => {
         } catch (err) { alert("Error al eliminar stream"); }
     };
 
-    // Función auxiliar para obtener el ID de video/canal
+    // Obtener ID de video o canal
     const getEmbedURL = (s) => {
         if (s.plataforma === 'Twitch') {
             const urlParts = s.url.split('/');
-            // Si el enlace contiene 'videos', es un VOD (directo finalizado)
+            // VOD
             if (s.url.includes('/videos/')) {
                 const videoId = urlParts[urlParts.indexOf('videos') + 1].split('?')[0];
                 return `https://player.twitch.tv/?video=${videoId}&parent=${window.location.hostname}&autoplay=false`;
             } else {
-                // Es un canal en directo
+                // Canal en directo
                 const channel = urlParts.filter(part => part !== "").pop();
                 return `https://player.twitch.tv/?channel=${channel}&parent=${window.location.hostname}&autoplay=false`;
             }
         } else {
-            // Lógica de YouTube
+            // YouTube
             const videoId = s.url.split('v=').pop()?.split('&')[0] || s.url.split('/').pop();
             return `https://www.youtube.com/embed/${videoId}`;
         }
@@ -412,7 +403,7 @@ const TournamentDetails = () => {
             }
         }
 
-        // Tabla de Características
+        // Tabla de características
         autoTable(doc, {
             startY: 40,
             head: [['Característica', 'Detalle']],
@@ -421,7 +412,7 @@ const TournamentDetails = () => {
             headStyles: { fillColor: [255, 115, 0] }
         });
 
-        // LÓGICA PARA BATTLE ROYALE EN EL PDF
+        // Formato BR
         if ((tournament.formato === 'Battle Royale' || tournament.formato === 'Battle Royale - Por equipos') && tournament.ganadoresRondaBR?.length > 0) {
             const brBody = tournament.ganadoresRondaBR.map((g, index) => [
                 `Ronda ${index + 1}`,
@@ -435,7 +426,7 @@ const TournamentDetails = () => {
                 body: brBody
             });
         }
-        // Lógica para 1v1 y Equipos (Brackets)
+        // Formato Clásico/Equipos
         else if (matches.length > 0) {
             const matchesBody = matches.map(m => {
                 const p1 = tournament.formato === 'Equipos' ? m.equipo1?.nombre : m.jugador1?.username;
@@ -454,7 +445,7 @@ const TournamentDetails = () => {
             });
         }
 
-        // Listado de Participantes con estado
+        // Listado de participantes
         const participantsBody = ['Equipos', 'Battle Royale - Por equipos'].includes(tournament.formato)
             ? tournament.equipos?.map(t => [t.nombre, tournament.descalificados?.includes(t._id) ? 'DESCALIFICADO' : 'ACTIVO'])
             : tournament.participantes?.map(p => [p.username, tournament.descalificados?.includes(p._id) ? 'DESCALIFICADO' : 'ACTIVO']);
@@ -470,11 +461,11 @@ const TournamentDetails = () => {
             });
         }
 
-        // Agregar sección de Reglamento al final si existe
+        // Reglamento
         if (tournament.reglas && tournament.reglas.trim() !== '') {
             let startY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : 50;
 
-            // Verificar si hay espacio suficiente en la página, en caso contrario añadir nueva
+            // Salto de página
             if (startY > doc.internal.pageSize.getHeight() - 40) {
                 doc.addPage();
                 startY = 20;
@@ -487,11 +478,10 @@ const TournamentDetails = () => {
             doc.setFontSize(10);
             doc.setTextColor(50, 50, 50);
 
-            // Dividir el texto largo en múltiples líneas para que no se corte
+            // Multilínea
             const rulesText = String(tournament.reglas);
             const splitReglas = doc.splitTextToSize(rulesText, pageWidth - 28);
 
-            // Comprobar desbordamiento de texto en Y
             let textY = startY + 8;
             for (let i = 0; i < splitReglas.length; i++) {
                 if (textY > doc.internal.pageSize.getHeight() - 15) {
@@ -499,7 +489,7 @@ const TournamentDetails = () => {
                     textY = 20;
                 }
                 doc.text(splitReglas[i], 14, textY);
-                textY += 5; // Aumentar línea
+                textY += 5;
             }
         }
 
@@ -527,12 +517,10 @@ const TournamentDetails = () => {
         }
     };
 
-    // Lógica para verificar si el usuario ya está inscrito
     const isJoined = tournament.participantes.some(p => (p._id || p) === (user?.id || user?._id));
-    // Solo mostramos el botón si es participante, el torneo está abierto y no está unido
     const showJoinButton = user?.rol === 'participante' && tournament.estado === 'Abierto' && !isJoined;
 
-    // Agrupamos enfrentamientos por rondas para "FASES"
+    // Fases
     const rounds = {};
     matches.forEach(m => {
         if (!rounds[m.ronda]) rounds[m.ronda] = [];

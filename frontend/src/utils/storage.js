@@ -1,9 +1,9 @@
-// Detectar si la app se ejecuta como PWA instalada o en el navegador
+// Detectar PWA
 const isPWA = () => {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 };
 
-// Si es PWA, usaremos un prefijo para aislar la sesión del navegador principal
+// Aislar sesión en PWA
 const PREFIX = isPWA() ? 'pwa_' : '';
 
 export const setStoredItem = (key, value) => {

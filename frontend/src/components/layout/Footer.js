@@ -5,7 +5,6 @@ import logoNav from '../../assets/images/logo-nav.png';
 import './Footer.css';
 
 const Footer = () => {
-    // Función para subir al inicio suavemente
     const handleScrollToTop = () => {
         window.scrollTo({
             top: 0,
@@ -16,7 +15,6 @@ const Footer = () => {
     return (
         <footer className="main-footer py-5 mt-auto">
             <div className="container text-center">
-                {/* Logo con ruta robusta y clase para control de tamaño */}
                 <Link to="/" onClick={handleScrollToTop}>
                     <img
                         src={logoNav}
@@ -25,7 +23,6 @@ const Footer = () => {
                     />
                 </Link>
 
-                {/* Enlaces de navegación con scroll suave */}
                 <div className="footer-links d-flex justify-content-center flex-wrap gap-4 mb-4">
                     <Link to="/tournaments" className="footer-link-item" onClick={handleScrollToTop}>
                         Ver todos los torneos

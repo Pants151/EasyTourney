@@ -9,14 +9,14 @@ const AdminTournaments = () => {
     const isOnline = useOnlineStatus();
     const navigate = useNavigate();
 
-    // Estados para Filtros
+    // Filtros
     const [filterName, setFilterName] = useState('');
     const [filterGame, setFilterGame] = useState('');
     const [filterFormat, setFilterFormat] = useState('');
     const [filterDate, setFilterDate] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
 
-    // --- NUEVOS ESTADOS ---
+    // Paginación y selección
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [selectedIds, setSelectedIds] = useState([]);
@@ -57,7 +57,7 @@ const AdminTournaments = () => {
         }
     };
 
-    // --- LÓGICA DE SELECCIÓN ---
+    // Selección
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             setSelectedIds(filteredTournaments.map(t => t._id));
@@ -101,7 +101,7 @@ const AdminTournaments = () => {
         }
     };
 
-    // --- LÓGICA DE EXPORTACIÓN ---
+    // Exportación
     const exportToJSON = () => {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredTournaments, null, 2));
         const downloadAnchorNode = document.createElement('a');
@@ -128,7 +128,7 @@ const AdminTournaments = () => {
         downloadAnchorNode.remove();
     };
 
-    // Funcionalidad de filtrado
+    // Filtrado
     const filteredTournaments = tournaments.filter(t => {
         const matchName = t.nombre.toLowerCase().includes(filterName.toLowerCase());
         const matchGame = t.juego?.nombre?.toLowerCase().includes(filterGame.toLowerCase()) ?? true;
@@ -144,7 +144,7 @@ const AdminTournaments = () => {
         return matchName && matchGame && matchFormat && matchStatus && matchDate;
     });
 
-    // --- CÁLCULOS DE PAGINACIÓN ---
+    // Paginación
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredTournaments.slice(indexOfFirstItem, indexOfLastItem);

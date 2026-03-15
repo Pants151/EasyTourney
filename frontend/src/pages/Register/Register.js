@@ -39,26 +39,26 @@ const Register = () => {
     const validateForm = () => {
         const { username, email, password, fechaNacimiento } = formData;
 
-        // Validación Nombre de Usuario: Mínimo 3 caracteres
+        // Validación de username
         if (username.trim().length < 3) {
             alert('El nombre de usuario debe tener al menos 3 caracteres.');
             return false;
         }
 
-        // Validación Básica de Email (regex)
+        // Validación de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             alert('Por favor, introduce un correo electrónico válido.');
             return false;
         }
 
-        // Validación Básica de Contraseña: Mínimo 6 caracteres
+        // Validación de contraseña
         if (password.length < 6) {
             alert('La contraseña debe tener al menos 6 caracteres.');
             return false;
         }
 
-        // Validación de fecha de nacimiento (opcional pero si existe, menor a hoy)
+        // Validación de fecha de nacimiento
         if (fechaNacimiento) {
             const birthDate = new Date(fechaNacimiento);
             const today = new Date();
@@ -74,7 +74,7 @@ const Register = () => {
     const onSubmit = async e => {
         e.preventDefault();
 
-        // Ejecutar validaciones locales antes de llamar al servidor
+        // Validaciones locales
         if (!validateForm()) return;
 
         try {
@@ -82,7 +82,6 @@ const Register = () => {
             alert('Usuario registrado con éxito');
             navigate('/login'); //
         } catch (err) {
-            // Si el backend devuelve un error (como "usuario ya existe"), lo mostramos aquí
             const errorMsg = err.response?.data?.msg || 'Error al registrar usuario.';
             alert(errorMsg);
         }

@@ -12,7 +12,7 @@ root.render(
   </React.StrictMode>
 );
 
-// REGISTRO DEL SERVICE WORKER
+// Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
@@ -24,5 +24,5 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
-// -------------------------------------------------
+
 reportWebVitals();

@@ -18,11 +18,11 @@ const HomeView = ({
     return (
         <div className="home-wrapper">
 
-            {/* --- SECCIÓN HERO --- */}
+            {/* Hero */}
             <section
                 className="hero-section d-flex align-items-center justify-content-center"
                 style={{
-                    // Mantenemos tu ruta directa a public sin imports fallidos
+                    // Ruta directa a public sin imports fallidos
                     backgroundImage: `url(${backgroundHero})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
@@ -30,16 +30,13 @@ const HomeView = ({
                     backgroundAttachment: 'fixed'
                 }}
             >
-                {/* Fondo de imagen sutil o gradiente */}
                 <div className="hero-bg-overlay"></div>
 
                 <div className="hero-content text-center text-uppercase position-relative z-2">
-                    {/* Envolvemos el logo en un contenedor para controlar su escala */}
                     <div className="hero-logo-container mb-2 animate-fade-up">
                         <img src={logoBig} alt="Logo Grande" className="hero-logo img-fluid" />
                     </div>
 
-                    {/* Texto en blanco puro */}
                     <h1 className="hero-title fw-bolder mb-3 animate-fade-up delay-1 text-white">
                         DONDE NACEN LAS <span className="text-accent outline-text">LEYENDAS</span>
                     </h1>
@@ -48,7 +45,6 @@ const HomeView = ({
                     </p>
 
                     <div className="hero-buttons d-flex justify-content-center flex-wrap gap-3">
-                        {/* BOTÓN 1: Empieza tu legado con scroll suave (Solo si NO está logueado) */}
                         {!user && (
                             <Link
                                 to="/register"
@@ -59,7 +55,6 @@ const HomeView = ({
                             </Link>
                         )}
 
-                        {/* BOTÓN NUEVO: Solo aparece si NO está instalada */}
                         {!isInstalled && (
                             <button
                                 onClick={handleInstallClick}
@@ -73,7 +68,7 @@ const HomeView = ({
             </section>
 
 
-            {/* --- BARRA DE JUEGOS POPULARES --- */}
+            {/* Juegos populares */}
             <section className="popular-games-bar py-5 bg-dark-secondary position-relative z-3">
                 <div className="container text-center">
                     <h4 className="text-uppercase fw-bold mb-4">
@@ -96,7 +91,6 @@ const HomeView = ({
                         ))}
                     </div>
 
-                    {/* BOTÓN 2: Ver todos los juegos con scroll suave */}
                     <button
                         className="btn btn-view-all mt-2"
                         onClick={() => {
@@ -110,12 +104,10 @@ const HomeView = ({
             </section>
 
 
-            {/* --- SECCIÓN VIDEO FEATURES --- */}
+            {/* Features */}
             <section className="video-feature-section position-relative">
-                {/* Contenedor del Video de fondo */}
                 <div className="video-background-container">
                     <video autoPlay loop muted playsInline className="video-bg">
-                        {/* Asegúrate de tener este archivo en /public/assets/images/ */}
                         <source src={esportsVideo} type="video/mp4" />
                     </video>
                     <div className="video-overlay-gradient"></div>
@@ -123,7 +115,6 @@ const HomeView = ({
 
                 <div className="container position-relative z-2 content-container h-100 d-flex align-items-center">
                     <div className="row w-100 align-items-center">
-                        {/* Texto e Iconos a la izquierda */}
                         <div className="col-lg-6 text-white">
                             <h2 className="feature-title text-uppercase fw-bolder mb-4 lh-1">
                                 VIVE LA <span className="text-accent">INTENSIDAD</span> DE LA COMPETICIÓN AMATEUR
@@ -149,7 +140,6 @@ const HomeView = ({
                                 </div>
                             </div>
                         </div>
-                        {/* El lado derecho queda libre para ver el video de fondo */}
                         <div className="col-lg-6"></div>
                     </div>
                 </div>

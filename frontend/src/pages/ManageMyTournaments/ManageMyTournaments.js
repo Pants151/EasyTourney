@@ -9,6 +9,7 @@ const ManageMyTournaments = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Carga inicial de mis torneos
         const fetchMyTournaments = async () => {
             try {
                 const data = await tournamentService.getMyTournaments();

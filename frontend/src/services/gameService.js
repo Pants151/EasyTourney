@@ -9,6 +9,7 @@ const getAuthHeaders = () => {
     return { headers: { 'x-auth-token': token } };
 };
 
+// Caché en memoria (1s)
 let gamesPromise = null;
 const getGames = async () => {
     if (gamesPromise) return gamesPromise;

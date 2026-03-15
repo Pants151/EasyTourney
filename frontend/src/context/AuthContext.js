@@ -21,12 +21,12 @@ export const AuthProvider = ({ children }) => {
                     const parsed = JSON.parse(userData);
                     setUser({ token, ...parsed });
 
-                    // Si ya tenemos email, no hace falta bloquear el render inicial
+                    // No bloquear render inicial si hay email
                     if (parsed.email) {
                         setLoading(false);
                     }
 
-                    // Intentar sincronizar perfil fresco
+                    // Sincronizar perfil fresco
                     const freshData = await authService.getProfile();
                     if (freshData) {
                         freshData.id = freshData._id || freshData.id;
@@ -35,8 +35,7 @@ export const AuthProvider = ({ children }) => {
                     }
                 } catch (err) {
                     console.error("Auth sync error:", err);
-                    // Si el perfil falla pero el interceptor 401 no se ha activado,
-                    // al menos dejamos de cargar para que la app intente seguir.
+                    // Permitir renderizado aunque falle el perfil si no hay 401
                 } finally {
                     setLoading(false);
                 }
@@ -48,20 +47,20 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
 
-    // Conectar Socket.io globalmente en la app si el usuario hace login o re-carga la app
+    // Conectar Socket.io globalmente
     useEffect(() => {
         let socket = null;
         if (user && user.id) {
             socket = io(config.SOCKET_URL);
 
-            // El usuario avisa de que se conecta para establecer una sala 1 a 1 de servidor a usuario
+            // Unirse a sala privada de socket
             socket.emit('joinUserRoom', user.id);
 
-            // Escuchar el evento de expulsión en tiempo real
+            // Escuchar expulsión en tiempo real
             socket.on('force_logout', () => {
                 removeStoredItem('userToken');
                 removeStoredItem('userData');
-                window.location.href = '/login'; // Inmediatamente recarga a expensas de la vista actual
+                window.location.href = '/login'; 
             });
         }
         return () => {
@@ -78,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await authService.logout(); // Limpiar el status fantasma en backend
+            await authService.logout();
         } catch (err) { }
         removeStoredItem('userToken');
         removeStoredItem('userData');

@@ -14,7 +14,7 @@ const TournamentsPage = () => {
     const gameFilter = searchParams.get('game');
 
     useEffect(() => {
-        // Pintar primero desde caché local si existe para evitar parpadeos
+        // Caché local
         try {
             const cached = localStorage.getItem('cachedTournaments');
             if (cached) {
@@ -56,14 +56,12 @@ const TournamentsPage = () => {
         return "TORNEOS";
     };
 
-    // Función para manejar la inscripción desde la lista
+
     const handleQuickJoin = async (e, t) => {
         e.stopPropagation();
         if (t.formato === 'Equipos' || t.formato === 'Battle Royale - Por equipos') {
-            // Redirigir a detalles para que elija equipo
             navigate(`/tournament/${t._id}?join=true`);
         } else {
-            // Inscripción directa para 1v1 y BR
             try { await tournamentService.joinTournament(t._id); window.location.reload(); } catch (err) { alert(err.response.data.msg); }
         }
     };

@@ -31,7 +31,7 @@ const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg fixed-top custom-navbar">
             <div className="container">
-                {/* Logo - Ya cumple la función de ir a Inicio */}
+
                 <Link className="navbar-brand py-0" to="/" onClick={handleNavigation}>
                     <img src={logoNav} alt="EasyTourney" className="nav-logo" />
                 </Link>
@@ -55,7 +55,7 @@ const Navbar = () => {
                         <li className="nav-item">
                             <Link className="nav-link nav-link-custom" to="/games" onClick={handleNavigation}>JUEGOS</Link>
                         </li>
-                        {/* SECCIÓN ADMIN: Desplegable profesional controlado por React */}
+                        {/* Menú Admin */}
                         {user && user.rol === 'administrador' && (
                             <li className={`nav-item dropdown ${isAdminOpen ? 'show' : ''}`}>
                                 <button
@@ -95,7 +95,7 @@ const Navbar = () => {
                                 </span>
                             </li>
                         )}
-                        {/* Mantenemos CUENTA solo si el usuario está logueado, eliminamos el 'else' de INICIO */}
+
                         {user && (
                             <li className="nav-item">
                                 <Link className="nav-link nav-link-custom" to="/account" onClick={handleNavigation}>CUENTA</Link>

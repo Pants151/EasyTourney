@@ -6,7 +6,6 @@ import CreateTournamentView from './CreateTournamentView';
 
 const CreateTournament = () => {
     const [games, setGames] = useState([]);
-    // Función para obtener la fecha y hora actual en formato YYYY-MM-DDTHH:mm
     const getCurrentDateTimeLocal = () => {
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -19,7 +18,7 @@ const CreateTournament = () => {
         formato: '1v1',
         tamanoEquipoMax: 2,
         limiteParticipantes: 16,
-        fechaInicio: getCurrentDateTimeLocal(), // Pre-rellenado con la fecha actual
+        fechaInicio: getCurrentDateTimeLocal(),
         reglas: '',
         alMejorDe: 1
     });

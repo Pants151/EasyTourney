@@ -23,6 +23,7 @@ const createTournament = async (data) => axios.post(API_URL, data, getAuthHeader
 const updateTournament = async (id, data) => axios.put(`${API_URL}/${id}`, data, getAuthHeaders());
 const deleteTournament = async (id) => axios.delete(`${API_URL}/${id}`, getAuthHeaders());
 const deleteTournamentsBulk = async (ids) => axios.delete(`${API_URL}/delete/bulk`, { ...getAuthHeaders(), data: { ids } });
+// Caché en memoria (1s) para evitar múltiples peticiones en cadena
 let tournamentsPromise = null;
 const getTournaments = async () => {
     if (tournamentsPromise) return tournamentsPromise;

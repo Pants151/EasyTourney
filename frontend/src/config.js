@@ -1,6 +1,5 @@
-// Archivo unificado de configuración
-// Cambia la variable IS_PRODUCTION a true cuando vayas a subir tu código a Render.
-// Déjala en false mientras estás desarrollando en tu ordenador local.
+// Configuración unificada
+// Cambiar IS_PRODUCTION a true para deploy en Render
 
 const IS_PRODUCTION = false;
 

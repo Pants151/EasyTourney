@@ -1,18 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import authService from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
-import '../TournamentForm.css'; // Reutilizamos estilos de contenedores
+import '../TournamentForm.css';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
 
-    // Estados para Filtros
-    const [filterUsername, setFilterUsername] = useState('');
-    const [filterEmail, setFilterEmail] = useState('');
     const [filterRol, setFilterRol] = useState('');
     const navigate = useNavigate();
 
-    // --- NUEVOS ESTADOS ---
+    // Paginación y selección
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [selectedIds, setSelectedIds] = useState([]);
@@ -56,7 +53,7 @@ const AdminUsers = () => {
         navigate(`/admin/edit-user/${user._id}`);
     };
 
-    // --- LÓGICA DE SELECCIÓN ---
+    // Selección
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             setSelectedIds(filteredUsers.map(u => u._id));
@@ -98,7 +95,7 @@ const AdminUsers = () => {
         }
     };
 
-    // --- LÓGICA DE EXPORTACIÓN ---
+    // Exportación
     const exportToJSON = () => {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredUsers, null, 2));
         const downloadAnchorNode = document.createElement('a');
@@ -125,7 +122,7 @@ const AdminUsers = () => {
         downloadAnchorNode.remove();
     };
 
-    // Funcionalidad de filtrado
+    // Filtrado
     const filteredUsers = users.filter(u => {
         const matchUsername = u.username.toLowerCase().includes(filterUsername.toLowerCase());
         const matchEmail = u.email.toLowerCase().includes(filterEmail.toLowerCase());
@@ -133,7 +130,7 @@ const AdminUsers = () => {
         return matchUsername && matchEmail && matchRol;
     });
 
-    // --- CÁLCULOS DE PAGINACIÓN ---
+    // Paginación
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
@@ -149,7 +146,6 @@ const AdminUsers = () => {
             <div className="form-container-custom p-4 p-md-5">
                 <h2 className="text-uppercase fw-bolder mb-4 text-white text-center">Gestión de <span className="text-accent">Usuarios</span></h2>
 
-                {/* --- SECCIÓN DE FILTROS --- */}
                 <div className="row g-3 mb-4 bg-dark p-3 rounded border border-secondary shadow-sm">
                     <div className="col-md-4">
                         <label className="text-white-50 small fw-bold mb-1">Nombre de Usuario</label>
@@ -175,7 +171,6 @@ const AdminUsers = () => {
                     </div>
                 </div>
 
-                {/* HERRAMIENTAS DE TABLA */}
                 <div className="d-flex justify-content-end align-items-center mb-4 gap-2">
                     {selectedIds.length > 0 && (
                         <>
@@ -249,7 +244,6 @@ const AdminUsers = () => {
                     </table>
                 </div>
 
-                {/* PAGINACIÓN */}
                 {totalPages > 1 && (
                     <nav className="mt-4 d-flex justify-content-center">
                         <ul className="pagination pagination-custom shadow-sm">
@@ -272,7 +266,6 @@ const AdminUsers = () => {
                     </nav>
                 )}
 
-                {/* EXPORTACIÓN */}
                 <div className="mt-4 d-flex gap-2 justify-content-end">
                     <button className="btn btn-sm btn-dark border-secondary text-white-50" onClick={exportToJSON}>
                         <i className="icon-custom icon-file me-1"></i> JSON
@@ -283,7 +276,6 @@ const AdminUsers = () => {
                 </div>
             </div>
 
-            {/* MODAL DE VISUALIZACIÓN */}
             {viewingItem && (
                 <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)', paddingTop: '50px', paddingBottom: '50px', zIndex: 9999, overflowY: 'auto' }}>
                     <div className="modal-dialog modal-lg modal-dialog-scrollable">

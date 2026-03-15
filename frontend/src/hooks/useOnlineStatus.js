@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const useOnlineStatus = () => {
+    // Escuchar eventos online/offline del navegador
     const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     useEffect(() => {

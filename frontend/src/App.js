@@ -27,15 +27,15 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        {/* Usamos un div con flexbox para que el footer siempre esté abajo */}
+        {/* Flexbox para empujar el footer abajo */}
         <div className="d-flex flex-column min-vh-100 bg-main">
           <Navbar />
           <main className="flex-grow-1">
             <Routes>
-              {/* Solo el Home NO lleva contenedor de Bootstrap para ser pantalla completa */}
+              {/* Home sin contenedor (pantalla completa) */}
               <Route path="/" element={<Home />} />
 
-              {/* Las demás páginas SÍ llevan su propio contenedor para no verse raras */}
+              {/* Vistas estándar con margen superior */}
               <Route path="/login" element={<div className="container mt-navbar"><Login /></div>} />
               <Route path="/register" element={<div className="container mt-navbar"><Register /></div>} />
               <Route path="/forgot-password" element={<div className="container mt-navbar"><ForgotPassword /></div>} />

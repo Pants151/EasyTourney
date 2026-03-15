@@ -8,7 +8,7 @@ const GamesPage = () => {
     const [games, setGames] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [limit, setLimit] = useState(8);
-    const { user, loading } = useContext(AuthContext); // Obtener usuario y estado de carga
+    const { user, loading } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {

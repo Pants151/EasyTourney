@@ -11,7 +11,7 @@ const EditTournament = () => {
     const [tournamentStatus, setTournamentStatus] = useState('');
     const [submitError, setSubmitError] = useState('');
     const [errors, setErrors] = useState({});
-    const [originalDate, setOriginalDate] = useState(''); // Guardamos la original
+    const [originalDate, setOriginalDate] = useState('');
     const [formData, setFormData] = useState({
         nombre: '', juego: '', formato: '1v1', limiteParticipantes: 16,
         tamanoEquipoMax: 2, alMejorDe: 1, ubicacion: 'Online',
@@ -28,7 +28,7 @@ const EditTournament = () => {
                 const dateObj = new Date(tData.fechaInicio);
                 dateObj.setMinutes(dateObj.getMinutes() - dateObj.getTimezoneOffset());
                 const formattedDate = dateObj.toISOString().slice(0, 16);
-                setOriginalDate(formattedDate); // Guardar fecha inicial local
+                setOriginalDate(formattedDate);
                 setTournamentStatus(tData.estado);
                 setFormData({
                     nombre: tData.nombre,

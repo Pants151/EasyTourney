@@ -12,18 +12,18 @@ const Home = () => {
     const [isInstalled, setIsInstalled] = useState(false);
 
     useEffect(() => {
-        // 1. Detectar si ya estamos dentro de la App (modo standalone)
+        // Detectar si ya estamos dentro de la App (modo standalone)
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             setIsInstalled(true);
         }
 
-        // 2. Capturar el evento de instalación disponible
+        // Capturar evento de instalación disponible
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             setDeferredPrompt(e);
         });
 
-        // 3. Detectar si se instaló con éxito para ocultar el botón
+        // Detectar si se instaló con éxito para ocultar botón
         window.addEventListener('appinstalled', () => {
             setIsInstalled(true);
             setDeferredPrompt(null);
@@ -42,7 +42,6 @@ const Home = () => {
         }
     };
 
-    // Función para el desplazamiento suave hacia arriba
     const handleScrollToTop = () => {
         window.scrollTo({
             top: 0,

@@ -11,7 +11,7 @@ const Account = () => {
         username: '', email: '', rol: '', pais: '', fechaNacimiento: '', idioma: []
     });
 
-    // Estado separado para el cambio de contraseña
+
     const [passwords, setPasswords] = useState({ passwordActual: '', passwordNuevo: '' });
 
     useEffect(() => {
@@ -19,13 +19,13 @@ const Account = () => {
             if (!user) return;
 
             let fullUser = user;
-            // Si venimos del Login, el contexto solo tiene {id, username, rol}. Faltan datos.
+            // Completar perfil incompleto del login
             if (!user.email) {
                 try {
                     fullUser = await authService.getProfile();
                 } catch (e) {
                     console.error("Error obteniendo perfil completo", e);
-                    return; // Si falla, nos quedamos con lo básico
+                    return;
                 }
             }
 
@@ -54,7 +54,7 @@ const Account = () => {
         syncData();
     }, [user]);
 
-    // PROTECCIÓN: Si el usuario no existe, redirigir a login
+    // Redirigir sin sesión
     useEffect(() => {
         if (!loading && !user) {
             navigate('/login');
@@ -62,7 +62,7 @@ const Account = () => {
     }, [user, loading, navigate]);
 
     if (!user || (user && !user.email && formData.email === '')) {
-        // Mostramos cargando si no hay usuario, o si acaba de llegar del login y estamos buscando sus datos
+
         return (
             <div className="container py-5 mt-navbar text-center text-white">
                 <div className="spinner-border text-accent mb-3" role="status"></div>
@@ -85,7 +85,7 @@ const Account = () => {
     const onUpdateProfile = async (e) => {
         e.preventDefault();
 
-        // VALIDACIONES LOCALES
+
         if (formData.username.trim().length < 3) {
             alert('El nombre de usuario debe tener al menos 3 caracteres.');
             return;
@@ -97,20 +97,19 @@ const Account = () => {
             return;
         }
 
-        // AVISO CONFIRMACIÓN BAJADA DE ROL
+        // Confirmar bajada de rol
         if (user?.rol === 'organizador' && formData.rol === 'participante') {
             if (!window.confirm("ATENCIÓN: Estás a punto de cambiar tu rol a Participante. Esto borrará permanentemente TODOS los torneos que has organizado. ¿Estás absolutamente seguro/a?")) {
-                return; // Cancelar guardado
+                return;
             }
         }
 
-        // Normalizar payload con los nombres de campo esperados por el backend
         const payload = { ...formData };
 
         try {
             await authService.updateProfile(payload);
             alert('Perfil actualizado con éxito');
-            // Como el rol puede haber cambiado, forzamos recarga para que AuthContext actualice los layouts (navbar, accesos, etc)
+            // Recargar para aplicar cambios de layout/rol
             window.location.reload();
         } catch (err) {
             const errorMsg = err.response?.data?.msg || 'Error al actualizar perfil';
@@ -121,7 +120,7 @@ const Account = () => {
     const onChangePassword = async (e) => {
         e.preventDefault();
 
-        // VALIDACIÓN LOCAL
+
         if (passwords.passwordNuevo.length < 6) {
             alert('La nueva contraseña debe tener al menos 6 caracteres.');
             return;

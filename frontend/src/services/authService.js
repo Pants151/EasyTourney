@@ -4,15 +4,13 @@ import { getStoredItem, setStoredItem, removeStoredItem } from '../utils/storage
 
 const API_URL = `${config.API_URL}/auth/`;
 
-// --- INTERCEPTOR DE Cierre de Sesión Automático (401) ---
+// Interceptor 401 para auto-logout
 axios.interceptors.response.use(
-    (response) => response, // Si todo va bien, dejar pasar la respuesta
+    (response) => response,
     (error) => {
-        // Si el servidor responde con 401 No Autorizado (ej. Sesión expirada por sesión concurrente)
         if (error.response && error.response.status === 401) {
             removeStoredItem('userToken');
             removeStoredItem('userData');
-            // Forzamos recarga y redirección agresiva para limpiar la memoria de React y estados
             window.location.href = '/login';
         }
         return Promise.reject(error);
@@ -46,8 +44,7 @@ const getProfile = async () => {
             const response = await axios.get(API_URL + 'profile', getAuthHeaders());
             return response.data;
         } finally {
-            // Reset promise after a short delay or immediately to allow future fresh fetches
-            // but prevent simultaneous redundant calls.
+            // Prevenir requests concurrentes redundantes
             setTimeout(() => {
                 profilePromise = null;
             }, 1000);

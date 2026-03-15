@@ -11,7 +11,7 @@ const AdminGames = () => {
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [editingId, setEditingId] = useState(null);
-    const [adminSearchTerm, setAdminSearchTerm] = useState(""); // Estado para el buscador
+    const [adminSearchTerm, setAdminSearchTerm] = useState("");
 
     const availablePlatforms = ['PC', 'PS5', 'PS4', 'PS3', 'PS2', 'PS1', 'Xbox Series X/S', 'Xbox One', 'Xbox 360', 'Xbox', 'Nintendo Switch', 'Nintendo Switch 2', 'Nintendo 3DS', 'Nintendo DS', 'Wii', 'Wii U', 'Gamecube', 'Mobile'];
 
@@ -23,11 +23,11 @@ const AdminGames = () => {
         header: ''
     });
 
-    // --- NUEVOS ESTADOS PARA PAGINACIÓN Y SELECCIÓN ---
+    // Paginación y selección
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [selectedIds, setSelectedIds] = useState([]);
-    const [viewingItem, setViewingItem] = useState(null); // Para el modal de visualizar
+    const [viewingItem, setViewingItem] = useState(null);
     const [modalPage, setModalPage] = useState(1);
     const MODAL_ITEMS_PER_PAGE = 5;
     const modalBodyRef = useRef(null);
@@ -56,7 +56,7 @@ const AdminGames = () => {
         } catch (err) { console.error(err); }
     };
 
-    // --- LÓGICA DE SELECCIÓN ---
+    // Selección
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             setSelectedIds(filteredGames.map(g => g._id));
@@ -73,7 +73,7 @@ const AdminGames = () => {
         }
     };
 
-    // --- LÓGICA DE BORRADO MASIVO ---
+    // Borrado masivo
     const handleDeleteSelected = async () => {
         if (!isOnline) return alert('No puedes realizar esta acción sin conexión');
         if (selectedIds.length === 0) return;
@@ -101,7 +101,7 @@ const AdminGames = () => {
         }
     };
 
-    // --- LÓGICA DE EXPORTACIÓN ---
+    // Exportación
     const exportToJSON = () => {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredGames, null, 2));
         const downloadAnchorNode = document.createElement('a');
@@ -194,7 +194,7 @@ const AdminGames = () => {
         g.nombre.toLowerCase().includes(adminSearchTerm.toLowerCase())
     );
 
-    // --- CÁLCULOS DE PAGINACIÓN ---
+    // Paginación
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredGames.slice(indexOfFirstItem, indexOfLastItem);
