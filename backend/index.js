@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require('http');
-const mongoose = require('mongoose');
+const connectDB = require('./config/db');
 const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
@@ -58,9 +58,7 @@ app.use('/api/games', require('./routes/gameRoutes'));
 app.use('/api/tournaments', tournamentRoutes);
 
 // Conexión a MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ Conexión exitosa a MongoDB'))
-    .catch((err) => console.error('❌ Error de conexión:', err));
+connectDB();
 
 // Ruta de prueba inicial
 app.get('/', (req, res) => {
