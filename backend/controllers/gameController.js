@@ -13,10 +13,10 @@ exports.getGames = async (req, res) => {
 // Crear un juego (Solo Admin)
 exports.createGame = async (req, res) => {
     try {
-        // 1. Añadimos 'header' a la desestructuración del cuerpo
+        // Añadimos 'header' a la desestructuración del cuerpo
         const { nombre, plataformas, caratula, logo, header } = req.body;
 
-        // 2. Incluimos 'header' al crear la nueva instancia del modelo
+        // Incluimos 'header' al crear la nueva instancia del modelo
         const newGame = new Game({
             nombre,
             plataformas,

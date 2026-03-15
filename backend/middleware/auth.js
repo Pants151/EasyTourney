@@ -2,19 +2,18 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Necesitamos consultar la BD
 
 module.exports = async function (req, res, next) {
-    // 1. Leer el token del header de la petición (x-auth-token)
+    //  Leer el token del header de la petición (x-auth-token)
     const token = req.header('x-auth-token');
 
-    // 2. Revisar si no hay token
+    // Revisar si no hay token
     if (!token) {
         return res.status(401).json({ msg: 'No hay token, permiso no válido' });
     }
 
-    // 3. Validar el token y la sesión
+    // Validar el token y la sesión
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // --- VALIDACIÓN DE SESIÓN ÚNICA ---
         // Buscar al usuario original en la base de datos
         const user = await User.findById(decoded.user.id);
 

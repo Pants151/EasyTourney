@@ -15,13 +15,13 @@ exports.createTournament = async (req, res) => {
         const alMejorDe = parseInt(req.body.alMejorDe) || 1;
         const limiteParticipantes = parseInt(req.body.limiteParticipantes) || 16;
 
-        // 1. Validar nombre duplicado
+        // Validar nombre duplicado
         const existingName = await Tournament.findOne({ nombre });
         if (existingName) {
             return res.status(400).json({ msg: 'Ya existe un torneo con este nombre.' });
         }
 
-        // 2. Validar fecha (No puede ser pasada, permitimos un margen de 1 min por latencia)
+        // Validar fecha (No puede ser pasada, permitimos un margen de 1 min por latencia)
         const dateLimit = new Date();
         dateLimit.setMinutes(dateLimit.getMinutes() - 1);
         if (new Date(fechaInicio) < dateLimit) {
@@ -95,17 +95,17 @@ exports.joinTournament = async (req, res) => {
 // Obtener un torneo por ID
 exports.getTournamentById = async (req, res) => {
     try {
-        // 1. Obtención de torneo 'crudo' para mantener IDs originales
+        // Obtención de torneo 'crudo' para mantener IDs originales
         let tournament = await Tournament.findById(req.params.id).lean();
         if (!tournament) return res.status(404).json({ msg: 'Torneo no encontrado' });
 
-        // 2. Guardar IDs crudos para hidratación posterior
+        // Guardar IDs crudos para hidratación posterior
         const rawParticipantes = tournament.participantes ? [...tournament.participantes] : [];
         const rawEquipos = tournament.equipos ? [...tournament.equipos] : [];
         const rawGanador = tournament.ganador;
         const rawGanadoresBR = tournament.ganadoresRondaBR ? [...tournament.ganadoresRondaBR] : [];
 
-        // 3. Poblar datos
+        // Poblar datos
         await Tournament.populate(tournament, [
             { path: 'organizador', select: 'username' },
             { path: 'participantes', select: 'username isBot pais idioma fechaNacimiento', options: { retainNullValues: true } },
@@ -115,7 +115,7 @@ exports.getTournamentById = async (req, res) => {
             { path: 'equipos', populate: { path: 'miembros.usuario', select: 'username isBot pais idioma fechaNacimiento' }, options: { retainNullValues: true } }
         ]);
 
-        // 4. HIDRATACIÓN DE BOTS Y USUARIOS ELIMINADOS
+        // HIDRATACIÓN DE BOTS Y USUARIOS ELIMINADOS
         const snapBots = tournament.snapNombresBots || new Map();
         const snapEquips = tournament.snapNombresEquipos || new Map();
         const snapMembers = tournament.snapEquiposMiembros || new Map();
@@ -342,7 +342,7 @@ exports.getTournamentMatches = async (req, res) => {
 
         let matches = await Match.find({ torneo: tournamentId }).sort({ ronda: 1 }).lean();
 
-        // 1. Guardar IDs crudos
+        // Guardar IDs crudos
         const rawMatchData = matches.map(m => ({
             jugador1: m.jugador1,
             jugador2: m.jugador2,
@@ -351,7 +351,7 @@ exports.getTournamentMatches = async (req, res) => {
             ganador: m.ganador
         }));
 
-        // 2. Poblar
+        // Poblar
         await Match.populate(matches, [
             { path: 'jugador1', select: 'username isBot' },
             { path: 'jugador2', select: 'username isBot' },
@@ -360,7 +360,7 @@ exports.getTournamentMatches = async (req, res) => {
             { path: 'ganador' }
         ]);
 
-        // 3. Hidratación
+        // Hidratación
         if (tournament && (tournament.snapNombresBots || tournament.snapNombresEquipos)) {
             const snapBots = tournament.snapNombresBots || {};
             const snapEquips = tournament.snapNombresEquipos || {};
@@ -546,7 +546,6 @@ exports.advanceTournament = async (req, res) => {
     } catch (err) { res.status(500).send('Error al avanzar ronda'); }
 };
 
-// Actualizar datos de un torneo
 // Actualizar datos de un torneo con validaciones
 exports.updateTournament = async (req, res) => {
     try {
@@ -1211,22 +1210,22 @@ exports.disqualifyParticipant = async (req, res) => {
         const io = req.app.get('socketio');
 
         if (type === 'user') {
-            // 1. Obtener nombre para el snapshot
+            // Obtener nombre para el snapshot
             const user = await User.findById(targetId);
             if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
-            // 2. Guardar en snapshot
+            // Guardar en snapshot
             const snapBots = tournament.snapNombresBots || new Map();
             snapBots.set(targetId, `${user.username} (Descalificado)`);
             tournament.snapNombresBots = snapBots;
 
-            // 3. Marcar como descalificado (sin quitarlo de la lista principal)
+            // Marcar como descalificado (sin quitarlo de la lista principal)
             if (!tournament.descalificados) tournament.descalificados = [];
             if (!tournament.descalificados.includes(targetId)) {
                 tournament.descalificados.push(targetId);
             }
 
-            // 4. Resolver enfrentamientos pendientes en Brackets
+            // Resolver enfrentamientos pendientes en Brackets
             const pendingMatches = await Match.find({
                 torneo: id,
                 ganador: { $exists: false },
@@ -1239,25 +1238,25 @@ exports.disqualifyParticipant = async (req, res) => {
                 await m.save();
             }
 
-            // 5. Borrar de equipos si existiera
+            // Borrar de equipos si existiera
             await Team.updateMany({ torneo: id }, { $pull: { miembros: { usuario: targetId } } });
 
         } else if (type === 'team') {
             const team = await Team.findById(targetId);
             if (!team) return res.status(404).json({ msg: 'Equipo no encontrado' });
 
-            // 2. Guardar en snapshot
+            // Guardar en snapshot
             const snapEquips = tournament.snapNombresEquipos || new Map();
             snapEquips.set(targetId, `${team.nombre} (Descalificado)`);
             tournament.snapNombresEquipos = snapEquips;
 
-            // 3. Marcar como descalificado
+            // Marcar como descalificado
             if (!tournament.descalificados) tournament.descalificados = [];
             if (!tournament.descalificados.includes(targetId)) {
                 tournament.descalificados.push(targetId);
             }
 
-            // 4. Resolver enfrentamientos
+            // Resolver enfrentamientos
             const pendingMatches = await Match.find({
                 torneo: id,
                 ganador: { $exists: false },

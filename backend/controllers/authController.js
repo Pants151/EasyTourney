@@ -12,19 +12,19 @@ exports.register = async (req, res) => {
     try {
         const { username, email, password, pais, fechaNacimiento, idioma, rol } = req.body;
 
-        // 1. Verificar si el correo ya existe
+        // Verificar si el correo ya existe
         let userEmail = await User.findOne({ email });
         if (userEmail) {
             return res.status(400).json({ msg: 'Este correo electrónico ya está registrado.' }); //
         }
 
-        // 2. Verificar si el nombre de usuario ya existe
+        // Verificar si el nombre de usuario ya existe
         let userUsername = await User.findOne({ username });
         if (userUsername) {
             return res.status(400).json({ msg: 'El nombre de usuario ya está en uso.' }); // Nuevo control
         }
 
-        // 3. Crear el nuevo usuario
+        // Crear el nuevo usuario
         const user = new User({
             username,
             email,
@@ -35,11 +35,11 @@ exports.register = async (req, res) => {
             rol
         });
 
-        // 4. Encriptar contraseña
+        // Encriptar contraseña
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt); //
 
-        // 5. Guardar en la base de datos
+        // Guardar en la base de datos
         await user.save(); //
 
         res.status(201).json({ msg: 'Usuario registrado correctamente' }); //
@@ -55,13 +55,13 @@ exports.login = async (req, res) => {
     try {
         const { email, password, forceLogout } = req.body; // Se añade forceLogout
 
-        // 1. Verificar si el usuario existe
+        // Verificar si el usuario existe
         let user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ msg: 'Credenciales inválidas' });
         }
 
-        // 2. Comparar la contraseña ingresada con la encriptada en la BD
+        // Comparar la contraseña ingresada con la encriptada en la BD
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ msg: 'Credenciales inválidas' });
@@ -92,7 +92,7 @@ exports.login = async (req, res) => {
         user.sessionToken = sessionToken;
         await user.save();
 
-        // 3. Si todo es correcto, crear el JWT inyectando el sessionToken
+        // Si todo es correcto, crear el JWT inyectando el sessionToken
         const payload = {
             user: {
                 id: user.id,
@@ -300,7 +300,7 @@ const performCascadeDelete = async (user) => {
         }
     }
 
-    // 3. Finalmente, borrar el usuario
+    // Finalmente, borrar el usuario
     await User.findByIdAndDelete(userId);
 };
 
@@ -522,20 +522,20 @@ exports.forgotPassword = async (req, res) => {
             return res.status(404).json({ msg: 'No existe ningún usuario con ese correo electrónico' });
         }
 
-        // 1. Generar token de reseteo aleatorio
+        // Generar token de reseteo aleatorio
         const resetToken = crypto.randomBytes(20).toString('hex');
 
-        // 2. Guardar token y expiración en el usuario (1 hora de validez)
+        // Guardar token y expiración en el usuario (1 hora de validez)
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hora en ms
         await user.save();
 
-        // 3. Generar URL de reseteo
+        // Generar URL de reseteo
         // Se asume que en el FRONTEND_URL está la URL de la aplicación React (ej. http://localhost:3000)
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
-        // 4. Crear mensaje y enviar correo
+        // Crear mensaje y enviar correo
         const message = `Has recibido este correo porque tú (o alguien más) ha solicitado el restablecimiento de la contraseña en EasyTourney.\n\nPor favor, haz clic en el siguiente enlace, o pégalo en tu navegador para completar el proceso:\n\n${resetUrl}\n\nSi no fuiste tú, por favor ignora este correo y tu contraseña permanecerá sin cambios.\n`;
 
         try {
@@ -564,7 +564,7 @@ exports.forgotPassword = async (req, res) => {
 // Restablecer contraseña con el token
 exports.resetPassword = async (req, res) => {
     try {
-        // 1. Buscar usuario con ese token que además no haya expirado
+        // Buscar usuario con ese token que además no haya expirado
         const user = await User.findOne({
             resetPasswordToken: req.params.token,
             resetPasswordExpires: { $gt: Date.now() }
@@ -574,17 +574,17 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ msg: 'El token de recuperación de contraseña es inválido o ha expirado.' });
         }
 
-        // 2. Validar contraseña
+        // Validar contraseña
         const { password } = req.body;
         if (!password || password.length < 6) {
             return res.status(400).json({ msg: 'La nueva contraseña debe tener al menos 6 caracteres.' });
         }
 
-        // 3. Hashear la nueva contraseña y guardarla
+        // Hashear la nueva contraseña y guardarla
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
 
-        // 4. Limpiar los campos del token para que no se reusen
+        // Limpiar los campos del token para que no se reusen
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
 
