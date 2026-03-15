@@ -15,29 +15,43 @@ const Account = () => {
     const [passwords, setPasswords] = useState({ passwordActual: '', passwordNuevo: '' });
 
     useEffect(() => {
-        // Solo sincronizar si el usuario existe y ha cambiado (o es la primera vez que lo recibimos completo)
-        if (user && user.email) {
-            let formattedDate = '';
-            if (user.fechaNacimiento) {
+        const syncData = async () => {
+            if (!user) return;
+
+            let fullUser = user;
+            // Si venimos del Login, el contexto solo tiene {id, username, rol}. Faltan datos.
+            if (!user.email) {
                 try {
-                    formattedDate = new Date(user.fechaNacimiento).toISOString().split('T')[0];
+                    fullUser = await authService.getProfile();
+                } catch (e) {
+                    console.error("Error obteniendo perfil completo", e);
+                    return; // Si falla, nos quedamos con lo básico
+                }
+            }
+
+            let formattedDate = '';
+            if (fullUser.fechaNacimiento) {
+                try {
+                    formattedDate = new Date(fullUser.fechaNacimiento).toISOString().split('T')[0];
                 } catch (e) { }
             }
 
             let userIdiomas = [];
-            if (user.idioma) {
-                userIdiomas = Array.isArray(user.idioma) ? user.idioma : user.idioma.split(',');
+            if (fullUser.idioma) {
+                userIdiomas = Array.isArray(fullUser.idioma) ? fullUser.idioma : fullUser.idioma.split(',');
             }
 
             setFormData({
-                username: user.username || '',
-                email: user.email || '',
-                rol: user.rol || '',
-                pais: user.pais || 'España',
+                username: fullUser.username || '',
+                email: fullUser.email || '',
+                rol: fullUser.rol || '',
+                pais: fullUser.pais || 'España',
                 fechaNacimiento: formattedDate,
                 idioma: userIdiomas
             });
-        }
+        };
+
+        syncData();
     }, [user]);
 
     // PROTECCIÓN: Si el usuario no existe, redirigir a login
@@ -47,26 +61,12 @@ const Account = () => {
         }
     }, [user, loading, navigate]);
 
-    if (loading) {
+    if (!user || (user && !user.email && formData.email === '')) {
+        // Mostramos cargando si no hay usuario, o si acaba de llegar del login y estamos buscando sus datos
         return (
             <div className="container py-5 mt-navbar text-center text-white">
                 <div className="spinner-border text-accent mb-3" role="status"></div>
-                <p className="text-uppercase fw-bold">Verificando sesión...</p>
-            </div>
-        );
-    }
-
-    // Si no hay email pero el AuthContext ya no está "loading", es que el perfil ha fallado
-    // Renderizamos de todos modos para que el usuario no se quede bloqueado,
-    // o al menos mostramos un mensaje de error si es crítico.
-    if (user && !user.email) {
-        return (
-            <div className="container py-5 mt-navbar text-center text-white">
-                <div className="spinner-border text-accent mb-3" role="status"></div>
-                <p className="text-uppercase fw-bold">Sincronizando perfil...</p>
-                <button className="btn btn-outline-light btn-sm mt-3" onClick={() => window.location.reload()}>
-                    Reintentar conexión
-                </button>
+                <p className="text-uppercase fw-bold">Cargando datos de tu cuenta...</p>
             </div>
         );
     }
