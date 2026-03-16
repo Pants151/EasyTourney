@@ -4,11 +4,22 @@
 
 La aplicación funciona como una **PWA (Progressive Web App)**, lo que permite instalarla en dispositivos móviles y de escritorio, además de ofrecer soporte básico para funcionamiento offline.
 
+## 🌐 Versión Online (Live Demo)
+
+¡No es necesario configurar el proyecto localmente para probarlo! Se han utilizado **Vercel** (para el frontend) y **Render** (para el backend) para poner en marcha la aplicación en la web.
+
+🔗 **Enlace de la web:** [https://easytourney-eta.vercel.app/](https://easytourney-eta.vercel.app/)
+
+> [!NOTE]  
+> **Importante:** La base de datos puede tardar en cargar inicialmente debido a que la página se pone a "dormir" tras un tiempo de inactividad para ahorrar memoria. Es necesario esperar entre **30 y 60 segundos** para que se conecte la primera vez.
+
 ---
 
 ## 🚀 Puesta en Marcha
 
-Sigue estos pasos para ejecutar el proyecto en tu máquina local:
+Si prefieres ejecutar el proyecto en tu máquina local, sigue estos pasos:
+
+
 
 ### 1. Requisitos Previos
 - Tener instalado [Node.js](https://nodejs.org/) (versión 16 o superior recomendada).
