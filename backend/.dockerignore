@@ -1,0 +1,4 @@
+# Ignorar dependencias locales y entorno
+node_modules
+npm-debug.log
+.env
