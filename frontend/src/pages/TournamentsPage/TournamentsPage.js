@@ -8,7 +8,7 @@ const TournamentsPage = () => {
     const [tournaments, setTournaments] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [limits, setLimits] = useState({ abiertos: 4, enCurso: 4, finalizados: 4 });
-    const { user, loading } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const gameFilter = searchParams.get('game');

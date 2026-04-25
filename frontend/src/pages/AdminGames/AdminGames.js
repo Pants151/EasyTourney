@@ -128,7 +128,6 @@ const AdminGames = () => {
         downloadAnchorNode.remove();
     };
 
-    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handlePlatformSelect = (e) => {
         const value = e.target.value;
