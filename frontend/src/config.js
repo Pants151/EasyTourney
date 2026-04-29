@@ -1,7 +1,7 @@
 // Configuración unificada
 // Cambiar IS_PRODUCTION a true para deploy en Render
 
-const IS_PRODUCTION = false;
+const IS_PRODUCTION = true;
 
 const config = {
     API_URL: IS_PRODUCTION
