@@ -18,6 +18,8 @@ import EditTournament from './pages/EditTournament/EditTournament';
 import AdminTournaments from './pages/AdminTournaments/AdminTournaments';
 import GamesPage from './pages/GamesPage/GamesPage';
 import AdminUsers from './pages/AdminUsers/AdminUsers';
+import AdminTeams from './pages/AdminTeams/AdminTeams';
+import AdminMatches from './pages/AdminMatches/AdminMatches';
 import AboutUs from './pages/AboutUs/AboutUs';
 import ContactUs from './pages/ContactUs/ContactUs';
 import AdminEditUser from './pages/AdminEditUser/AdminEditUser';
@@ -52,6 +54,8 @@ function App() {
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/admin/tournaments" element={<AdminTournaments />} />
+              <Route path="/admin/teams" element={<AdminTeams />} />
+              <Route path="/admin/matches" element={<AdminMatches />} />
               <Route path="/admin/edit-user/:id" element={<AdminEditUser />} />
             </Routes>
           </main>

@@ -76,6 +76,16 @@ const Navbar = () => {
                                             <i className="icon-custom icon-eye me-2 small"></i> JUEGOS
                                         </Link>
                                     </li>
+                                    <li>
+                                        <Link className="dropdown-item py-2 px-4 fw-bold" to="/admin/teams" onClick={handleNavigation}>
+                                            <i className="icon-custom icon-eye me-2 small"></i> EQUIPOS
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item py-2 px-4 fw-bold" to="/admin/matches" onClick={handleNavigation}>
+                                            <i className="icon-custom icon-eye me-2 small"></i> MATCHES
+                                        </Link>
+                                    </li>
                                     <li><hr className="dropdown-divider border-secondary" /></li>
                                     <li>
                                         <Link className="dropdown-item py-2 px-4 fw-bold" to="/admin-users" onClick={handleNavigation}>

@@ -54,6 +54,8 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/games', require('./routes/gameRoutes'));
 app.use('/api/tournaments', tournamentRoutes);
+app.use('/api/teams', require('./routes/teamRoutes'));
+app.use('/api/matches', require('./routes/matchRoutes'));
 
 connectDB();
 
