@@ -47,7 +47,7 @@ const AdminTeams = () => {
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
-            setSelectedIds(filteredTeams.map(t => t._id));
+            setSelectedIds(filteredTeams.filter(t => t.torneo?.estado !== 'En curso').map(t => t._id));
         } else {
             setSelectedIds([]);
         }

@@ -88,7 +88,7 @@ const AdminTeamsView = ({
                                             type="checkbox"
                                             className="form-check-input"
                                             onChange={handleSelectAll}
-                                            checked={selectedIds.length === filteredTeams.length && filteredTeams.length > 0}
+                                            checked={selectedIds.length > 0 && selectedIds.length === filteredTeams.filter(t => t.torneo?.estado !== 'En curso').length}
                                         />
                                     </th>
                                     <th>Nombre Equipo</th>
@@ -100,16 +100,21 @@ const AdminTeamsView = ({
                             </thead>
                             <tbody>
                                 {currentItems.map(t => (
-                                    <tr key={t._id} className="border-bottom border-secondary">
+                                    <tr key={t._id} className={`border-bottom border-secondary ${t.torneo?.estado === 'En curso' ? 'opacity-75' : ''}`}>
                                         <td className="ps-4">
                                             <input
                                                 type="checkbox"
                                                 className="form-check-input"
                                                 checked={selectedIds.includes(t._id)}
                                                 onChange={() => handleSelectOne(t._id)}
+                                                disabled={t.torneo?.estado === 'En curso'}
+                                                title={t.torneo?.estado === 'En curso' ? 'No se puede seleccionar (Torneo en curso)' : ''}
                                             />
                                         </td>
-                                        <td className="fw-bold fs-5 text-white">{t.nombre}</td>
+                                        <td className="fw-bold fs-5 text-white">
+                                            {t.nombre}
+                                            {t.torneo?.estado === 'En curso' && <span className="badge bg-warning text-dark ms-2 small">En curso</span>}
+                                        </td>
                                         <td>{t.capitan?.username || 'Desconocido'}</td>
                                         <td>{t.torneo?.nombre || 'Eliminado'}</td>
                                         <td>{t.miembros?.length || 0} / 5</td>
@@ -125,7 +130,8 @@ const AdminTeamsView = ({
                                                 <button
                                                     className="btn btn-sm btn-outline-danger fw-bold"
                                                     onClick={() => handleDelete(t._id)}
-                                                    title="Borrar"
+                                                    title={t.torneo?.estado === 'En curso' ? "Torneo en curso: No se puede borrar" : "Borrar"}
+                                                    disabled={t.torneo?.estado === 'En curso'}
                                                 >
                                                     <i className="icon-custom icon-x"></i>
                                                 </button>
@@ -192,6 +198,7 @@ const AdminTeamsView = ({
                                         <p><strong>ID:</strong> {item._id}</p>
                                         <p><strong>Capitán:</strong> {item.capitan?.username} ({item.capitan?.email})</p>
                                         <p><strong>Torneo:</strong> {item.torneo?.nombre} ({item.torneo?.formato})</p>
+                                        <p><strong>Estado del Torneo:</strong> {item.torneo?.estado || 'Desconocido'}</p>
                                         <p><strong>Miembros ({item.miembros?.length}):</strong></p>
                                         <ul>
                                             {item.miembros?.map(m => (

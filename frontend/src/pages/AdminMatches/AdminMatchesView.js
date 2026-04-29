@@ -88,7 +88,7 @@ const AdminMatchesView = ({
                                             type="checkbox"
                                             className="form-check-input"
                                             onChange={handleSelectAll}
-                                            checked={selectedIds.length === filteredMatches.length && filteredMatches.length > 0}
+                                            checked={selectedIds.length > 0 && selectedIds.length === filteredMatches.filter(m => m.torneo?.estado !== 'En curso').length}
                                         />
                                     </th>
                                     <th>Torneo</th>
@@ -100,16 +100,21 @@ const AdminMatchesView = ({
                             </thead>
                             <tbody>
                                 {currentItems.map(m => (
-                                    <tr key={m._id} className="border-bottom border-secondary">
+                                    <tr key={m._id} className={`border-bottom border-secondary ${m.torneo?.estado === 'En curso' ? 'opacity-75' : ''}`}>
                                         <td className="ps-4">
                                             <input
                                                 type="checkbox"
                                                 className="form-check-input"
                                                 checked={selectedIds.includes(m._id)}
                                                 onChange={() => handleSelectOne(m._id)}
+                                                disabled={m.torneo?.estado === 'En curso'}
+                                                title={m.torneo?.estado === 'En curso' ? 'No se puede seleccionar (Torneo en curso)' : ''}
                                             />
                                         </td>
-                                        <td className="fw-bold fs-5 text-white">{m.torneo?.nombre || 'Desconocido'}</td>
+                                        <td className="fw-bold fs-5 text-white">
+                                            {m.torneo?.nombre || 'Desconocido'} 
+                                            {m.torneo?.estado === 'En curso' && <span className="badge bg-warning text-dark ms-2 small">En curso</span>}
+                                        </td>
                                         <td>{m.ronda}</td>
                                         <td>
                                             {m.jugador1?.username || m.equipo1?.nombre || 'TBD'} vs {m.jugador2?.username || m.equipo2?.nombre || 'TBD'}
@@ -127,7 +132,8 @@ const AdminMatchesView = ({
                                                 <button
                                                     className="btn btn-sm btn-outline-danger fw-bold"
                                                     onClick={() => handleDelete(m._id)}
-                                                    title="Borrar"
+                                                    title={m.torneo?.estado === 'En curso' ? "Torneo en curso: No se puede borrar" : "Borrar"}
+                                                    disabled={m.torneo?.estado === 'En curso'}
                                                 >
                                                     <i className="icon-custom icon-x"></i>
                                                 </button>
@@ -193,6 +199,7 @@ const AdminMatchesView = ({
                                         <h4 className="text-accent fw-bold">Match en {item.torneo?.nombre || 'Desconocido'}</h4>
                                         <p><strong>ID:</strong> {item._id}</p>
                                         <p><strong>Ronda:</strong> {item.ronda}</p>
+                                        <p><strong>Estado del Torneo:</strong> {item.torneo?.estado || 'Desconocido'}</p>
                                         <p><strong>Participante 1:</strong> {item.jugador1?.username || item.equipo1?.nombre || 'TBD'} (ID: {item.jugador1?._id || item.equipo1?._id || item.jugador1 || item.equipo1})</p>
                                         <p><strong>Participante 2:</strong> {item.jugador2?.username || item.equipo2?.nombre || 'TBD'} (ID: {item.jugador2?._id || item.equipo2?._id || item.jugador2 || item.equipo2})</p>
                                         <p><strong>Ganador:</strong> {item.ganador || 'No decidido'}</p>
