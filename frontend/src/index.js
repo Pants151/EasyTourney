@@ -11,6 +11,13 @@ root.render(
   </React.StrictMode>
 );
 
+// Captura global del evento de instalación PWA para que no se pierda al navegar
+window.deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window.deferredPrompt = e;
+});
+
 // Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

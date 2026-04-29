@@ -31,14 +31,17 @@ const Home = () => {
     }, []);
 
     const handleInstallClick = async () => {
-        if (!deferredPrompt) {
+        const promptEvent = deferredPrompt || window.deferredPrompt;
+        
+        if (!promptEvent) {
             alert("Si el instalador no se abre automáticamente puede deberse a dos motivos:\n\n1. Ya tienes la App instalada en tu dispositivo.\n2. Tu navegador (Brave, Safari, Firefox...) requiere instalación manual. Busca el icono de descarga en la barra de direcciones, o pulsa 'Añadir a la pantalla de inicio' en el menú de opciones.");
             return;
         }
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
+        promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
         if (outcome === 'accepted') {
             setDeferredPrompt(null);
+            window.deferredPrompt = null;
         }
     };
 
