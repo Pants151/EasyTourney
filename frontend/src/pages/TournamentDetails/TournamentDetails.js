@@ -324,6 +324,20 @@ const TournamentDetails = () => {
     };
 
     const handleAddStream = async () => {
+        const { plataforma, url } = streamData;
+        
+        if (!url || url.trim() === "") {
+            return alert("Por favor, introduce un enlace válido.");
+        }
+
+        if (plataforma === 'Twitch' && !url.toLowerCase().includes('twitch.tv')) {
+            return alert("El enlace introducido no parece ser de Twitch. Asegúrate de incluir 'twitch.tv' en la URL.");
+        }
+        
+        if (plataforma === 'YouTube' && !url.toLowerCase().includes('youtube.com') && !url.toLowerCase().includes('youtu.be')) {
+            return alert("El enlace introducido no parece ser de YouTube. Asegúrate de incluir 'youtube.com' o 'youtu.be' en la URL.");
+        }
+
         try {
             const updatedStreams = [...(tournament.streams || []), streamData];
             await tournamentService.updateTournament(id, { streams: updatedStreams });
