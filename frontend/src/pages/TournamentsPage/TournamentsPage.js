@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'; // Añadido useContext
 import tournamentService from '../../services/tournamentService';
+import gameService from '../../services/gameService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext'; // Importar el contexto
 import TournamentsPageView from './TournamentsPageView';
@@ -8,6 +9,7 @@ const TournamentsPage = () => {
     const [tournaments, setTournaments] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [limits, setLimits] = useState({ abiertos: 4, enCurso: 4, finalizados: 4 });
+    const [gameTitle, setGameTitle] = useState("");
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -43,6 +45,17 @@ const TournamentsPage = () => {
         fetchTournaments();
     }, []);
 
+    useEffect(() => {
+        if (gameFilter) {
+            gameService.getGames().then(games => {
+                const targetGame = games.find(g => g._id === gameFilter);
+                if (targetGame) setGameTitle(targetGame.nombre);
+            }).catch(e => console.error(e));
+        } else {
+            setGameTitle("");
+        }
+    }, [gameFilter]);
+
     const filtered = tournaments.filter(t => {
         const matchesSearch = t.nombre.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesGame = gameFilter ? (t.juego?._id === gameFilter) : true;
@@ -50,8 +63,9 @@ const TournamentsPage = () => {
     });
 
     const getPageTitle = () => {
+        if (gameTitle) return `TORNEOS DE ${gameTitle.toUpperCase()}`;
         if (gameFilter && filtered.length > 0) {
-            return `TORNEOS DE ${filtered[0].juego?.nombre}`;
+            return `TORNEOS DE ${filtered[0].juego?.nombre?.toUpperCase()}`;
         }
         return "TORNEOS";
     };

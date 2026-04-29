@@ -31,7 +31,7 @@ const getTournaments = async () => {
         try {
             return (await axios.get(API_URL)).data;
         } finally {
-            setTimeout(() => { tournamentsPromise = null; }, 1000);
+            tournamentsPromise = null;
         }
     })();
     return tournamentsPromise;
@@ -44,7 +44,7 @@ const getTournamentById = async (id) => {
         try {
             return (await axios.get(`${API_URL}/${id}`)).data;
         } finally {
-            setTimeout(() => { delete tournamentDetailPromises[id]; }, 1000);
+            delete tournamentDetailPromises[id];
         }
     })();
     return tournamentDetailPromises[id];

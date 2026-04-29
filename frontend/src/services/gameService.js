@@ -17,7 +17,7 @@ const getGames = async () => {
         try {
             return (await axios.get(API_URL)).data;
         } finally {
-            setTimeout(() => { gamesPromise = null; }, 1000);
+            gamesPromise = null;
         }
     })();
     return gamesPromise;
