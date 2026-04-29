@@ -207,10 +207,22 @@ exports.getTournamentById = async (req, res) => {
                     const id = rawGanadoresBR[index]?.toString();
                     if (id) {
                         if (isTeam) {
+                            // Intento manual de encontrarlo en los equipos actuales por si falló el populate
+                            const existingTeam = tournament.equipos.find(t => t && t._id && t._id.toString() === id);
+                            if (existingTeam && existingTeam.nombre && existingTeam.nombre !== "EQUIPO DESCALIFICADO") {
+                                return existingTeam;
+                            }
+
                             const snapEquipName = getSnap(snapEquips, id);
                             if (snapEquipName) return { _id: id, nombre: snapEquipName, isBot: true };
                             return { _id: id, nombre: "EQUIPO DESCALIFICADO", isBot: false, isDeleted: true };
                         } else {
+                            // Intento manual de encontrarlo en los participantes
+                            const existingUser = tournament.participantes.find(p => p && p._id && p._id.toString() === id);
+                            if (existingUser && existingUser.username && existingUser.username !== "DESCALIFICADO") {
+                                return existingUser;
+                            }
+
                             const snapName = getSnap(snapBots, id);
                             if (snapName) {
                                 const isDeletedRealUser = snapName.includes('(Descalificado)');
@@ -582,6 +594,14 @@ exports.updateTournament = async (req, res) => {
         }
 
         Object.assign(tournament, req.body);
+        
+        // Sincronizar tipos de ganador si el formato cambió
+        if (req.body.formato) {
+            const isTeam = ['Equipos', 'Battle Royale - Por equipos'].includes(req.body.formato);
+            tournament.ganadorTipo = isTeam ? 'Team' : 'User';
+            tournament.tipoGanadorRonda = req.body.formato === 'Battle Royale - Por equipos' ? 'Team' : 'User';
+        }
+
         await tournament.save();
         res.json(tournament);
     } catch (err) {
