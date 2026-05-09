@@ -975,7 +975,7 @@ exports.addBot = async (req, res) => {
                 const botName = await generateUniqueBotName(baseBotName);
                 const botUser = new User({
                     username: botName,
-                    email: botName.toLowerCase() + '@bot.easytourney',
+                    email: `${botName.toLowerCase()}_${Date.now()}@bot.easytourney`,
                     password: 'bot_no_login',
                     rol: 'participante',
                     isBot: true
@@ -1004,7 +1004,7 @@ exports.addBot = async (req, res) => {
             const botName = await generateUniqueBotName(baseBotName);
             const botUser = new User({
                 username: botName,
-                email: botName.toLowerCase() + '@bot.easytourney',
+                email: `${botName.toLowerCase()}_${Date.now()}@bot.easytourney`,
                 password: 'bot_no_login',
                 rol: 'participante',
                 isBot: true
