@@ -1,0 +1,380 @@
+[{
+  "_id": {
+    "$oid": "694fa9c266b104ee30da6d10"
+  },
+  "nombre": "Super Smash Bros. Ultimate",
+  "plataformas": [
+    "Switch"
+  ],
+  "caratula": "https://i.pinimg.com/originals/0f/a9/80/0fa9804d3650fa7b50550a6adcfaf7d6.jpg",
+  "logo": "https://preview.redd.it/does-the-smash-logo-mean-anything-or-is-it-just-supposed-to-v0-ow0ttgzkbbob1.jpg?width=640&crop=smart&auto=webp&s=b460ea3a41b0af19172a4e25ca7c180aaa8d4681",
+  "fechaAñadido": {
+    "$date": "2025-12-27T09:41:22.308Z"
+  },
+  "__v": 0,
+  "header": "https://images.gamebanana.com/img/Webpage/Game/Profile/Background/5b38fc9f3a676.jpg"
+},
+{
+  "_id": {
+    "$oid": "694fac54825d4a00e124579c"
+  },
+  "nombre": "Fortnite",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "PS4",
+    "Xbox Series X",
+    "Xbox Series S",
+    "Xbox One",
+    "Nintendo Switch",
+    "Mobile"
+  ],
+  "caratula": "https://m.media-amazon.com/images/M/MV5BNmE4YWE1MjItMzY5Yi00NTY1LTllMjUtZDI1ZDU4Mjg1ZWE5XkEyXkFqcGc@._V1_.jpg",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Fortnite_F_lettermark_logo.png",
+  "fechaAñadido": {
+    "$date": "2025-12-27T09:52:20.500Z"
+  },
+  "__v": 1,
+  "header": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQcggu1ZpvOH9_7pct5nVRZkW9jFR3ubX8_g&s"
+},
+{
+  "_id": {
+    "$oid": "694fadf8825d4a00e12457a5"
+  },
+  "nombre": "Counter Strike 2",
+  "plataformas": [
+    "PC"
+  ],
+  "caratula": "https://areajugones.sport.es/wp-content/uploads/2023/03/counter-strike-2-2-473x588.jpg",
+  "logo": "https://cdn2.steamgriddb.com/icon/fe772ff1261b820e437821342b445539/32/256x256.png",
+  "fechaAñadido": {
+    "$date": "2025-12-27T09:59:20.612Z"
+  },
+  "__v": 0,
+  "header": "https://developer.valvesoftware.com/w/images/thumb/1/10/Event_Header_-_Counter-Strike_2.png/550px-Event_Header_-_Counter-Strike_2.png"
+},
+{
+  "_id": {
+    "$oid": "694faf4f825d4a00e12457b1"
+  },
+  "nombre": "Tekken 8",
+  "plataformas": [
+    "PS5",
+    "Xbox Series X",
+    "Xbox Series S",
+    "PC"
+  ],
+  "caratula": "https://image.api.playstation.com/vulcan/ap/rnd/202212/2009/04S9doVJzhHa0OE8o8wax88S.png",
+  "logo": "https://shared.fastly.steamstatic.com/community_assets/images/apps/1778820/3ffacb2d80bbe1d77f006ce9244db1fc75ee7759.ico",
+  "fechaAñadido": {
+    "$date": "2025-12-27T10:05:03.621Z"
+  },
+  "__v": 0,
+  "header": "https://cms-images.mmst.eu/nzwrdbjwhn3t/6zC0md3383t6IWdyacvk7O/f31b0ea9467a0fb5ca629f71ce0d61f5/Tekken-8-header.jpg?q=80"
+},
+{
+  "_id": {
+    "$oid": "694fafcb825d4a00e12457b5"
+  },
+  "nombre": "Rocket League",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "PS4",
+    "Xbox Series X",
+    "Xbox Series S",
+    "Xbox One",
+    "Nintendo Switch"
+  ],
+  "caratula": "https://static0.polygonimages.com/wordpress/wp-content/uploads/sharedimages/2024/12/mixcollage-06-dec-2024-03-09-pm-3912.jpg",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Rocket_League_coverart.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-27T10:07:07.016Z"
+  },
+  "__v": 0,
+  "header": "https://images.squarespace-cdn.com/content/v1/54d1a3c7e4b0d35ba4ba1e3e/eb8531df-e7e9-4d31-a31b-a3c9218b1e20/Rocket-League-Banner.jpg"
+},
+{
+  "_id": {
+    "$oid": "694fb017825d4a00e12457b9"
+  },
+  "nombre": "Overwatch 2",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "PS4",
+    "Xbox Series X",
+    "Xbox Series S",
+    "Xbox One",
+    "Nintendo Switch"
+  ],
+  "caratula": "https://m.media-amazon.com/images/M/MV5BOGMxODVmNDgtZGE1Yy00Y2VlLTk3ZTMtYzU5YTcxODhiNzMxXkEyXkFqcGc@._V1_.jpg",
+  "logo": "https://images.seeklogo.com/logo-png/49/2/overwatch-2-logo-png_seeklogo-493763.png",
+  "fechaAñadido": {
+    "$date": "2025-12-27T10:08:23.651Z"
+  },
+  "__v": 0,
+  "header": "https://bnetcmsus-a.akamaihd.net/cms/blog_header/wu/WUEVBTRBRKUE1671214936790.png"
+},
+{
+  "_id": {
+    "$oid": "69511d8d7d70fb5b0b6a4148"
+  },
+  "nombre": "Valorant",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "Xbox Series X/S"
+  ],
+  "caratula": "https://media.vandal.net/m/78531/valorant-202052910331074_1.jpg",
+  "logo": "https://images.seeklogo.com/logo-png/37/2/valorant-logo-png_seeklogo-379976.png",
+  "header": "https://mmos.com/wp-content/uploads/2021/06/valorant-heroes-grayscale-banner.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:07:41.282Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69511e627d70fb5b0b6a415a"
+  },
+  "nombre": "Apex Legends",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "PS4",
+    "Xbox Series X/S",
+    "Xbox One",
+    "Nintendo Switch"
+  ],
+  "caratula": "https://i.pinimg.com/736x/20/42/c7/2042c777c911be32250a5a5ea6745056.jpg",
+  "logo": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Apex_legends_simple_logo.jpg",
+  "header": "https://www.ninjarefinery.com/wp-content/uploads/2022/06/Apex-Legends-Banner.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:11:14.564Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69511eff7d70fb5b0b6a415e"
+  },
+  "nombre": "Rainbow Six Siege",
+  "plataformas": [
+    "PC",
+    "PS4",
+    "PS5",
+    "Xbox One",
+    "Xbox Series X/S"
+  ],
+  "caratula": "https://m.media-amazon.com/images/I/61BlQmnK8XS._AC_UF894,1000_QL80_.jpg",
+  "logo": "https://sw6.elbenwald.de/media/96/e2/44/1633451371/E1063325_3.jpg",
+  "header": "https://staticctf.ubisoft.com/J3yJr34U2pZ2Ieem48Dwy9uqj5PNUQTn/1GUGTgi7diwlJlK2bQuD7d/1034c84cf28498b2baa56b4f55ef1dee/r6sx-heroBanner.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:13:51.135Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69511fa47d70fb5b0b6a4162"
+  },
+  "nombre": "Call Of Duty: Warzone",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "PS4",
+    "Xbox One",
+    "Xbox Series X/S"
+  ],
+  "caratula": "https://i.3djuegos.com/juegos/18735/call_of_duty_warzone_2/fotos/ficha/call_of_duty_warzone_2-5769123.webp",
+  "logo": "https://i.etsystatic.com/15083750/r/il/b32f12/6645589492/il_570xN.6645589492_77qr.jpg",
+  "header": "https://a.storyblok.com/f/178677/2000x871/61e9ed7f7f/cod-warzone.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:16:36.607Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6951202e7d70fb5b0b6a4166"
+  },
+  "nombre": "Marvel Rivals",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "Xbox Series X/S"
+  ],
+  "caratula": "https://cdn1.epicgames.com/spt-assets/eb15454c010f4a748498cd3a62096a52/marvel-rivals-wq3mr.png",
+  "logo": "https://pbs.twimg.com/media/GsImAGjXoAAjzJB.jpg",
+  "header": "https://pbs.twimg.com/media/GJrC5x5WMAIBY2_.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:18:54.437Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695120bb7d70fb5b0b6a416a"
+  },
+  "nombre": "League of Legends",
+  "plataformas": [
+    "PC"
+  ],
+  "caratula": "https://cdn1.epicgames.com/offer/24b9b5e323bc40eea252a10cdd3b2f10/EGS_LeagueofLegends_RiotGames_S2_1200x1600-112729f9da450fe377e11d40029c4831",
+  "logo": "https://logos-world.net/wp-content/uploads/2023/02/LoL-Symbol.png",
+  "header": "https://i.redd.it/gw4h3begfrc81.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:21:15.967Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6951217e7d70fb5b0b6a4172"
+  },
+  "nombre": "Dota 2",
+  "plataformas": [
+    "PC"
+  ],
+  "caratula": "https://i.pinimg.com/736x/d1/59/e9/d159e9ca272b73f56ef2b770a7c0b17b.jpg",
+  "logo": "https://www.citypng.com/public/uploads/preview/hd-dota-2-official-logo-symbol-png-701751694788304xiqxbjto28.png?v=2025083016",
+  "header": "https://external-preview.redd.it/L-269XDCtpNmS9KaO6oq-N3BcmV1Okn4gmfTbWD_qwk.jpg?width=1080&crop=smart&auto=webp&s=efbd9996beb4f88aaa97bbf0d9c7b10d4d6bd999",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:24:30.931Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695123487d70fb5b0b6a4178"
+  },
+  "nombre": "Shrek SuperSlam",
+  "plataformas": [
+    "PS2",
+    "Xbox",
+    "Gamecube",
+    "Nintendo DS",
+    "PC"
+  ],
+  "caratula": "https://m.media-amazon.com/images/M/MV5BZTY0ZWNiMTItMmU2ZC00YzFlLTgyYmEtMDM1ZWU2NWMyNWI1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+  "logo": "https://combogamer.com/wp-content/uploads/2017/04/Shrek-SuperSlam-Banner-390x241.png.webp",
+  "header": "https://cdn2.steamgriddb.com/thumb/76da71f2454fe88fba7a71dc198a7285.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:32:08.906Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695123b77d70fb5b0b6a417c"
+  },
+  "nombre": "Teamfight Tactics (TFT)",
+  "plataformas": [
+    "PC",
+    "Mobile"
+  ],
+  "caratula": "https://m.media-amazon.com/images/M/MV5BYzM1YjdkZDItNjBjZS00NTBjLThiYmItYjM3MzZjOTNhYTdiXkEyXkFqcGc@._V1_.jpg",
+  "logo": "https://cdnb.artstation.com/p/assets/covers/images/025/410/377/large/t-j-geisen-tft-iconv2-artstation-thumbnail.jpg?1585702150",
+  "header": "https://pbs.twimg.com/media/E6r4UkvVUAIA37B.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:33:59.418Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695124457d70fb5b0b6a4180"
+  },
+  "nombre": "Hearthstone",
+  "plataformas": [
+    "PC",
+    "Mobile"
+  ],
+  "caratula": "https://uvejuegos.com/img/caratulas/51155/Hearthstone-Heroes-of-Warcraft-1842-1597921986.jpg",
+  "logo": "https://preview.redd.it/thoughs-on-the-new-app-logo-v0-i1n82a0ljsnc1.jpeg?width=640&crop=smart&auto=webp&s=73bfd87ae72f61ada3465e364a272cbdccb0a368",
+  "header": "https://bnetcmsus-a.akamaihd.net/cms/blog_header/C3RTS7JR6BE51376586154389.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:36:21.336Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "695125947d70fb5b0b6a4188"
+  },
+  "nombre": "PUBG: Battlegrounds",
+  "plataformas": [
+    "PC",
+    "PS4",
+    "PS5",
+    "Xbox One",
+    "Xbox Series X/S"
+  ],
+  "caratula": "https://cdn1.epicgames.com/spt-assets/53ec4985296b4facbe3a8d8d019afba9/pubg-battlegrounds-1rx7f.png",
+  "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8ku7ynjD6DIcRDtkYeBOxnFABgi_AcmWAYA&s",
+  "header": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/578080/841ea38bc58cabb70aef65365cf50bc2d79329d9/header.jpg?t=1764817633",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:41:56.048Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695126637d70fb5b0b6a419e"
+  },
+  "nombre": "Street Fighter 6",
+  "plataformas": [
+    "PC",
+    "PS4",
+    "PS5",
+    "Xbox Series X/S"
+  ],
+  "caratula": "https://i.3djuegos.com/juegos/18376/fotos/ficha/-5775675.webp",
+  "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdmF77EhdvLouF7Y3Pts36V2uelJLVjOyyaw&s",
+  "header": "https://preview.redd.it/qelfsqrs85o91.jpg?auto=webp&s=c7a6eb519694ca8066b423e316c30c30cfaa0ddd",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:45:23.276Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695127187d70fb5b0b6a41a2"
+  },
+  "nombre": "Mortal Kombat 1",
+  "plataformas": [
+    "PC",
+    "PS5",
+    "Xbox Series X/S",
+    "Nintendo Switch"
+  ],
+  "caratula": "https://upload.wikimedia.org/wikipedia/en/5/5b/Mortal_Kombat_1_key_art.jpeg",
+  "logo": "https://i.redd.it/y99oiewl2gza1.png",
+  "header": "https://cloudfront-eu-central-1.images.arcpublishing.com/diarioas/TLDMJ57DURBJTA4YOAPRJWWPSM.jpg",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:48:24.602Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "695128077d70fb5b0b6a41a6"
+  },
+  "nombre": "EA Sports FC 25",
+  "plataformas": [
+    "PC",
+    "PS4",
+    "PS5",
+    "Xbox One",
+    "Xbox Series X/S",
+    "Nintendo Switch"
+  ],
+  "caratula": "https://i.3djuegos.com/juegos/19862/ea_sports_fc_25/fotos/ficha/ea_sports_fc_25-5908048.jpg",
+  "logo": "https://logoeps.com/wp-content/uploads/2025/02/EA_Sports_FC_25-logo.png",
+  "header": "https://game4u.co.za/wp-content/uploads/2024/09/fc-25-banner.png.webp",
+  "fechaAñadido": {
+    "$date": "2025-12-28T12:52:23.891Z"
+  },
+  "__v": 0
+}]

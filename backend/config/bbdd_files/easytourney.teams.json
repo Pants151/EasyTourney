@@ -1,0 +1,804 @@
+[{
+  "_id": {
+    "$oid": "69ff33180ceb39b3afb237ab"
+  },
+  "nombre": "Los cartones",
+  "capitan": {
+    "$oid": "694e67ba4a5368ec8c3728d1"
+  },
+  "torneo": {
+    "$oid": "69ff302f0ceb39b3afb2366f"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "694e67ba4a5368ec8c3728d1"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff33180ceb39b3afb237ac"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "695101a73e810c83a936000f"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff33910ceb39b3afb2380d"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "695101bc3e810c83a9360012"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff33b20ceb39b3afb23840"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "6953d6c281ec171b652e4b79"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff33c80ceb39b3afb23871"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "6953d6de81ec171b652e4b7c"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff340f0ceb39b3afb238ce"
+      }
+    }
+  ],
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "69ff42da0ceb39b3afb25024"
+  },
+  "nombre": "Los AFK",
+  "capitan": {
+    "$oid": "69ff42da0ceb39b3afb2501c"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42da0ceb39b3afb2501c"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42da0ceb39b3afb25025"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42da0ceb39b3afb2501f"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42da0ceb39b3afb25026"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42da0ceb39b3afb25022"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42da0ceb39b3afb25027"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42db0ceb39b3afb25042"
+  },
+  "nombre": "Team Ping",
+  "capitan": {
+    "$oid": "69ff42db0ceb39b3afb2503a"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42db0ceb39b3afb2503a"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42db0ceb39b3afb25043"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42db0ceb39b3afb2503d"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42db0ceb39b3afb25044"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42db0ceb39b3afb25040"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42db0ceb39b3afb25045"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25063"
+  },
+  "nombre": "Cyber Patos",
+  "capitan": {
+    "$oid": "69ff42dc0ceb39b3afb2505b"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb2505b"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25064"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb2505e"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25065"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb25061"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25066"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25087"
+  },
+  "nombre": "Glitch Squad",
+  "capitan": {
+    "$oid": "69ff42dc0ceb39b3afb2507f"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb2507f"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25088"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb25082"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25089"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb25085"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb2508a"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250ae"
+  },
+  "nombre": "Neo Pibes",
+  "capitan": {
+    "$oid": "69ff42dc0ceb39b3afb250a6"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb250a6"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb250af"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb250a9"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb250b0"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb250ac"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb250b1"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250d8"
+  },
+  "nombre": "Pixel Gang",
+  "capitan": {
+    "$oid": "69ff42dc0ceb39b3afb250d0"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb250d0"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb250d9"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb250d3"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb250da"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb250d6"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb250db"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25105"
+  },
+  "nombre": "Los Mancos",
+  "capitan": {
+    "$oid": "69ff42dc0ceb39b3afb250fd"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb250fd"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25106"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb25100"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25107"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb25103"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25108"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25135"
+  },
+  "nombre": "Titan Lab",
+  "capitan": {
+    "$oid": "69ff42dc0ceb39b3afb2512d"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb2512d"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25136"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb25130"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25137"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff42dc0ceb39b3afb25133"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff42dc0ceb39b3afb25138"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdd8"
+  },
+  "nombre": "Keyboard Warriors",
+  "capitan": {
+    "$oid": "69ff4864197525512480fdca"
+  },
+  "torneo": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdca"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fdd9"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdcd"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fdda"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdd0"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fddb"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdd3"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fddc"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdd6"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fddd"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fe00"
+  },
+  "nombre": "Los Pro-mesas",
+  "capitan": {
+    "$oid": "69ff4864197525512480fdf2"
+  },
+  "torneo": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdf2"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fe01"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdf5"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fe02"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdf8"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fe03"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdfb"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fe04"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4864197525512480fdfe"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4864197525512480fe05"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4865197525512480fe2d"
+  },
+  "nombre": "Team Rocket (Low Cost)",
+  "capitan": {
+    "$oid": "69ff4865197525512480fe1f"
+  },
+  "torneo": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff4865197525512480fe1f"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4865197525512480fe2e"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4865197525512480fe22"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4865197525512480fe2f"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4865197525512480fe25"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4865197525512480fe30"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4865197525512480fe28"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4865197525512480fe31"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4865197525512480fe2b"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4865197525512480fe32"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4866197525512480fe5f"
+  },
+  "nombre": "Michis Galácticos",
+  "capitan": {
+    "$oid": "69ff4866197525512480fe51"
+  },
+  "torneo": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff4866197525512480fe51"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4866197525512480fe60"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4866197525512480fe54"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4866197525512480fe61"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4866197525512480fe57"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4866197525512480fe62"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4866197525512480fe5a"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4866197525512480fe63"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff4866197525512480fe5d"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff4866197525512480fe64"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb1975255124810480"
+  },
+  "nombre": "Team Hardware",
+  "capitan": {
+    "$oid": "69ff49eb1975255124810478"
+  },
+  "torneo": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff49eb1975255124810478"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb1975255124810481"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49eb197525512481047b"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb1975255124810482"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49eb197525512481047e"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb1975255124810483"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb197525512481049e"
+  },
+  "nombre": "Los Magos",
+  "capitan": {
+    "$oid": "69ff49eb1975255124810496"
+  },
+  "torneo": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff49eb1975255124810496"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb197525512481049f"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49eb1975255124810499"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb19752551248104a0"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49eb197525512481049c"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb19752551248104a1"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb19752551248104bf"
+  },
+  "nombre": "Zona Arcade",
+  "capitan": {
+    "$oid": "69ff49eb19752551248104b7"
+  },
+  "torneo": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff49eb19752551248104b7"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb19752551248104c0"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49eb19752551248104ba"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb19752551248104c1"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49eb19752551248104bd"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49eb19752551248104c2"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ec19752551248104e3"
+  },
+  "nombre": "Snack Pack",
+  "capitan": {
+    "$oid": "69ff49ec19752551248104db"
+  },
+  "torneo": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "miembros": [
+    {
+      "usuario": {
+        "$oid": "69ff49ec19752551248104db"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49ec19752551248104e4"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49ec19752551248104de"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49ec19752551248104e5"
+      }
+    },
+    {
+      "usuario": {
+        "$oid": "69ff49ec19752551248104e1"
+      },
+      "estado": "Aceptado",
+      "_id": {
+        "$oid": "69ff49ec19752551248104e6"
+      }
+    }
+  ],
+  "__v": 0
+}]

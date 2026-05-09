@@ -1,0 +1,1823 @@
+[{
+  "_id": {
+    "$oid": "694e67ba4a5368ec8c3728d1"
+  },
+  "username": "BrasucaPro",
+  "email": "participante@gmail.com",
+  "password": "$2b$10$EyXJFSlZ/qkyJs4IjnkSQu1mcPVh1VSR5rmMaFnH.pDYScHoRBcwO",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-26T10:47:22.086Z"
+  },
+  "__v": 1,
+  "sessionToken": "cbf7a66afaaba6837bf70de11c68aa05",
+  "isBot": false,
+  "fechaNacimiento": {
+    "$date": "2000-01-01T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "694e6f9729ef28fd4f1270b2"
+  },
+  "username": "Organizador",
+  "email": "organizador@gmail.com",
+  "password": "$2b$10$QCHZA01sRgP4FGlNg8z7n.Q/x.8kEpStGmKRwOYyD4KIeM3eQAc3O",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "organizador",
+  "fechaRegistro": {
+    "$date": "2025-12-26T11:20:55.187Z"
+  },
+  "__v": 1,
+  "sessionToken": null,
+  "isBot": false
+},
+{
+  "_id": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "username": "admin",
+  "email": "admin@gmail.com",
+  "password": "$2b$10$VShAcOQ7hACVVjrg1LnbMOKw1aRwRQkriwzFYgvOACZ/OWTBL.4SO",
+  "pais": "España",
+  "idioma": [
+    "es",
+    "en"
+  ],
+  "rol": "administrador",
+  "fechaRegistro": {
+    "$date": "2025-12-27T09:26:26.323Z"
+  },
+  "__v": 4,
+  "sessionToken": "1e6760d642f315b977a2b76b5b63281c",
+  "isBot": false,
+  "fechaNacimiento": {
+    "$date": "2002-04-30T00:00:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "695101a73e810c83a936000f"
+  },
+  "username": "as3re60",
+  "email": "participante2@gmail.com",
+  "password": "$2b$10$V7OP1KCT5a6jD1pctnSHgOoibU22VDc8Q50uw2fzsY9LvEj17qIcS",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-28T10:08:39.128Z"
+  },
+  "__v": 1,
+  "sessionToken": null,
+  "isBot": false
+},
+{
+  "_id": {
+    "$oid": "695101bc3e810c83a9360012"
+  },
+  "username": "toniguaixD",
+  "email": "participante3@gmail.com",
+  "password": "$2b$10$NPx.u1y6VhJp2jOiD2Dg2eBK2MLtV8KFItE0c/Gb2064mwXjuZkqS",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-28T10:09:00.368Z"
+  },
+  "__v": 1,
+  "sessionToken": null,
+  "isBot": false
+},
+{
+  "_id": {
+    "$oid": "6953d6c281ec171b652e4b79"
+  },
+  "username": "Asesino_Pro_001",
+  "email": "participante4@gmail.com",
+  "password": "$2b$10$9CJwNOKU4zzG43LhFhZHjekKDHPRuKto.tfrnyVngArgiQl.ppTtu",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-30T13:42:26.588Z"
+  },
+  "__v": 1,
+  "sessionToken": null,
+  "fechaNacimiento": null,
+  "isBot": false
+},
+{
+  "_id": {
+    "$oid": "6953d6de81ec171b652e4b7c"
+  },
+  "username": "fcm22",
+  "email": "participante5@gmail.com",
+  "password": "$2b$10$rGoPOQZOp5MTpMOEdJr7UOh3MtEFEFds6Jwjuh9F0fnU1JeuQbCtK",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-30T13:42:54.202Z"
+  },
+  "__v": 1,
+  "sessionToken": null,
+  "isBot": false
+},
+{
+  "_id": {
+    "$oid": "6953d90981ec171b652e4c44"
+  },
+  "username": "Paquito",
+  "email": "participante6@gmail.com",
+  "password": "$2b$10$dacwKQ7I5xS23uaoXTCgUOZhlhPUaKrNtgwEU7gGAFB9/75oOyQLC",
+  "pais": "España",
+  "idioma": "es",
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-30T13:52:09.703Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6953d94481ec171b652e4c47"
+  },
+  "username": "Manolo",
+  "email": "participante8@gmail.com",
+  "password": "$2b$10$9Ubam8uB.Q2x/C/nYEStReBvoEAU0ywp5zBT/pWY.hmPBFPx/hpHq",
+  "pais": "España",
+  "idioma": "es",
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-30T13:53:08.056Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6953d97681ec171b652e4c69"
+  },
+  "username": "Paco Bravas",
+  "email": "participante7@gmail.com",
+  "password": "$2b$10$GNi5V6GZjDGyZmTTGVC8fephxdHyBShgldymo3aoZWebC87CBxA0a",
+  "pais": "España",
+  "idioma": "es",
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2025-12-30T13:53:58.433Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6957a4c05ee1a497d657ce8c"
+  },
+  "username": "user",
+  "email": "user@gmail.com",
+  "password": "$2b$10$xL13Z/awvYyKQxh.aZTbKukVoi32pD1spyvlySzot/Tn6rlLCj6yO",
+  "pais": "España",
+  "idioma": "es",
+  "rol": "participante",
+  "fechaRegistro": {
+    "$date": "2026-01-02T10:58:08.662Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69a5a4b06a7ea787a00e2be7"
+  },
+  "username": "Organizador2",
+  "email": "organizador2@gmail.com",
+  "password": "$2b$10$JyB15v0sbxcYj/XefqJcLeNFPGWQ5Ba2jt246LM2ybDyfcWhp.LRe",
+  "pais": "España",
+  "idioma": "es",
+  "rol": "organizador",
+  "fechaRegistro": {
+    "$date": "2026-03-02T14:54:40.110Z"
+  },
+  "__v": 0,
+  "sessionToken": null
+},
+{
+  "_id": {
+    "$oid": "69b6b1bbd1b1587ab97532e1"
+  },
+  "username": "tester",
+  "email": "tester@example.com",
+  "password": "$2b$10$266cC.CfVxvvzwoEYbLTuOUAxjanfv2H1.xdci40cd.NF27GzdLbW",
+  "pais": "España",
+  "fechaNacimiento": {
+    "$date": "1990-01-01T00:00:00.000Z"
+  },
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": false,
+  "fechaRegistro": {
+    "$date": "2026-03-15T13:18:51.736Z"
+  },
+  "__v": 0,
+  "sessionToken": null
+},
+{
+  "_id": {
+    "$oid": "69ff42da0ceb39b3afb2501c"
+  },
+  "username": "Zzz",
+  "email": "botteam1_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:14.857Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42da0ceb39b3afb2501f"
+  },
+  "username": "Pause",
+  "email": "botteam1_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:14.862Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42da0ceb39b3afb25022"
+  },
+  "username": "Offline",
+  "email": "botteam1_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:14.866Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42db0ceb39b3afb2503a"
+  },
+  "username": "Laggy",
+  "email": "botteam2_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:15.961Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42db0ceb39b3afb2503d"
+  },
+  "username": "Ms999",
+  "email": "botteam2_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:15.965Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42db0ceb39b3afb25040"
+  },
+  "username": "Delay",
+  "email": "botteam2_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:15.970Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb2505b"
+  },
+  "username": "Quack",
+  "email": "botteam3_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.115Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb2505e"
+  },
+  "username": "Cua_Cua",
+  "email": "botteam3_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.122Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25061"
+  },
+  "username": "Pato_X",
+  "email": "botteam3_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.126Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb2507f"
+  },
+  "username": "Error",
+  "email": "botteam4_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.273Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25082"
+  },
+  "username": "Bug",
+  "email": "botteam4_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.277Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25085"
+  },
+  "username": "Crash",
+  "email": "botteam4_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.282Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250a6"
+  },
+  "username": "Chelo",
+  "email": "botteam5_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.422Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250a9"
+  },
+  "username": "Tito",
+  "email": "botteam5_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.427Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250ac"
+  },
+  "username": "Vane",
+  "email": "botteam5_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.431Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250d0"
+  },
+  "username": "8Bit",
+  "email": "botteam6_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.582Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250d3"
+  },
+  "username": "Dot",
+  "email": "botteam6_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.586Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250d6"
+  },
+  "username": "Retro",
+  "email": "botteam6_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.591Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb250fd"
+  },
+  "username": "Manco1",
+  "email": "botteam7_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.751Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25100"
+  },
+  "username": "Casi",
+  "email": "botteam7_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.757Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25103"
+  },
+  "username": "Falle",
+  "email": "botteam7_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.762Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb2512d"
+  },
+  "username": "Rex",
+  "email": "botteam8_j1@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.909Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25130"
+  },
+  "username": "Core",
+  "email": "botteam8_j2@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.913Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff42dc0ceb39b3afb25133"
+  },
+  "username": "Flux",
+  "email": "botteam8_j3@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:21:16.917Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdca"
+  },
+  "username": "Esc",
+  "email": "botteam1_j1_1778337892365@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.366Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdcd"
+  },
+  "username": "Alt",
+  "email": "botteam1_j2_1778337892370@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.371Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdd0"
+  },
+  "username": "Basado",
+  "email": "botteam1_j3_1778337892375@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.375Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdd3"
+  },
+  "username": "Del",
+  "email": "botteam1_j4_1778337892380@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.381Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdd6"
+  },
+  "username": "Tab",
+  "email": "botteam1_j5_1778337892385@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.386Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdf2"
+  },
+  "username": "Caso",
+  "email": "botteam2_j1_1778337892837@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.837Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdf5"
+  },
+  "username": "Lueguito",
+  "email": "botteam2_j2_1778337892843@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.843Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdf8"
+  },
+  "username": "Quizás",
+  "email": "botteam2_j3_1778337892848@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.848Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdfb"
+  },
+  "username": "Mañana",
+  "email": "botteam2_j4_1778337892852@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.852Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4864197525512480fdfe"
+  },
+  "username": "Intento",
+  "email": "botteam2_j5_1778337892856@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:52.856Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4865197525512480fe1f"
+  },
+  "username": "Astro",
+  "email": "botteam3_j1_1778337893157@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:53.157Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4865197525512480fe22"
+  },
+  "username": "Nova",
+  "email": "botteam3_j2_1778337893162@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:53.162Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4865197525512480fe25"
+  },
+  "username": "Luna",
+  "email": "botteam3_j3_1778337893166@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:53.167Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4865197525512480fe28"
+  },
+  "username": "Sol",
+  "email": "botteam3_j4_1778337893171@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:53.171Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4865197525512480fe2b"
+  },
+  "username": "Mars",
+  "email": "botteam3_j5_1778337893175@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:53.175Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4866197525512480fe51"
+  },
+  "username": "Miau",
+  "email": "botteam4_j1_1778337894048@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:54.048Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4866197525512480fe54"
+  },
+  "username": "Michi",
+  "email": "botteam4_j2_1778337894053@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:54.053Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4866197525512480fe57"
+  },
+  "username": "Garra",
+  "email": "botteam4_j3_1778337894057@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:54.057Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4866197525512480fe5a"
+  },
+  "username": "Bigos",
+  "email": "botteam4_j4_1778337894062@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:54.062Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4866197525512480fe5d"
+  },
+  "username": "Felix",
+  "email": "botteam4_j5_1778337894067@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:44:54.067Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a8197525512481023e"
+  },
+  "username": "Bot_1",
+  "email": "bot_1_1778338216264@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:16.264Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a8197525512481024c"
+  },
+  "username": "Bot_2",
+  "email": "bot_2_1778338216714@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:16.714Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a8197525512481025a"
+  },
+  "username": "Bot_3",
+  "email": "bot_3_1778338216858@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:16.858Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a81975255124810268"
+  },
+  "username": "Bot_4",
+  "email": "bot_4_1778338216995@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:16.995Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a91975255124810276"
+  },
+  "username": "Bot_5",
+  "email": "bot_5_1778338217133@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:17.134Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a91975255124810284"
+  },
+  "username": "Bot_6",
+  "email": "bot_6_1778338217262@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:17.263Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a91975255124810292"
+  },
+  "username": "Bot_7",
+  "email": "bot_7_1778338217398@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:17.398Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a919752551248102a0"
+  },
+  "username": "Bot_8",
+  "email": "bot_8_1778338217537@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:17.537Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a919752551248102ae"
+  },
+  "username": "Bot_9",
+  "email": "bot_9_1778338217676@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:17.676Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a919752551248102bc"
+  },
+  "username": "Bot_10",
+  "email": "bot_10_1778338217809@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:17.809Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49a919752551248102ca"
+  },
+  "username": "Bot_11",
+  "email": "bot_11_1778338217942@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:17.942Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa19752551248102d8"
+  },
+  "username": "Bot_12",
+  "email": "bot_12_1778338218083@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.084Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa19752551248102e6"
+  },
+  "username": "Bot_13",
+  "email": "bot_13_1778338218242@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.243Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa19752551248102f4"
+  },
+  "username": "Bot_14",
+  "email": "bot_14_1778338218366@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.366Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa1975255124810302"
+  },
+  "username": "Bot_15",
+  "email": "bot_15_1778338218485@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.485Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa1975255124810310"
+  },
+  "username": "Bot_16",
+  "email": "bot_16_1778338218625@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.625Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa197525512481031e"
+  },
+  "username": "Bot_17",
+  "email": "bot_17_1778338218752@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.752Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa197525512481032c"
+  },
+  "username": "Bot_18",
+  "email": "bot_18_1778338218868@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.868Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49aa197525512481033a"
+  },
+  "username": "Bot_19",
+  "email": "bot_19_1778338218989@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:18.989Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ab1975255124810348"
+  },
+  "username": "Bot_20",
+  "email": "bot_20_1778338219217@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:19.217Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ab1975255124810356"
+  },
+  "username": "Bot_21",
+  "email": "bot_21_1778338219350@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:19.350Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ab1975255124810364"
+  },
+  "username": "Bot_22",
+  "email": "bot_22_1778338219472@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:19.472Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ab1975255124810372"
+  },
+  "username": "Bot_23",
+  "email": "bot_23_1778338219596@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:19.596Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ab1975255124810380"
+  },
+  "username": "Bot_24",
+  "email": "bot_24_1778338219724@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:19.724Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ab197525512481038e"
+  },
+  "username": "Bot_25",
+  "email": "bot_25_1778338219855@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:19.856Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ab197525512481039c"
+  },
+  "username": "Bot_26",
+  "email": "bot_26_1778338219990@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:19.990Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ac19752551248103aa"
+  },
+  "username": "Bot_27",
+  "email": "bot_27_1778338220123@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:20.124Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ac19752551248103b8"
+  },
+  "username": "Bot_28",
+  "email": "bot_28_1778338220271@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:20.271Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ac19752551248103c6"
+  },
+  "username": "Bot_29",
+  "email": "bot_29_1778338220403@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:20.403Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ac19752551248103d4"
+  },
+  "username": "Bot_30",
+  "email": "bot_30_1778338220535@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:20.535Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ac19752551248103e2"
+  },
+  "username": "Bot_31",
+  "email": "bot_31_1778338220673@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:20.673Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ac19752551248103f0"
+  },
+  "username": "Bot_32",
+  "email": "bot_32_1778338220799@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:50:20.799Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb1975255124810478"
+  },
+  "username": "Ram",
+  "email": "botteam1_j1_1778338283054@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.054Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb197525512481047b"
+  },
+  "username": "Cpu",
+  "email": "botteam1_j2_1778338283059@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.059Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb197525512481047e"
+  },
+  "username": "Gpu",
+  "email": "botteam1_j3_1778338283064@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.065Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb1975255124810496"
+  },
+  "username": "Ice",
+  "email": "botteam2_j1_1778338283771@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.771Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb1975255124810499"
+  },
+  "username": "Lamar",
+  "email": "botteam2_j2_1778338283776@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.777Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb197525512481049c"
+  },
+  "username": "Zen",
+  "email": "botteam2_j3_1778338283781@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.781Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb19752551248104b7"
+  },
+  "username": "Pow",
+  "email": "botteam3_j1_1778338283927@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.928Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb19752551248104ba"
+  },
+  "username": "Zap",
+  "email": "botteam3_j2_1778338283932@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.932Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49eb19752551248104bd"
+  },
+  "username": "Bam",
+  "email": "botteam3_j3_1778338283937@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:23.937Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ec19752551248104db"
+  },
+  "username": "Cloud",
+  "email": "botteam4_j1_1778338284080@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:24.081Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ec19752551248104de"
+  },
+  "username": "Zack",
+  "email": "botteam4_j2_1778338284084@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:24.084Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff49ec19752551248104e1"
+  },
+  "username": "Seph",
+  "email": "botteam4_j3_1778338284089@bot.easytourney",
+  "password": "bot_no_login",
+  "pais": "España",
+  "idioma": [
+    "es"
+  ],
+  "rol": "participante",
+  "isBot": true,
+  "fechaRegistro": {
+    "$date": "2026-05-09T14:51:24.089Z"
+  },
+  "__v": 0
+}]

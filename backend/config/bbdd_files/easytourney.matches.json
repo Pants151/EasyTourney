@@ -1,0 +1,699 @@
+[{
+  "_id": {
+    "$oid": "69ff35680ceb39b3afb23f61"
+  },
+  "torneo": {
+    "$oid": "69ff302f0ceb39b3afb2366f"
+  },
+  "equipo1": {
+    "$oid": "69ff34530ceb39b3afb23a46"
+  },
+  "equipo2": {
+    "$oid": "69ff344d0ceb39b3afb239be"
+  },
+  "ronda": 1,
+  "ganadorTipo": "Team",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff344d0ceb39b3afb239be"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff35680ceb39b3afb23f63"
+  },
+  "torneo": {
+    "$oid": "69ff302f0ceb39b3afb2366f"
+  },
+  "equipo1": {
+    "$oid": "69ff33180ceb39b3afb237ab"
+  },
+  "equipo2": {
+    "$oid": "69ff344f0ceb39b3afb239fd"
+  },
+  "ronda": 1,
+  "ganadorTipo": "Team",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff33180ceb39b3afb237ab"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff35950ceb39b3afb24065"
+  },
+  "torneo": {
+    "$oid": "69ff302f0ceb39b3afb2366f"
+  },
+  "equipo1": {
+    "$oid": "69ff344d0ceb39b3afb239be"
+  },
+  "equipo2": {
+    "$oid": "69ff33180ceb39b3afb237ab"
+  },
+  "ronda": 2,
+  "ganadorTipo": "Team",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff33180ceb39b3afb237ab"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3d130ceb39b3afb244ed"
+  },
+  "torneo": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "jugador1": {
+    "$oid": "69ff3c8f0ceb39b3afb24474"
+  },
+  "jugador2": {
+    "$oid": "69ff3c8d0ceb39b3afb24420"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "4 - 5",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3c8d0ceb39b3afb24420"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3d130ceb39b3afb244ef"
+  },
+  "torneo": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "jugador1": {
+    "$oid": "69ff3c8c0ceb39b3afb24412"
+  },
+  "jugador2": {
+    "$oid": "69ff3c8e0ceb39b3afb24466"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "1 - 3",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3c8e0ceb39b3afb24466"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3d130ceb39b3afb244f1"
+  },
+  "torneo": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "jugador1": {
+    "$oid": "69ff3c8d0ceb39b3afb24458"
+  },
+  "jugador2": {
+    "$oid": "69ff3c8d0ceb39b3afb2442e"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "3 - 1",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3c8d0ceb39b3afb24458"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3d130ceb39b3afb244f3"
+  },
+  "torneo": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "jugador1": {
+    "$oid": "69ff3c8d0ceb39b3afb2443c"
+  },
+  "jugador2": {
+    "$oid": "69ff3c8d0ceb39b3afb2444a"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "1 - 0",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3c8d0ceb39b3afb2443c"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3d400ceb39b3afb2454e"
+  },
+  "torneo": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "jugador1": {
+    "$oid": "69ff3c8d0ceb39b3afb24420"
+  },
+  "jugador2": {
+    "$oid": "69ff3c8e0ceb39b3afb24466"
+  },
+  "ronda": 2,
+  "ganadorTipo": "User",
+  "resultado": "4 - 2",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3c8d0ceb39b3afb24420"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3d400ceb39b3afb24550"
+  },
+  "torneo": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "jugador1": {
+    "$oid": "69ff3c8d0ceb39b3afb24458"
+  },
+  "jugador2": {
+    "$oid": "69ff3c8d0ceb39b3afb2443c"
+  },
+  "ronda": 2,
+  "ganadorTipo": "User",
+  "resultado": "2 - 0",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3c8d0ceb39b3afb24458"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3d680ceb39b3afb24588"
+  },
+  "torneo": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "jugador1": {
+    "$oid": "69ff3c8d0ceb39b3afb24420"
+  },
+  "jugador2": {
+    "$oid": "69ff3c8d0ceb39b3afb24458"
+  },
+  "ronda": 3,
+  "ganadorTipo": "User",
+  "resultado": "0 - 1",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3c8d0ceb39b3afb24458"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249a5"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2c0ceb39b3afb24875"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2b0ceb39b3afb24805"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24805"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249a7"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24867"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2b0ceb39b3afb2483d"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24867"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249a9"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24859"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2a0ceb39b3afb247db"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2a0ceb39b3afb247db"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249ab"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2b0ceb39b3afb2482f"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249ad"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24813"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2c0ceb39b3afb24883"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24813"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249af"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb2484b"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2c0ceb39b3afb248ad"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2c0ceb39b3afb248ad"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249b1"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2c0ceb39b3afb2489f"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2c0ceb39b3afb24891"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2c0ceb39b3afb24891"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fc00ceb39b3afb249b3"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2a0ceb39b3afb247f7"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2a0ceb39b3afb247e9"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2a0ceb39b3afb247f7"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fd90ceb39b3afb24a56"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24805"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2b0ceb39b3afb24867"
+  },
+  "ronda": 2,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24867"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fd90ceb39b3afb24a58"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2a0ceb39b3afb247db"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  },
+  "ronda": 2,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fd90ceb39b3afb24a5a"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24813"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2c0ceb39b3afb248ad"
+  },
+  "ronda": 2,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2c0ceb39b3afb248ad"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fd90ceb39b3afb24a5c"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2c0ceb39b3afb24891"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2a0ceb39b3afb247f7"
+  },
+  "ronda": 2,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2c0ceb39b3afb24891"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fe30ceb39b3afb24ab8"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24867"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  },
+  "ronda": 3,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fe30ceb39b3afb24aba"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2c0ceb39b3afb248ad"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2c0ceb39b3afb24891"
+  },
+  "ronda": 3,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2c0ceb39b3afb24891"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff3fed0ceb39b3afb24af2"
+  },
+  "torneo": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "jugador1": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  },
+  "jugador2": {
+    "$oid": "69ff3f2c0ceb39b3afb24891"
+  },
+  "ronda": 4,
+  "ganadorTipo": "User",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff448c0ceb39b3afb256eb"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "jugador1": {
+    "$oid": "69ff42db0ceb39b3afb25042"
+  },
+  "jugador2": {
+    "$oid": "69ff42dc0ceb39b3afb25135"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "Pendiente",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff448c0ceb39b3afb256ed"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "jugador1": {
+    "$oid": "69ff42da0ceb39b3afb25024"
+  },
+  "jugador2": {
+    "$oid": "69ff42dc0ceb39b3afb25087"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "Pendiente",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff448c0ceb39b3afb256ef"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "jugador1": {
+    "$oid": "69ff42dc0ceb39b3afb250ae"
+  },
+  "jugador2": {
+    "$oid": "69ff42dc0ceb39b3afb25063"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "Pendiente",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff448c0ceb39b3afb256f1"
+  },
+  "torneo": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "jugador1": {
+    "$oid": "69ff42dc0ceb39b3afb250d8"
+  },
+  "jugador2": {
+    "$oid": "69ff42dc0ceb39b3afb25105"
+  },
+  "ronda": 1,
+  "ganadorTipo": "User",
+  "resultado": "Pendiente",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff499d1975255124810207"
+  },
+  "torneo": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "equipo1": {
+    "$oid": "69ff4866197525512480fe5f"
+  },
+  "equipo2": {
+    "$oid": "69ff4865197525512480fe2d"
+  },
+  "ronda": 1,
+  "ganadorTipo": "Team",
+  "resultado": "2 - 1",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff4866197525512480fe5f"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff499d1975255124810209"
+  },
+  "torneo": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "equipo1": {
+    "$oid": "69ff4864197525512480fdd8"
+  },
+  "equipo2": {
+    "$oid": "69ff4864197525512480fe00"
+  },
+  "ronda": 1,
+  "ganadorTipo": "Team",
+  "resultado": "1 - 3",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff4864197525512480fe00"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff4a111975255124810599"
+  },
+  "torneo": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "equipo1": {
+    "$oid": "69ff4866197525512480fe5f"
+  },
+  "equipo2": {
+    "$oid": "69ff4864197525512480fe00"
+  },
+  "ronda": 2,
+  "ganadorTipo": "Team",
+  "resultado": "Pendiente",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4af01975255124810841"
+  },
+  "torneo": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "equipo1": {
+    "$oid": "69ff49eb19752551248104bf"
+  },
+  "equipo2": {
+    "$oid": "69ff49eb197525512481049e"
+  },
+  "ronda": 1,
+  "ganadorTipo": "Team",
+  "resultado": "5 - 7",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff49eb197525512481049e"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff4af01975255124810843"
+  },
+  "torneo": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "equipo1": {
+    "$oid": "69ff49ec19752551248104e3"
+  },
+  "equipo2": {
+    "$oid": "69ff49eb1975255124810480"
+  },
+  "ronda": 1,
+  "ganadorTipo": "Team",
+  "resultado": "2 - 5",
+  "__v": 0,
+  "ganador": {
+    "$oid": "69ff49eb1975255124810480"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff4b1619752551248108d6"
+  },
+  "torneo": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "equipo1": {
+    "$oid": "69ff49eb197525512481049e"
+  },
+  "equipo2": {
+    "$oid": "69ff49eb1975255124810480"
+  },
+  "ronda": 2,
+  "ganadorTipo": "Team",
+  "resultado": "Pendiente",
+  "__v": 0
+}]

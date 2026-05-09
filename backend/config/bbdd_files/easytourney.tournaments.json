@@ -1,0 +1,1263 @@
+[{
+  "_id": {
+    "$oid": "69ff302f0ceb39b3afb2366f"
+  },
+  "nombre": "Nexus Legends Championship",
+  "juego": {
+    "$oid": "695120bb7d70fb5b0b6a416a"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 4,
+  "formato": "Equipos",
+  "tamanoEquipoMax": 5,
+  "equipos": [
+    {
+      "$oid": "69ff33180ceb39b3afb237ab"
+    },
+    {
+      "$oid": "69ff344d0ceb39b3afb239be"
+    },
+    {
+      "$oid": "69ff344f0ceb39b3afb239fd"
+    },
+    {
+      "$oid": "69ff34530ceb39b3afb23a46"
+    }
+  ],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-11T19:30:00.000Z"
+  },
+  "estado": "Finalizado",
+  "reglas": "La arena de batalla espera a los titanes de la estrategia en tiempo real. Este torneo reúne a escuadras de cinco jugadores que competirán por el control del mapa y la destrucción de la base enemiga. Con una fase de grupos intensiva seguida de eliminatorias directas, el evento destaca por sus jugadas de alto riesgo y la profundidad táctica en la selección de héroes. La gloria del nexo está en juego para los estrategas más brillantes.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "Team",
+  "participantes": [
+    {
+      "$oid": "694e67ba4a5368ec8c3728d1"
+    },
+    {
+      "$oid": "695101a73e810c83a936000f"
+    },
+    {
+      "$oid": "695101bc3e810c83a9360012"
+    },
+    {
+      "$oid": "6953d6c281ec171b652e4b79"
+    },
+    {
+      "$oid": "6953d6de81ec171b652e4b7c"
+    },
+    {
+      "$oid": "69ff344d0ceb39b3afb239b0"
+    },
+    {
+      "$oid": "69ff344d0ceb39b3afb239b3"
+    },
+    {
+      "$oid": "69ff344d0ceb39b3afb239b6"
+    },
+    {
+      "$oid": "69ff344d0ceb39b3afb239b9"
+    },
+    {
+      "$oid": "69ff344d0ceb39b3afb239bc"
+    },
+    {
+      "$oid": "69ff344f0ceb39b3afb239ef"
+    },
+    {
+      "$oid": "69ff344f0ceb39b3afb239f2"
+    },
+    {
+      "$oid": "69ff344f0ceb39b3afb239f5"
+    },
+    {
+      "$oid": "69ff344f0ceb39b3afb239f8"
+    },
+    {
+      "$oid": "69ff344f0ceb39b3afb239fb"
+    },
+    {
+      "$oid": "69ff34530ceb39b3afb23a38"
+    },
+    {
+      "$oid": "69ff34530ceb39b3afb23a3b"
+    },
+    {
+      "$oid": "69ff34530ceb39b3afb23a3e"
+    },
+    {
+      "$oid": "69ff34530ceb39b3afb23a41"
+    },
+    {
+      "$oid": "69ff34530ceb39b3afb23a44"
+    }
+  ],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 8,
+  "ganador": {
+    "$oid": "69ff33180ceb39b3afb237ab"
+  },
+  "snapEquiposMiembros": {
+    "69ff344d0ceb39b3afb239be": [
+      "69ff344d0ceb39b3afb239b0",
+      "69ff344d0ceb39b3afb239b3",
+      "69ff344d0ceb39b3afb239b6",
+      "69ff344d0ceb39b3afb239b9",
+      "69ff344d0ceb39b3afb239bc"
+    ],
+    "69ff344f0ceb39b3afb239fd": [
+      "69ff344f0ceb39b3afb239ef",
+      "69ff344f0ceb39b3afb239f2",
+      "69ff344f0ceb39b3afb239f5",
+      "69ff344f0ceb39b3afb239f8",
+      "69ff344f0ceb39b3afb239fb"
+    ],
+    "69ff34530ceb39b3afb23a46": [
+      "69ff34530ceb39b3afb23a38",
+      "69ff34530ceb39b3afb23a3b",
+      "69ff34530ceb39b3afb23a3e",
+      "69ff34530ceb39b3afb23a41",
+      "69ff34530ceb39b3afb23a44"
+    ]
+  },
+  "snapNombresBots": {
+    "69ff344d0ceb39b3afb239b0": "Viper_Shadow",
+    "69ff344d0ceb39b3afb239b3": "Ghost_Sniper",
+    "69ff344d0ceb39b3afb239b6": "DarkReaper99",
+    "69ff344d0ceb39b3afb239b9": "Alpha_Elite",
+    "69ff344d0ceb39b3afb239bc": "Nexus_Void",
+    "69ff344f0ceb39b3afb239ef": "PocoYoyo",
+    "69ff344f0ceb39b3afb239f2": "Manco_Pero_Honrado",
+    "69ff344f0ceb39b3afb239f5": "Wifi_de_McDonalds",
+    "69ff344f0ceb39b3afb239f8": "TuAbuelaEnBici",
+    "69ff344f0ceb39b3afb239fb": "Error_404_Skill",
+    "69ff34530ceb39b3afb23a38": "Juanito2008",
+    "69ff34530ceb39b3afb23a3b": "Kike_Gamer",
+    "69ff34530ceb39b3afb23a3e": "Santi_Master",
+    "69ff34530ceb39b3afb23a41": "Fer_Crack",
+    "69ff34530ceb39b3afb23a44": "Rodri_05"
+  },
+  "snapNombresEquipos": {
+    "69ff344d0ceb39b3afb239be": "Shadow Vanguard",
+    "69ff344f0ceb39b3afb239fd": "Los Fontaneros del Lag",
+    "69ff34530ceb39b3afb23a46": "Team Dinamita"
+  }
+},
+{
+  "_id": {
+    "$oid": "69ff32440ceb39b3afb23690"
+  },
+  "nombre": "Survival Peak Open",
+  "juego": {
+    "$oid": "694fac54825d4a00e124579c"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 64,
+  "formato": "Battle Royale",
+  "tamanoEquipoMax": 2,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-17T20:00:00.000Z"
+  },
+  "estado": "Finalizado",
+  "reglas": "Sesenta y cuatro jugadores entran, pero solo uno sobrevive. Este torneo de Battle Royale pone a prueba la capacidad de supervivencia, el posicionamiento estratégico y la puntería bajo presión extrema. A lo largo de varias rondas de puntuación acumulativa, los participantes deberán navegar por terrenos cambiantes y zonas de cierre mortales. La consistencia es el factor determinante para coronarse en la cima de este desafío de resistencia y habilidad.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "User",
+  "participantes": [
+    {
+      "$oid": "694e67ba4a5368ec8c3728d1"
+    },
+    {
+      "$oid": "69ff40410ceb39b3afb24b3a"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b48"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b56"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b64"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b72"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b80"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b8e"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b9c"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24baa"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24bb8"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24bc6"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24bd4"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24be2"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24bf0"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24bfe"
+    },
+    {
+      "$oid": "69ff40440ceb39b3afb24c0c"
+    },
+    {
+      "$oid": "69ff40440ceb39b3afb24c1a"
+    },
+    {
+      "$oid": "69ff40440ceb39b3afb24c28"
+    },
+    {
+      "$oid": "69ff40440ceb39b3afb24c36"
+    },
+    {
+      "$oid": "69ff40440ceb39b3afb24c44"
+    },
+    {
+      "$oid": "69ff40440ceb39b3afb24c52"
+    },
+    {
+      "$oid": "69ff40440ceb39b3afb24c60"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24c6e"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24c7c"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24c8a"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24c98"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24ca6"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24cb4"
+    },
+    {
+      "$oid": "69ff40460ceb39b3afb24cc2"
+    },
+    {
+      "$oid": "69ff40460ceb39b3afb24cd0"
+    },
+    {
+      "$oid": "69ff40460ceb39b3afb24cde"
+    },
+    {
+      "$oid": "69ff40460ceb39b3afb24cec"
+    },
+    {
+      "$oid": "69ff40460ceb39b3afb24cfa"
+    },
+    {
+      "$oid": "69ff40460ceb39b3afb24d08"
+    },
+    {
+      "$oid": "69ff40470ceb39b3afb24d16"
+    },
+    {
+      "$oid": "69ff40470ceb39b3afb24d24"
+    },
+    {
+      "$oid": "69ff40470ceb39b3afb24d32"
+    },
+    {
+      "$oid": "69ff40470ceb39b3afb24d40"
+    },
+    {
+      "$oid": "69ff40470ceb39b3afb24d4e"
+    },
+    {
+      "$oid": "69ff40470ceb39b3afb24d5c"
+    },
+    {
+      "$oid": "69ff40470ceb39b3afb24d6a"
+    },
+    {
+      "$oid": "69ff40480ceb39b3afb24d78"
+    },
+    {
+      "$oid": "69ff40480ceb39b3afb24d86"
+    },
+    {
+      "$oid": "69ff40480ceb39b3afb24d94"
+    },
+    {
+      "$oid": "69ff40480ceb39b3afb24da2"
+    },
+    {
+      "$oid": "69ff40480ceb39b3afb24db0"
+    },
+    {
+      "$oid": "69ff40480ceb39b3afb24dbe"
+    },
+    {
+      "$oid": "69ff40480ceb39b3afb24dcc"
+    },
+    {
+      "$oid": "69ff40490ceb39b3afb24dda"
+    },
+    {
+      "$oid": "69ff40490ceb39b3afb24de8"
+    },
+    {
+      "$oid": "69ff40490ceb39b3afb24df6"
+    },
+    {
+      "$oid": "69ff40490ceb39b3afb24e04"
+    },
+    {
+      "$oid": "69ff40490ceb39b3afb24e12"
+    },
+    {
+      "$oid": "69ff404a0ceb39b3afb24e20"
+    },
+    {
+      "$oid": "69ff404a0ceb39b3afb24e2e"
+    },
+    {
+      "$oid": "69ff404a0ceb39b3afb24e3c"
+    },
+    {
+      "$oid": "69ff404a0ceb39b3afb24e4a"
+    },
+    {
+      "$oid": "69ff404a0ceb39b3afb24e58"
+    },
+    {
+      "$oid": "69ff404a0ceb39b3afb24e66"
+    },
+    {
+      "$oid": "69ff404a0ceb39b3afb24e74"
+    },
+    {
+      "$oid": "69ff404b0ceb39b3afb24e82"
+    },
+    {
+      "$oid": "69ff404b0ceb39b3afb24e90"
+    },
+    {
+      "$oid": "69ff404b0ceb39b3afb24e9e"
+    }
+  ],
+  "alMejorDe": 3,
+  "ganadoresRondaBR": [
+    {
+      "$oid": "69ff40410ceb39b3afb24b3a"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24baa"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24ca6"
+    },
+    {
+      "$oid": "69ff40450ceb39b3afb24c98"
+    },
+    {
+      "$oid": "694e67ba4a5368ec8c3728d1"
+    },
+    {
+      "$oid": "69ff40410ceb39b3afb24b3a"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b64"
+    },
+    {
+      "$oid": "69ff40460ceb39b3afb24cc2"
+    },
+    {
+      "$oid": "694e67ba4a5368ec8c3728d1"
+    },
+    {
+      "$oid": "69ff40430ceb39b3afb24baa"
+    },
+    {
+      "$oid": "69ff40420ceb39b3afb24b72"
+    },
+    {
+      "$oid": "694e67ba4a5368ec8c3728d1"
+    }
+  ],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 76,
+  "ganador": {
+    "$oid": "694e67ba4a5368ec8c3728d1"
+  },
+  "snapEquiposMiembros": {},
+  "snapNombresBots": {
+    "69ff40410ceb39b3afb24b3a": "Bot_2",
+    "69ff40420ceb39b3afb24b48": "Bot_3",
+    "69ff40420ceb39b3afb24b56": "Bot_4",
+    "69ff40420ceb39b3afb24b64": "Bot_5",
+    "69ff40420ceb39b3afb24b72": "Bot_6",
+    "69ff40420ceb39b3afb24b80": "Bot_7",
+    "69ff40420ceb39b3afb24b8e": "Bot_8",
+    "69ff40420ceb39b3afb24b9c": "Bot_9",
+    "69ff40430ceb39b3afb24baa": "Bot_10",
+    "69ff40430ceb39b3afb24bb8": "Bot_11",
+    "69ff40430ceb39b3afb24bc6": "Bot_12",
+    "69ff40430ceb39b3afb24bd4": "Bot_13",
+    "69ff40430ceb39b3afb24be2": "Bot_14",
+    "69ff40430ceb39b3afb24bf0": "Bot_15",
+    "69ff40430ceb39b3afb24bfe": "Bot_16",
+    "69ff40440ceb39b3afb24c0c": "Bot_17",
+    "69ff40440ceb39b3afb24c1a": "Bot_18",
+    "69ff40440ceb39b3afb24c28": "Bot_19",
+    "69ff40440ceb39b3afb24c36": "Bot_20",
+    "69ff40440ceb39b3afb24c44": "Bot_21",
+    "69ff40440ceb39b3afb24c52": "Bot_22",
+    "69ff40440ceb39b3afb24c60": "Bot_23",
+    "69ff40450ceb39b3afb24c6e": "Bot_24",
+    "69ff40450ceb39b3afb24c7c": "Bot_25",
+    "69ff40450ceb39b3afb24c8a": "Bot_26",
+    "69ff40450ceb39b3afb24c98": "Bot_27",
+    "69ff40450ceb39b3afb24ca6": "Bot_28",
+    "69ff40450ceb39b3afb24cb4": "Bot_29",
+    "69ff40460ceb39b3afb24cc2": "Bot_30",
+    "69ff40460ceb39b3afb24cd0": "Bot_31",
+    "69ff40460ceb39b3afb24cde": "Bot_32",
+    "69ff40460ceb39b3afb24cec": "Bot_33",
+    "69ff40460ceb39b3afb24cfa": "Bot_34",
+    "69ff40460ceb39b3afb24d08": "Bot_35",
+    "69ff40470ceb39b3afb24d16": "Bot_36",
+    "69ff40470ceb39b3afb24d24": "Bot_37",
+    "69ff40470ceb39b3afb24d32": "Bot_38",
+    "69ff40470ceb39b3afb24d40": "Bot_39",
+    "69ff40470ceb39b3afb24d4e": "Bot_40",
+    "69ff40470ceb39b3afb24d5c": "Bot_41",
+    "69ff40470ceb39b3afb24d6a": "Bot_42",
+    "69ff40480ceb39b3afb24d78": "Bot_43",
+    "69ff40480ceb39b3afb24d86": "Bot_44",
+    "69ff40480ceb39b3afb24d94": "Bot_45",
+    "69ff40480ceb39b3afb24da2": "Bot_46",
+    "69ff40480ceb39b3afb24db0": "Bot_47",
+    "69ff40480ceb39b3afb24dbe": "Bot_48",
+    "69ff40480ceb39b3afb24dcc": "Bot_49",
+    "69ff40490ceb39b3afb24dda": "Bot_50",
+    "69ff40490ceb39b3afb24de8": "Bot_51",
+    "69ff40490ceb39b3afb24df6": "Bot_52",
+    "69ff40490ceb39b3afb24e04": "Bot_53",
+    "69ff40490ceb39b3afb24e12": "Bot_54",
+    "69ff404a0ceb39b3afb24e20": "Bot_55",
+    "69ff404a0ceb39b3afb24e2e": "Bot_56",
+    "69ff404a0ceb39b3afb24e3c": "Bot_57",
+    "69ff404a0ceb39b3afb24e4a": "Bot_58",
+    "69ff404a0ceb39b3afb24e58": "Bot_59",
+    "69ff404a0ceb39b3afb24e66": "Bot_60",
+    "69ff404a0ceb39b3afb24e74": "Bot_61",
+    "69ff404b0ceb39b3afb24e82": "Bot_62",
+    "69ff404b0ceb39b3afb24e90": "Bot_63",
+    "69ff404b0ceb39b3afb24e9e": "Bot_64"
+  },
+  "snapNombresEquipos": {}
+},
+{
+  "_id": {
+    "$oid": "69ff3c7d0ceb39b3afb243f4"
+  },
+  "nombre": "Speed & Goal Invitational",
+  "juego": {
+    "$oid": "695128077d70fb5b0b6a41a6"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 8,
+  "formato": "1v1",
+  "tamanoEquipoMax": 2,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-12T19:00:00.000Z"
+  },
+  "estado": "Finalizado",
+  "reglas": "Una combinación explosiva de velocidad, motores y deportes tradicionales. Este torneo celebra la destreza técnica en el manejo de vehículos dentro de estadios virtuales dinámicos. Los equipos competirán en series al mejor de cinco, donde la rotación aérea, el control del turbo y la comunicación constante decidirán quién domina el campo de juego. Es una experiencia electrizante diseñada para mantener la adrenalina al límite de principio a fin.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "User",
+  "participantes": [
+    {
+      "$oid": "69ff3c8c0ceb39b3afb24412"
+    },
+    {
+      "$oid": "69ff3c8d0ceb39b3afb24420"
+    },
+    {
+      "$oid": "69ff3c8d0ceb39b3afb2442e"
+    },
+    {
+      "$oid": "69ff3c8d0ceb39b3afb2443c"
+    },
+    {
+      "$oid": "69ff3c8d0ceb39b3afb2444a"
+    },
+    {
+      "$oid": "69ff3c8d0ceb39b3afb24458"
+    },
+    {
+      "$oid": "69ff3c8e0ceb39b3afb24466"
+    },
+    {
+      "$oid": "69ff3c8f0ceb39b3afb24474"
+    }
+  ],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 8,
+  "ganador": {
+    "$oid": "69ff3c8d0ceb39b3afb24458"
+  },
+  "snapEquiposMiembros": {},
+  "snapNombresBots": {
+    "69ff3c8c0ceb39b3afb24412": "Ghost_Sniper",
+    "69ff3c8d0ceb39b3afb24420": "Viper_Shadow",
+    "69ff3c8d0ceb39b3afb2442e": "DarkReaper99",
+    "69ff3c8d0ceb39b3afb2443c": "Alpha_Elite",
+    "69ff3c8d0ceb39b3afb2444a": "Juanito2008",
+    "69ff3c8d0ceb39b3afb24458": "Kike_Gamer",
+    "69ff3c8e0ceb39b3afb24466": "Santi_Master",
+    "69ff3c8f0ceb39b3afb24474": "Fer_Crack"
+  },
+  "snapNombresEquipos": {}
+},
+{
+  "_id": {
+    "$oid": "69ff3eae0ceb39b3afb2479e"
+  },
+  "nombre": "Ultimate Combat Series",
+  "juego": {
+    "$oid": "695127187d70fb5b0b6a41a2"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 16,
+  "formato": "1v1",
+  "tamanoEquipoMax": 2,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-14T13:30:00.000Z"
+  },
+  "estado": "Finalizado",
+  "reglas": "El escenario principal para los amantes de los juegos de lucha. En un formato de uno contra uno, los guerreros virtuales se miden en combates de alta intensidad donde cada movimiento cuenta. El torneo utiliza un sistema de llaves de ganadores y perdedores para asegurar que solo los más resilientes lleguen a la gran final. La precisión en los combos y la capacidad de leer al oponente son las llaves para convertirse en el campeón indiscutible de la temporada.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "User",
+  "participantes": [
+    {
+      "$oid": "69ff3f2a0ceb39b3afb247db"
+    },
+    {
+      "$oid": "69ff3f2a0ceb39b3afb247e9"
+    },
+    {
+      "$oid": "69ff3f2a0ceb39b3afb247f7"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb24805"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb24813"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb24821"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb2482f"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb2483d"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb2484b"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb24859"
+    },
+    {
+      "$oid": "69ff3f2b0ceb39b3afb24867"
+    },
+    {
+      "$oid": "69ff3f2c0ceb39b3afb24875"
+    },
+    {
+      "$oid": "69ff3f2c0ceb39b3afb24883"
+    },
+    {
+      "$oid": "69ff3f2c0ceb39b3afb24891"
+    },
+    {
+      "$oid": "69ff3f2c0ceb39b3afb2489f"
+    },
+    {
+      "$oid": "69ff3f2c0ceb39b3afb248ad"
+    }
+  ],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 16,
+  "ganador": {
+    "$oid": "69ff3f2b0ceb39b3afb24821"
+  },
+  "snapEquiposMiembros": {},
+  "snapNombresBots": {
+    "69ff3f2a0ceb39b3afb247db": "Vortex_Striker",
+    "69ff3f2a0ceb39b3afb247e9": "Hyper_Reflex",
+    "69ff3f2a0ceb39b3afb247f7": "Ghost_Zero",
+    "69ff3f2b0ceb39b3afb24805": "Silent_Ace",
+    "69ff3f2b0ceb39b3afb24813": "Manco_De_Gira",
+    "69ff3f2b0ceb39b3afb24821": "Ping_Legendario",
+    "69ff3f2b0ceb39b3afb2482f": "Saco_De_Puntos",
+    "69ff3f2b0ceb39b3afb2483d": "Patata_Cósmica",
+    "69ff3f2b0ceb39b3afb2484b": "Cactus_Botas",
+    "69ff3f2b0ceb39b3afb24859": "TostadoraGamer",
+    "69ff3f2b0ceb39b3afb24867": "Don_Nadie",
+    "69ff3f2c0ceb39b3afb24875": "El_Maestro_07",
+    "69ff3f2c0ceb39b3afb24883": "Solo_Rush",
+    "69ff3f2c0ceb39b3afb24891": "SonicFan",
+    "69ff3f2c0ceb39b3afb2489f": "Zunder_Blast",
+    "69ff3f2c0ceb39b3afb248ad": "Gato_Pantuflas"
+  },
+  "snapNombresEquipos": {}
+},
+{
+  "_id": {
+    "$oid": "69ff41710ceb39b3afb24f51"
+  },
+  "nombre": "Velocity Grand Prix",
+  "juego": {
+    "$oid": "694fafcb825d4a00e12457b5"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 4,
+  "formato": "Equipos",
+  "tamanoEquipoMax": 3,
+  "equipos": [
+    {
+      "$oid": "69ff49eb1975255124810480"
+    },
+    {
+      "$oid": "69ff49eb197525512481049e"
+    },
+    {
+      "$oid": "69ff49eb19752551248104bf"
+    },
+    {
+      "$oid": "69ff49ec19752551248104e3"
+    }
+  ],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-19T12:00:00.000Z"
+  },
+  "estado": "En curso",
+  "reglas": "Una competencia de simulación de carreras de alto nivel donde la precisión milimétrica es la clave. Los pilotos deberán dominar cada curva en circuitos icónicos, gestionando el desgaste de neumáticos y la estrategia de paradas en boxes. Con clasificaciones previas para determinar la parrilla de salida, este evento busca al conductor más veloz y consistente del asfalto virtual en un entorno de máxima tensión.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "Team",
+  "participantes": [
+    {
+      "$oid": "69ff49eb1975255124810478"
+    },
+    {
+      "$oid": "69ff49eb197525512481047b"
+    },
+    {
+      "$oid": "69ff49eb197525512481047e"
+    },
+    {
+      "$oid": "69ff49eb1975255124810496"
+    },
+    {
+      "$oid": "69ff49eb1975255124810499"
+    },
+    {
+      "$oid": "69ff49eb197525512481049c"
+    },
+    {
+      "$oid": "69ff49eb19752551248104b7"
+    },
+    {
+      "$oid": "69ff49eb19752551248104ba"
+    },
+    {
+      "$oid": "69ff49eb19752551248104bd"
+    },
+    {
+      "$oid": "69ff49ec19752551248104db"
+    },
+    {
+      "$oid": "69ff49ec19752551248104de"
+    },
+    {
+      "$oid": "69ff49ec19752551248104e1"
+    }
+  ],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "69ff41e80ceb39b3afb24f5c"
+  },
+  "nombre": "Neon Rumble Party",
+  "juego": {
+    "$oid": "69511e627d70fb5b0b6a415a"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 8,
+  "formato": "Battle Royale - Por equipos",
+  "tamanoEquipoMax": 3,
+  "equipos": [
+    {
+      "$oid": "69ff42da0ceb39b3afb25024"
+    },
+    {
+      "$oid": "69ff42db0ceb39b3afb25042"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25063"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25087"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250ae"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250d8"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25105"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25135"
+    }
+  ],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-18T12:15:00.000Z"
+  },
+  "estado": "En curso",
+  "reglas": "Un evento vibrante diseñado para juegos battle royale competitivos. La diversión y la habilidad se mezclan en una serie de desafíos rápidos donde la adaptabilidad es el mayor activo del jugador. Ideal para comunidades que buscan un ambiente competitivo pero dinámico, donde los reflejos y el instinto se ponen a prueba en cada ronda eliminatoria hasta encontrar al jugador más versátil.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "Team",
+  "participantes": [
+    {
+      "$oid": "69ff42da0ceb39b3afb2501c"
+    },
+    {
+      "$oid": "69ff42da0ceb39b3afb2501f"
+    },
+    {
+      "$oid": "69ff42da0ceb39b3afb25022"
+    },
+    {
+      "$oid": "69ff42db0ceb39b3afb2503a"
+    },
+    {
+      "$oid": "69ff42db0ceb39b3afb2503d"
+    },
+    {
+      "$oid": "69ff42db0ceb39b3afb25040"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb2505b"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb2505e"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25061"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb2507f"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25082"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25085"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250a6"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250a9"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250ac"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250d0"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250d3"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250d6"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb250fd"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25100"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25103"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb2512d"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25130"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25133"
+    }
+  ],
+  "alMejorDe": 2,
+  "ganadoresRondaBR": [
+    {
+      "$oid": "69ff42dc0ceb39b3afb25105"
+    },
+    {
+      "$oid": "69ff42dc0ceb39b3afb25087"
+    }
+  ],
+  "tipoGanadorRonda": "Team",
+  "descalificados": [],
+  "streams": [],
+  "__v": 10
+},
+{
+  "_id": {
+    "$oid": "69ff42260ceb39b3afb24f67"
+  },
+  "nombre": "Alpha Clash",
+  "juego": {
+    "$oid": "695125947d70fb5b0b6a4188"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 32,
+  "formato": "Battle Royale",
+  "tamanoEquipoMax": 2,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-19T11:00:00.000Z"
+  },
+  "estado": "En curso",
+  "reglas": "Torneo enfocado exclusivamente en la escena competitiva de dispositivos móviles. Equipos de cuatro integrantes se enfrentan en mapas urbanos compactos para demostrar quién posee la mejor puntería y coordinación en pantalla táctil. El formato de puntos por bajas y posición final asegura que la agresividad inteligente sea recompensada, culminando en una Gran Final épica por el dominio absoluto de la región.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "User",
+  "participantes": [
+    {
+      "$oid": "69ff49a8197525512481023e"
+    },
+    {
+      "$oid": "69ff49a8197525512481024c"
+    },
+    {
+      "$oid": "69ff49a8197525512481025a"
+    },
+    {
+      "$oid": "69ff49a81975255124810268"
+    },
+    {
+      "$oid": "69ff49a91975255124810276"
+    },
+    {
+      "$oid": "69ff49a91975255124810284"
+    },
+    {
+      "$oid": "69ff49a91975255124810292"
+    },
+    {
+      "$oid": "69ff49a919752551248102a0"
+    },
+    {
+      "$oid": "69ff49a919752551248102ae"
+    },
+    {
+      "$oid": "69ff49a919752551248102bc"
+    },
+    {
+      "$oid": "69ff49a919752551248102ca"
+    },
+    {
+      "$oid": "69ff49aa19752551248102d8"
+    },
+    {
+      "$oid": "69ff49aa19752551248102e6"
+    },
+    {
+      "$oid": "69ff49aa19752551248102f4"
+    },
+    {
+      "$oid": "69ff49aa1975255124810302"
+    },
+    {
+      "$oid": "69ff49aa1975255124810310"
+    },
+    {
+      "$oid": "69ff49aa197525512481031e"
+    },
+    {
+      "$oid": "69ff49aa197525512481032c"
+    },
+    {
+      "$oid": "69ff49aa197525512481033a"
+    },
+    {
+      "$oid": "69ff49ab1975255124810348"
+    },
+    {
+      "$oid": "69ff49ab1975255124810356"
+    },
+    {
+      "$oid": "69ff49ab1975255124810364"
+    },
+    {
+      "$oid": "69ff49ab1975255124810372"
+    },
+    {
+      "$oid": "69ff49ab1975255124810380"
+    },
+    {
+      "$oid": "69ff49ab197525512481038e"
+    },
+    {
+      "$oid": "69ff49ab197525512481039c"
+    },
+    {
+      "$oid": "69ff49ac19752551248103aa"
+    },
+    {
+      "$oid": "69ff49ac19752551248103b8"
+    },
+    {
+      "$oid": "69ff49ac19752551248103c6"
+    },
+    {
+      "$oid": "69ff49ac19752551248103d4"
+    },
+    {
+      "$oid": "69ff49ac19752551248103e2"
+    },
+    {
+      "$oid": "69ff49ac19752551248103f0"
+    }
+  ],
+  "alMejorDe": 3,
+  "ganadoresRondaBR": [
+    {
+      "$oid": "69ff49a8197525512481023e"
+    },
+    {
+      "$oid": "69ff49a8197525512481025a"
+    },
+    {
+      "$oid": "69ff49aa1975255124810310"
+    },
+    {
+      "$oid": "69ff49ab1975255124810364"
+    },
+    {
+      "$oid": "69ff49ab1975255124810348"
+    }
+  ],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 39
+},
+{
+  "_id": {
+    "$oid": "69ff427d0ceb39b3afb24f76"
+  },
+  "nombre": "Virtual Glory Cup",
+  "juego": {
+    "$oid": "694fb017825d4a00e12457b9"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 8,
+  "formato": "Equipos",
+  "tamanoEquipoMax": 5,
+  "equipos": [
+    {
+      "$oid": "69ff4864197525512480fdd8"
+    },
+    {
+      "$oid": "69ff4864197525512480fe00"
+    },
+    {
+      "$oid": "69ff4865197525512480fe2d"
+    },
+    {
+      "$oid": "69ff4866197525512480fe5f"
+    }
+  ],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-18T17:00:00.000Z"
+  },
+  "estado": "En curso",
+  "reglas": "La emoción del deporte tradicional se traslada a las pantallas en este torneo de simulación deportiva. Los jugadores controlan a sus equipos favoritos en partidos de alta intensidad, buscando la perfección en cada pase y cada anotación. Bajo un sistema de liga con playoffs finales, la Virtual Glory Cup premia la habilidad técnica, el conocimiento profundo de las mecánicas del juego y la resistencia mental en el campo.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "Team",
+  "participantes": [
+    {
+      "$oid": "69ff4864197525512480fdca"
+    },
+    {
+      "$oid": "69ff4864197525512480fdcd"
+    },
+    {
+      "$oid": "69ff4864197525512480fdd0"
+    },
+    {
+      "$oid": "69ff4864197525512480fdd3"
+    },
+    {
+      "$oid": "69ff4864197525512480fdd6"
+    },
+    {
+      "$oid": "69ff4864197525512480fdf2"
+    },
+    {
+      "$oid": "69ff4864197525512480fdf5"
+    },
+    {
+      "$oid": "69ff4864197525512480fdf8"
+    },
+    {
+      "$oid": "69ff4864197525512480fdfb"
+    },
+    {
+      "$oid": "69ff4864197525512480fdfe"
+    },
+    {
+      "$oid": "69ff4865197525512480fe1f"
+    },
+    {
+      "$oid": "69ff4865197525512480fe22"
+    },
+    {
+      "$oid": "69ff4865197525512480fe25"
+    },
+    {
+      "$oid": "69ff4865197525512480fe28"
+    },
+    {
+      "$oid": "69ff4865197525512480fe2b"
+    },
+    {
+      "$oid": "69ff4866197525512480fe51"
+    },
+    {
+      "$oid": "69ff4866197525512480fe54"
+    },
+    {
+      "$oid": "69ff4866197525512480fe57"
+    },
+    {
+      "$oid": "69ff4866197525512480fe5a"
+    },
+    {
+      "$oid": "69ff4866197525512480fe5d"
+    }
+  ],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 13
+},
+{
+  "_id": {
+    "$oid": "69ff4c85197525512481094d"
+  },
+  "nombre": "Galaxy Rift Challenge",
+  "juego": {
+    "$oid": "694fa9c266b104ee30da6d10"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 16,
+  "formato": "1v1",
+  "tamanoEquipoMax": 2,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-25T18:00:00.000Z"
+  },
+  "estado": "Abierto",
+  "reglas": "Un viaje competitivo a las profundidades del espacio en este torneo de combate estelar y simuladores de vuelo. Los pilotos deben maniobrar a través de entornos complejos mientras eliminan a sus rivales en combates de 360 grados. El evento combina velocidad, precisión de disparo y una conciencia espacial única, ofreciendo un espectáculo visual y competitivo sin igual para los entusiastas de la simulación que buscan demostrar quién es el mejor as del aire.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "User",
+  "participantes": [],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [
+    {
+      "plataforma": "YouTube",
+      "url": "https://www.youtube.com/watch?v=hI9gPuGN07c&t=1s",
+      "_id": {
+        "$oid": "69ff4d9b19752551248109d6"
+      }
+    },
+    {
+      "plataforma": "Twitch",
+      "url": "https://www.twitch.tv/videos/2511546048",
+      "_id": {
+        "$oid": "69ff4dc119752551248109e5"
+      }
+    }
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "69ff4cad1975255124810958"
+  },
+  "nombre": "Cyber League Alpha",
+  "juego": {
+    "$oid": "69511fa47d70fb5b0b6a4162"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 64,
+  "formato": "Battle Royale",
+  "tamanoEquipoMax": 2,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-26T10:00:00.000Z"
+  },
+  "estado": "Abierto",
+  "reglas": "Una competencia de shooters en primera persona enfocada exclusivamente en el control de objetivos y el juego en equipo. En este torneo, la comunicación clara es tan importante como la puntería. Los equipos luchan por dominar puntos estratégicos del mapa en una serie de rondas rápidas y dinámicas. Con un sistema de clasificación por puntos, solo los grupos que demuestren una sinergia perfecta y una ejecución táctica impecable lograrán el ascenso a la división profesional.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "User",
+  "participantes": [],
+  "alMejorDe": 2,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4d1b1975255124810963"
+  },
+  "nombre": "Strategy Zenith Open",
+  "juego": {
+    "$oid": "694faf4f825d4a00e12457b1"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 8,
+  "formato": "1v1",
+  "tamanoEquipoMax": 2,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-27T19:30:00.000Z"
+  },
+  "estado": "Abierto",
+  "reglas": "El campo de pruebas definitivo para los amantes de los juegos de estrategia por turnos y gestión de recursos. Los jugadores deben planificar cada movimiento con antelación, anticipando las tácticas de sus oponentes en un tablero digital en constante cambio. Este evento premia la paciencia, el análisis de datos y la capacidad de pivotar ante situaciones imprevistas, culminando en un duelo de mentes brillantes por el título de Gran Maestro de la temporada.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "User",
+  "participantes": [],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ff4d63197525512481096e"
+  },
+  "nombre": "Iron Circuit Invitational",
+  "juego": {
+    "$oid": "69511d8d7d70fb5b0b6a4148"
+  },
+  "plataformas": [],
+  "limiteParticipantes": 8,
+  "formato": "Equipos",
+  "tamanoEquipoMax": 5,
+  "equipos": [],
+  "ubicacion": "Online",
+  "fechaInicio": {
+    "$date": "2026-05-31T11:00:00.000Z"
+  },
+  "estado": "Abierto",
+  "reglas": "Un torneo de élite para los maestros de los shooters competitivos. El formato se centra en la ejecución técnica y la capacidad de adaptación en tiempo real. Los competidores avanzan a través de un cuadro de eliminación doble, donde cada set es una batalla de nervios y conocimiento de personajes. Es el escenario ideal para destacar la destreza individual y el dominio de los combos más complejos bajo la mirada de toda la comunidad.",
+  "organizador": {
+    "$oid": "694fa64266b104ee30da6cff"
+  },
+  "ganadorTipo": "Team",
+  "participantes": [],
+  "alMejorDe": 1,
+  "ganadoresRondaBR": [],
+  "tipoGanadorRonda": "User",
+  "descalificados": [],
+  "streams": [],
+  "__v": 0
+}]
