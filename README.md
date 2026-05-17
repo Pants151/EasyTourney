@@ -30,6 +30,8 @@ Sigue estos pasos para desplegar el proyecto localmente utilizando Docker:
 5. **Acceder a la aplicación**: Abre tu navegador web y visita [http://localhost:3000](http://localhost:3000).
 6. **¡Listo!**: Ya puedes empezar a disfrutar y gestionar tus torneos con EasyTourney. :D
 
+> 💡 **Nota adicional**: Si deseas explorar la base de datos y ver los registros internos generados por la aplicación, puedes usar el programa [MongoDB Compass](https://www.mongodb.com/products/tools/compass). Simplemente crea una nueva conexión utilizando la siguiente URI: `mongodb://localhost:27018/`
+
 ---
 
 ## Tecnologías Principales
