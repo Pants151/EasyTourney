@@ -1,4 +1,5 @@
 const Game = require('../models/Game');
+const Tournament = require('../models/Tournament');
 
 exports.getGames = async (req, res) => {
     try {
@@ -55,6 +56,11 @@ exports.deleteGame = async (req, res) => {
         const game = await Game.findById(req.params.id);
         if (!game) return res.status(404).json({ msg: 'Juego no encontrado' });
 
+        const tournamentsUsingGame = await Tournament.findOne({ juego: req.params.id });
+        if (tournamentsUsingGame) {
+            return res.status(400).json({ msg: 'No se puede eliminar el juego porque hay torneos asociados a él.' });
+        }
+
         await Game.findByIdAndDelete(req.params.id);
         res.json({ msg: 'Juego eliminado correctamente' });
     } catch (err) {
@@ -66,6 +72,11 @@ exports.deleteGamesBulk = async (req, res) => {
     try {
         const { ids } = req.body;
         if (!ids || !Array.isArray(ids)) return res.status(400).json({ msg: 'Lista de IDs no válida' });
+
+        const tournamentsUsingGames = await Tournament.findOne({ juego: { $in: ids } });
+        if (tournamentsUsingGames) {
+            return res.status(400).json({ msg: 'No se pueden eliminar los juegos seleccionados porque al menos uno tiene torneos asociados.' });
+        }
 
         await Game.deleteMany({ _id: { $in: ids } });
         res.json({ msg: 'Juegos eliminados correctamente' });

@@ -83,7 +83,7 @@ const AdminGames = () => {
                 setSelectedIds([]);
                 fetchGames();
                 alert('Juegos eliminados');
-            } catch (err) { alert('Error al eliminar en bloque'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al eliminar en bloque'); }
         }
     };
 
@@ -96,7 +96,7 @@ const AdminGames = () => {
                     await gameService.deleteGamesBulk(allIds);
                     fetchGames();
                     alert('Todos los juegos han sido eliminados.');
-                } catch (err) { alert('Error al borrar todo'); }
+                } catch (err) { alert(err.response?.data?.msg || 'Error al borrar todo'); }
             }
         }
     };
@@ -165,7 +165,7 @@ const AdminGames = () => {
                 await gameService.deleteGame(id);
                 fetchGames();
             } catch (err) {
-                alert('Error al eliminar');
+                alert(err.response?.data?.msg || 'Error al eliminar');
             }
         }
     };
