@@ -15,15 +15,20 @@ La aplicación funciona como una **PWA (Progressive Web App)**, lo que permite i
 
 ---
 
-## Puesta en Marcha
+## Puesta en Marcha (Instalación Local)
 
-PASOS PARA INSTALAR EASYTOURNEY:
-1. TE DESCARGAS EL REPOSITORIO EN LA RAMA DE 'modo-local'.
-2. TE VAS A LOS ARCHIVOS (ABRES LA CARPETA EN VSCODE, POR EJEMPLO), Y CAMBIAS EL NOMBRE DEL ARCHIVO DE BACKEND '.env.example' a '.env'
-3. TE DESCARGAS LA APLICACION DE DOCKER DESKTOP. UNA VEZ INSTALADO, ENTRAS A CONTENEDORES, ABRES SU TERMINAL Y APUNTAS A LA CARPETA RAIZ DEL PROYECTO.
-4. EJECUTAS EL COMANDO: 'docker-compose up -d --build' Y ESPERAS A QUE TERMINE TODO EL PROCESO
-5. ABRES LA PAGINA 'localhost:3000'
-6. A DISFRUTAR :D
+Sigue estos pasos para desplegar el proyecto localmente utilizando Docker:
+
+1. **Clonar el repositorio**: Descarga el proyecto y asegúrate de situarte en la rama `modo-local`.
+2. **Configurar el entorno**: Abre el proyecto en tu editor preferido (por ejemplo, VS Code). Navega hasta la carpeta `backend` y renombra el archivo `.env.example` a `.env`.
+3. **Preparar Docker**: Descarga e instala [Docker Desktop](https://www.docker.com/products/docker-desktop/). Una vez iniciado, abre una terminal apuntando a la carpeta raíz del proyecto.
+4. **Desplegar los contenedores**: Ejecuta el siguiente comando para construir e iniciar los servicios:
+   ```bash
+   docker-compose up -d --build
+   ```
+   *Espera a que finalice todo el proceso de construcción.*
+5. **Acceder a la aplicación**: Abre tu navegador web y visita [http://localhost:3000](http://localhost:3000).
+6. **¡Listo!**: Ya puedes empezar a disfrutar y gestionar tus torneos con EasyTourney. :D
 
 ---
 
