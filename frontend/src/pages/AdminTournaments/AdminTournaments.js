@@ -83,7 +83,7 @@ const AdminTournaments = () => {
                 setSelectedIds([]);
                 fetchTournaments();
                 alert('Torneos eliminados');
-            } catch (err) { alert('Error al eliminar en bloque'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al eliminar en bloque'); }
         }
     };
 
@@ -96,7 +96,7 @@ const AdminTournaments = () => {
                     await tournamentService.deleteTournamentsBulk(allIds);
                     fetchTournaments();
                     alert('Todos los torneos han sido eliminados.');
-                } catch (err) { alert('Error al borrar todo'); }
+                } catch (err) { alert(err.response?.data?.msg || 'Error al borrar todo'); }
             }
         }
     };
