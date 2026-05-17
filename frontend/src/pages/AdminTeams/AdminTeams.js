@@ -70,7 +70,7 @@ const AdminTeams = () => {
                 setSelectedIds([]);
                 fetchTeams();
                 alert('Equipos eliminados');
-            } catch (err) { alert('Error al eliminar en bloque'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al eliminar en bloque'); }
         }
     };
 
@@ -82,7 +82,7 @@ const AdminTeams = () => {
                 await teamService.deleteTeamsBulk(allIds);
                 fetchTeams();
                 alert('Todos los equipos han sido eliminados.');
-            } catch (err) { alert('Error al borrar todo'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al borrar todo'); }
         }
     };
 
@@ -91,7 +91,7 @@ const AdminTeams = () => {
             try {
                 await teamService.deleteTeam(id);
                 fetchTeams();
-            } catch (err) { alert('Error al eliminar'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al eliminar'); }
         }
     };
 

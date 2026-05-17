@@ -23,6 +23,15 @@ exports.deleteTeam = async (req, res) => {
             return res.status(400).json({ msg: 'No se puede borrar un equipo de un torneo en curso' });
         }
 
+        const Tournament = require('../models/Tournament');
+        if (team.torneo) {
+            const memberIds = team.miembros.map(m => m.usuario.toString());
+            await Tournament.findByIdAndUpdate(team.torneo._id, {
+                $pull: { equipos: team._id },
+                $pullAll: { participantes: memberIds }
+            });
+        }
+
         await Team.findByIdAndDelete(teamId);
         res.json({ msg: 'Equipo eliminado exitosamente' });
     } catch (err) {
@@ -41,6 +50,17 @@ exports.deleteTeamsBulk = async (req, res) => {
 
         if (invalidTeams.length > 0) {
             return res.status(400).json({ msg: 'No se pueden borrar equipos de torneos en curso' });
+        }
+
+        const Tournament = require('../models/Tournament');
+        for (const team of teamsToDelete) {
+            if (team.torneo) {
+                const memberIds = team.miembros.map(m => m.usuario.toString());
+                await Tournament.findByIdAndUpdate(team.torneo._id, {
+                    $pull: { equipos: team._id },
+                    $pullAll: { participantes: memberIds }
+                });
+            }
         }
 
         await Team.deleteMany({ _id: { $in: ids } });

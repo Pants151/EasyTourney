@@ -70,7 +70,7 @@ const AdminMatches = () => {
                 setSelectedIds([]);
                 fetchMatches();
                 alert('Matches eliminados');
-            } catch (err) { alert('Error al eliminar en bloque'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al eliminar en bloque'); }
         }
     };
 
@@ -82,7 +82,7 @@ const AdminMatches = () => {
                 await matchService.deleteMatchesBulk(allIds);
                 fetchMatches();
                 alert('Todos los matches han sido eliminados.');
-            } catch (err) { alert('Error al borrar todo'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al borrar todo'); }
         }
     };
 
@@ -91,7 +91,7 @@ const AdminMatches = () => {
             try {
                 await matchService.deleteMatch(id);
                 fetchMatches();
-            } catch (err) { alert('Error al eliminar'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al eliminar'); }
         }
     };
 

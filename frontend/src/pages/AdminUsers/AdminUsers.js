@@ -47,7 +47,7 @@ const AdminUsers = () => {
                 await authService.deleteUserByAdmin(id);
                 fetchUsers();
                 setSelectedIds(selectedIds.filter(i => i !== id));
-            } catch (err) { alert("Error al borrar"); }
+            } catch (err) { alert(err.response?.data?.msg || "Error al borrar"); }
         }
     };
 
@@ -80,7 +80,7 @@ const AdminUsers = () => {
                 setSelectedIds([]);
                 fetchUsers();
                 alert('Usuarios eliminados');
-            } catch (err) { alert('Error al eliminar en bloque'); }
+            } catch (err) { alert(err.response?.data?.msg || 'Error al eliminar en bloque'); }
         }
     };
 
@@ -92,7 +92,7 @@ const AdminUsers = () => {
                     await authService.deleteUsersBulk(allIds);
                     fetchUsers();
                     alert('Todos los usuarios han sido eliminados.');
-                } catch (err) { alert('Error al borrar todo'); }
+                } catch (err) { alert(err.response?.data?.msg || 'Error al borrar todo'); }
             }
         }
     };
